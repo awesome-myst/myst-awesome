@@ -1,0 +1,14 @@
+[project]
+authors = ["Matt McCormick <matt@fideus.io>"]
+channels = ["conda-forge"]
+description = "Build and test documentation for the MyST Awesome Theme"
+name = "docs"
+platforms = ["linux-aarch64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.12.5,<4"
+deno = ">=2.2.6,<2.3"
+mystmd = ">=1.3.25,<2"
