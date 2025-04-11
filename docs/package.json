@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Documentation for the myst-awesome-theme",
   "scripts": {
+    "myst-content-server": "myst start --headless",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -19,5 +20,8 @@
     "myst-parser": "^1.5.2",
     "myst-roles": "^1.5.2",
     "unist-builder": "^4.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
