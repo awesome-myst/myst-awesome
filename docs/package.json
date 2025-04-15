@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Documentation for the myst-awesome-theme",
   "scripts": {
+    "dev": "concurrently \"npm run myst-content-server\" \"cd .. && npm run dev\"",
     "myst-content-server": "myst start --headless",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
