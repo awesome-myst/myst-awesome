@@ -11,7 +11,7 @@ project:
     python: https://docs.python.org/3.13/
     jupyterbook: https://jupyterbook.org/en/stable/
     jtex: https://mystmd.org/jtex/
-    spec: https://mystmd.org/spec/
+    # spec: https://mystmd.org/spec/
   plugins:
     - directives.mjs
   toc:
