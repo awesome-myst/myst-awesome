@@ -25,19 +25,5 @@ export default defineConfig({
     ssr: {
       noExternal: ["@awesome.me/webawesome"],
     },
-    // Ensure Web Awesome and its dependencies are properly optimized
-    optimizeDeps: {
-      include: [
-        "@awesome.me/webawesome",
-        "@shoelace-style/localize",
-        "@shoelace-style/animations",
-        "@ctrl/tinycolor",
-        "@floating-ui/dom",
-        "lit",
-        "qr-creator",
-        "style-observer",
-        "composed-offset-position",
-      ],
-    },
   },
 });
