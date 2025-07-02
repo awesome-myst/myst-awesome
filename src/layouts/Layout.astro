@@ -4,6 +4,10 @@ interface Props {
 }
 
 const { title = "MyST Awesomeness" } = Astro.props;
+
+// Import Web Awesome CSS for proper bundling and tree shaking
+import "@awesome.me/webawesome/dist/styles/webawesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/default.css";
 ---
 
 <!doctype html>
@@ -15,10 +19,6 @@ const { title = "MyST Awesomeness" } = Astro.props;
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-
-		<link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.12/dist/styles/themes/default.css" />
-    	<link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.12/dist/styles/webawesome.css" />
-    	<script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.12/dist/webawesome.loader.js"></script>
 	</head>
 	<body>
 		<slot />

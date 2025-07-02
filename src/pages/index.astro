@@ -1,10 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
 ---
 
 <Layout title="MyST Awesomeness Demo">
 	<h3>Heading Level 3</h3>
 	<p>Try changing the number of <code>#</code>s to change the <code>depth</code>.</p>
-	<w-awesome-icon name="home"></w-awesome-icon>
-	<w-awesome-button theme="primary">Click Me</w-awesome-button>
+	<wa-icon name="home"></wa-icon>
+	<wa-button variant="brand">Click Me</wa-button>
 </Layout>
+
+<script>
+import "@awesome.me/webawesome/dist/components/button/button.js"
+import "@awesome.me/webawesome/dist/components/icon/icon.js"
+</script>
