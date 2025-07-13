@@ -10,9 +10,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@awesome.me/webawesome": "^3.0.0-beta.1",
-    "astro": "5.10.2",
-    "@awesome-myst/myst-zod": "^0.3.1"
+    "@astrojs/check": "^0.9.4",
+    "@awesome.me/webawesome": "^3.0.0-beta.2",
+    "astro": "5.11.0",
+    "@awesome-myst/myst-zod": "^0.4.0",
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
