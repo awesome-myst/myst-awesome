@@ -4,6 +4,7 @@
     "npm:@astrojs/check@~0.9.4": "0.9.4_typescript@5.8.3",
     "npm:@awesome-myst/myst-zod@0.4": "0.4.0",
     "npm:@awesome.me/webawesome@^3.0.0-beta.2": "3.0.0-beta.2",
+    "npm:@playwright/test@^1.54.1": "1.54.1",
     "npm:astro@5.11.0": "5.11.0_typescript@5.8.3_vite@6.3.5__picomatch@4.0.2_zod@3.25.76",
     "npm:concurrently@^9.1.2": "9.2.0",
     "npm:mystmd@^1.3.26": "1.5.1",
@@ -494,6 +495,13 @@
     },
     "@oslojs/encoding@1.1.0": {
       "integrity": "sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ=="
+    },
+    "@playwright/test@1.54.1": {
+      "integrity": "sha512-FS8hQ12acieG2dYSksmLOF7BNxnVf2afRJdCuM1eMSxj6QTSE6G4InGF7oApGgDb65MX7AwMVlIkpru0yZA4Xw==",
+      "dependencies": [
+        "playwright"
+      ],
+      "bin": true
     },
     "@rollup/pluginutils@5.2.0": {
       "integrity": "sha512-qWJ2ZTbmumwiLFomfzTyt5Kng4hwPi9rwCYN4SHb6eaRU1KNO4ccxINHr/VhH4GgPlt1XfSTLX2LBTme8ne4Zw==",
@@ -1254,6 +1262,11 @@
         "unicode-properties",
         "unicode-trie"
       ]
+    },
+    "fsevents@2.3.2": {
+      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
+      "os": ["darwin"],
+      "scripts": true
     },
     "fsevents@2.3.3": {
       "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
@@ -2028,6 +2041,20 @@
     "picomatch@4.0.2": {
       "integrity": "sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg=="
     },
+    "playwright-core@1.54.1": {
+      "integrity": "sha512-Nbjs2zjj0htNhzgiy5wu+3w09YetDx5pkrpI/kZotDlDUaYk0HVA5xrBVPdow4SAUIlhgKcJeJg4GRKW6xHusA==",
+      "bin": true
+    },
+    "playwright@1.54.1": {
+      "integrity": "sha512-peWpSwIBmSLi6aW2auvrUtf2DqY16YYcCMO8rTVx486jKmDTJg7UAhyrraP98GB8BoPURZP8+nxO7TSd4cPr5g==",
+      "dependencies": [
+        "playwright-core"
+      ],
+      "optionalDependencies": [
+        "fsevents@2.3.2"
+      ],
+      "bin": true
+    },
     "postcss@8.5.6": {
       "integrity": "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==",
       "dependencies": [
@@ -2240,7 +2267,7 @@
         "@rollup/rollup-win32-arm64-msvc",
         "@rollup/rollup-win32-ia32-msvc",
         "@rollup/rollup-win32-x64-msvc",
-        "fsevents"
+        "fsevents@2.3.3"
       ],
       "bin": true
     },
@@ -2609,7 +2636,7 @@
         "tinyglobby"
       ],
       "optionalDependencies": [
-        "fsevents"
+        "fsevents@2.3.3"
       ],
       "bin": true
     },
@@ -2905,6 +2932,7 @@
         "npm:@astrojs/check@~0.9.4",
         "npm:@awesome-myst/myst-zod@0.4",
         "npm:@awesome.me/webawesome@^3.0.0-beta.2",
+        "npm:@playwright/test@^1.54.1",
         "npm:astro@5.11.0",
         "npm:concurrently@^9.1.2",
         "npm:mystmd@^1.3.26",
