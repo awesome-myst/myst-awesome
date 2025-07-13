@@ -1,0 +1,838 @@
+---
+import BasePage from './BasePage.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  colorScheme?: 'light' | 'dark' | 'auto';
+  author?: string;
+  publishDate?: Date;
+  lastModified?: Date;
+  tags?: string[];
+  category?: string;
+  readingTime?: string;
+  showAuthor?: boolean;
+  showDate?: boolean;
+  showTags?: boolean;
+  showReadingTime?: boolean;
+  showTableOfContents?: boolean;
+  heroImage?: string;
+  heroImageAlt?: string;
+}
+
+const { 
+  title,
+  description,
+  theme = 'default',
+  colorScheme = 'auto',
+  author,
+  publishDate,
+  lastModified,
+  tags = [],
+  category,
+  readingTime,
+  showAuthor = true,
+  showDate = true,
+  showTags = true,
+  showReadingTime = true,
+  showTableOfContents = false,
+  heroImage,
+  heroImageAlt,
+  ...rest
+} = Astro.props;
+
+// Generate reading time if not provided
+const estimatedReadingTime = readingTime || "5 min read";
+
+// Generate table of contents items (simplified for demo)
+const tocItems = showTableOfContents ? [
+  { level: 2, title: "Introduction", href: "#introduction" },
+  { level: 2, title: "Main Content", href: "#main-content" },
+  { level: 3, title: "Subsection", href: "#subsection" },
+  { level: 2, title: "Conclusion", href: "#conclusion" },
+] : [];
+---
+
+<BasePage 
+  title={title} 
+  description={description}
+  theme={theme}
+  colorScheme={colorScheme}
+  mobileBreakpoint="768px"
+  {...rest}
+>
+  <!-- Header with site branding -->
+  <div slot="header" class="content-header">
+    <div class="site-branding">
+      <a href="/" class="brand-link">
+        <wa-icon name="feather" variant="solid"></wa-icon>
+        <span class="brand-text">MyST Blog</span>
+      </a>
+    </div>
+    
+    <nav class="header-nav">
+      <a href="/blog" class="nav-link">Blog</a>
+      <a href="/docs" class="nav-link">Docs</a>
+      <a href="/about" class="nav-link">About</a>
+      <a href="/contact" class="nav-link">Contact</a>
+    </nav>
+    
+    <div class="header-controls">
+      <!-- Color scheme toggle -->
+      <wa-button class="theme-toggle" appearance="plain" size="small">
+        <wa-icon class="only-light" name="moon" variant="regular"></wa-icon>
+        <wa-icon class="only-dark" name="sun" variant="regular"></wa-icon>
+      </wa-button>
+    </div>
+  </div>
+
+  <!-- Main article content -->
+  <article class="content-article">
+    <!-- Hero image -->
+    {heroImage && (
+      <div class="article-hero">
+        <img src={heroImage} alt={heroImageAlt || ""} class="hero-image" />
+      </div>
+    )}
+
+    <!-- Article header -->
+    <header class="article-header">
+      {category && (
+        <wa-badge variant="brand" class="category-badge">{category}</wa-badge>
+      )}
+      
+      <h1 class="article-title">{title}</h1>
+      
+      {description && (
+        <p class="article-description">{description}</p>
+      )}
+      
+      <div class="article-meta">
+        {showAuthor && author && (
+          <div class="meta-item author">
+            <wa-avatar size="small" label={author}></wa-avatar>
+            <span class="author-name">{author}</span>
+          </div>
+        )}
+        
+        {showDate && publishDate && (
+          <div class="meta-item date">
+            <wa-icon name="calendar" variant="regular"></wa-icon>
+            <time datetime={publishDate.toISOString()}>
+              {publishDate.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </time>
+          </div>
+        )}
+        
+        {showReadingTime && (
+          <div class="meta-item reading-time">
+            <wa-icon name="clock" variant="regular"></wa-icon>
+            <span>{estimatedReadingTime}</span>
+          </div>
+        )}
+        
+        {lastModified && (
+          <div class="meta-item updated">
+            <wa-icon name="pencil" variant="regular"></wa-icon>
+            <time datetime={lastModified.toISOString()}>
+              Updated {lastModified.toLocaleDateString()}
+            </time>
+          </div>
+        )}
+      </div>
+      
+      {showTags && tags.length > 0 && (
+        <div class="article-tags">
+          {tags.map(tag => (
+            <wa-tag size="small" variant="neutral">
+              <wa-icon slot="start" name="tag" variant="regular"></wa-icon>
+              {tag}
+            </wa-tag>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Article content -->
+    <div class="article-content">
+      <slot />
+    </div>
+
+    <!-- Article footer with sharing -->
+    <footer class="article-footer">
+      <div class="sharing-section">
+        <h3 class="sharing-title">Share this article</h3>
+        <div class="sharing-buttons">
+          <wa-button size="small" appearance="outlined" class="share-button">
+            <wa-icon slot="start" name="twitter" family="brands"></wa-icon>
+            Twitter
+          </wa-button>
+          <wa-button size="small" appearance="outlined" class="share-button">
+            <wa-icon slot="start" name="linkedin" family="brands"></wa-icon>
+            LinkedIn
+          </wa-button>
+          <wa-button size="small" appearance="outlined" class="share-button">
+            <wa-icon slot="start" name="facebook" family="brands"></wa-icon>
+            Facebook
+          </wa-button>
+          <wa-button size="small" appearance="outlined" class="share-button">
+            <wa-icon slot="start" name="link" variant="regular"></wa-icon>
+            Copy Link
+          </wa-button>
+        </div>
+      </div>
+      
+      {showTags && tags.length > 0 && (
+        <div class="tags-section">
+          <h3 class="tags-title">Tags</h3>
+          <div class="tag-cloud">
+            {tags.map(tag => (
+              <a href={`/blog/tags/${tag.toLowerCase()}`} class="tag-link">
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </footer>
+  </article>
+
+  <!-- Table of contents sidebar -->
+  {showTableOfContents && tocItems.length > 0 && (
+    <aside slot="aside" class="content-toc">
+      <div class="toc-header">
+        <h3 class="toc-title">Table of Contents</h3>
+      </div>
+      
+      <nav class="toc-nav">
+        <ul class="toc-list">
+          {tocItems.map(item => (
+            <li class={`toc-item toc-level-${item.level}`}>
+              <a href={item.href} class="toc-link">{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )}
+
+  <!-- Footer -->
+  <div slot="footer" class="content-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>MyST Blog</h4>
+        <p>Exploring the intersection of technology, design, and creativity through thoughtful writing and practical insights.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Categories</h4>
+        <ul>
+          <li><a href="/blog/technology">Technology</a></li>
+          <li><a href="/blog/design">Design</a></li>
+          <li><a href="/blog/tutorials">Tutorials</a></li>
+          <li><a href="/blog/thoughts">Thoughts</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Connect</h4>
+        <div class="social-links">
+          <a href="#" class="social-link">
+            <wa-icon name="twitter" family="brands"></wa-icon>
+            Twitter
+          </a>
+          <a href="#" class="social-link">
+            <wa-icon name="github" family="brands"></wa-icon>
+            GitHub
+          </a>
+          <a href="#" class="social-link">
+            <wa-icon name="linkedin" family="brands"></wa-icon>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Subscribe</h4>
+        <p>Get notified about new articles and updates.</p>
+        <div class="newsletter-signup">
+          <wa-input placeholder="Enter your email" size="small" type="email">
+            <wa-icon slot="start" name="envelope" variant="regular"></wa-icon>
+          </wa-input>
+          <wa-button size="small" variant="brand">Subscribe</wa-button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024 MyST Blog. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/rss.xml">RSS</a>
+      </div>
+    </div>
+  </div>
+</BasePage>
+
+<script>
+  // Theme toggle functionality
+  const themeToggle = document.querySelector('.theme-toggle');
+  
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const currentScheme = localStorage.getItem('color-scheme') || 'auto';
+      const newScheme = currentScheme === 'dark' ? 'light' : 'dark';
+      window.setColorScheme(newScheme);
+    });
+  }
+
+  // Table of contents active link tracking
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  
+  function updateActiveTocLink() {
+    let current = '';
+    
+    headings.forEach(heading => {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 100) {
+        current = heading.id;
+      }
+    });
+    
+    tocLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+  
+  if (tocLinks.length > 0) {
+    window.addEventListener('scroll', updateActiveTocLink);
+    updateActiveTocLink();
+  }
+
+  // Sharing functionality
+  const shareButtons = document.querySelectorAll('.share-button');
+  
+  shareButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const buttonText = button.textContent.trim();
+      const url = window.location.href;
+      const title = document.title;
+      
+      switch (buttonText) {
+        case 'Twitter':
+          window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
+          break;
+        case 'LinkedIn':
+          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+          break;
+        case 'Facebook':
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+          break;
+        case 'Copy Link':
+          navigator.clipboard.writeText(url).then(() => {
+            // Show success feedback
+            button.innerHTML = '<wa-icon slot="start" name="check" variant="regular"></wa-icon>Copied!';
+            setTimeout(() => {
+              button.innerHTML = '<wa-icon slot="start" name="link" variant="regular"></wa-icon>Copy Link';
+            }, 2000);
+          });
+          break;
+      }
+    });
+  });
+
+  // Newsletter signup
+  const newsletterForm = document.querySelector('.newsletter-signup');
+  if (newsletterForm) {
+    const input = newsletterForm.querySelector('wa-input');
+    const button = newsletterForm.querySelector('wa-button');
+    
+    button.addEventListener('click', () => {
+      const email = input.value;
+      if (email) {
+        // Implement newsletter signup
+        console.log('Newsletter signup:', email);
+        button.innerHTML = 'Subscribed!';
+        button.disabled = true;
+        input.value = '';
+      }
+    });
+  }
+</script>
+
+<style>
+  /* Content layout specific styles */
+  
+  /* Header */
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: var(--wa-space-m);
+  }
+
+  .site-branding {
+    display: flex;
+    align-items: center;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+    text-decoration: none;
+    color: var(--wa-color-text-normal);
+    font-weight: var(--wa-font-weight-bold);
+    font-size: var(--wa-font-size-l);
+  }
+
+  .brand-link:hover {
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .brand-text {
+    font-family: var(--wa-font-family-heading);
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-m);
+  }
+
+  .nav-link {
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    font-weight: var(--wa-font-weight-medium);
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+  }
+
+  .nav-link:hover {
+    background-color: var(--wa-color-neutral-fill-quiet);
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  /* Article */
+  .content-article {
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .article-hero {
+    margin-bottom: var(--wa-space-xl);
+    border-radius: var(--wa-border-radius-l);
+    overflow: hidden;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .article-header {
+    margin-bottom: var(--wa-space-2xl);
+    text-align: center;
+  }
+
+  .category-badge {
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .article-title {
+    font-size: var(--wa-font-size-4xl);
+    font-weight: var(--wa-font-weight-bold);
+    line-height: var(--wa-line-height-tight);
+    margin: 0 0 var(--wa-space-l) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .article-description {
+    font-size: var(--wa-font-size-xl);
+    color: var(--wa-color-text-quiet);
+    margin: 0 0 var(--wa-space-l) 0;
+    line-height: var(--wa-line-height-relaxed);
+  }
+
+  .article-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--wa-space-l);
+    margin-bottom: var(--wa-space-m);
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
+  }
+
+  .author-name {
+    font-weight: var(--wa-font-weight-medium);
+  }
+
+  .article-tags {
+    display: flex;
+    justify-content: center;
+    gap: var(--wa-space-xs);
+    flex-wrap: wrap;
+  }
+
+  /* Article content */
+  .article-content {
+    line-height: var(--wa-line-height-relaxed);
+    font-size: var(--wa-font-size-m);
+  }
+
+  .article-content h2,
+  .article-content h3,
+  .article-content h4,
+  .article-content h5,
+  .article-content h6 {
+    margin-top: var(--wa-space-2xl);
+    margin-bottom: var(--wa-space-m);
+    scroll-margin-top: var(--wa-space-xl);
+  }
+
+  .article-content h2 {
+    font-size: var(--wa-font-size-2xl);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+    padding-bottom: var(--wa-space-s);
+  }
+
+  .article-content h3 {
+    font-size: var(--wa-font-size-xl);
+  }
+
+  .article-content p {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin-bottom: var(--wa-space-l);
+    padding-left: var(--wa-space-xl);
+  }
+
+  .article-content li {
+    margin-bottom: var(--wa-space-s);
+  }
+
+  .article-content blockquote {
+    margin: var(--wa-space-l) 0;
+    padding: var(--wa-space-m) var(--wa-space-l);
+    border-left: 4px solid var(--wa-color-brand-fill-loud);
+    background-color: var(--wa-color-brand-fill-quiet);
+    font-style: italic;
+  }
+
+  .article-content code {
+    background-color: var(--wa-color-neutral-fill-quiet);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    border-radius: var(--wa-border-radius-s);
+    font-size: 0.9em;
+  }
+
+  .article-content pre {
+    background-color: var(--wa-color-surface-lowered);
+    padding: var(--wa-space-l);
+    border-radius: var(--wa-border-radius-m);
+    overflow-x: auto;
+    margin: var(--wa-space-l) 0;
+    border: 1px solid var(--wa-color-surface-border);
+  }
+
+  .article-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--wa-border-radius-m);
+    margin: var(--wa-space-l) 0;
+  }
+
+  /* Article footer */
+  .article-footer {
+    margin-top: var(--wa-space-2xl);
+    padding-top: var(--wa-space-xl);
+    border-top: 1px solid var(--wa-color-surface-border);
+  }
+
+  .sharing-section {
+    margin-bottom: var(--wa-space-xl);
+    text-align: center;
+  }
+
+  .sharing-title {
+    font-size: var(--wa-font-size-l);
+    font-weight: var(--wa-font-weight-semibold);
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .sharing-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--wa-space-s);
+    flex-wrap: wrap;
+  }
+
+  .tags-section {
+    text-align: center;
+  }
+
+  .tags-title {
+    font-size: var(--wa-font-size-l);
+    font-weight: var(--wa-font-weight-semibold);
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .tag-cloud {
+    display: flex;
+    justify-content: center;
+    gap: var(--wa-space-s);
+    flex-wrap: wrap;
+  }
+
+  .tag-link {
+    color: var(--wa-color-text-link);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+    padding: var(--wa-space-2xs) var(--wa-space-xs);
+    border-radius: var(--wa-border-radius-s);
+    background-color: var(--wa-color-neutral-fill-quiet);
+    transition: all var(--wa-transition-fast);
+  }
+
+  .tag-link:hover {
+    background-color: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+  }
+
+  /* Table of contents */
+  .content-toc {
+    width: 15rem;
+  }
+
+  .toc-header {
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .toc-title {
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    margin: 0;
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .toc-level-3 {
+    padding-left: var(--wa-space-m);
+  }
+
+  .toc-level-4 {
+    padding-left: var(--wa-space-l);
+  }
+
+  .toc-link {
+    display: block;
+    padding: var(--wa-space-2xs) var(--wa-space-xs);
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+    border-left: 2px solid transparent;
+  }
+
+  .toc-link:hover {
+    color: var(--wa-color-text-normal);
+    background-color: var(--wa-color-neutral-fill-quiet);
+  }
+
+  .toc-link.active {
+    color: var(--wa-color-brand-fill-loud);
+    border-left-color: var(--wa-color-brand-fill-loud);
+    background-color: var(--wa-color-brand-fill-quiet);
+  }
+
+  /* Footer */
+  .content-footer {
+    width: 100%;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--wa-space-xl);
+    margin-bottom: var(--wa-space-xl);
+  }
+
+  .footer-section h4 {
+    font-size: var(--wa-font-size-m);
+    font-weight: var(--wa-font-weight-semibold);
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .footer-section p {
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-relaxed);
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .footer-section ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-section li {
+    margin-bottom: var(--wa-space-xs);
+  }
+
+  .footer-section a {
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+  }
+
+  .footer-section a:hover {
+    color: var(--wa-color-text-link);
+    text-decoration: underline;
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wa-space-xs);
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+  }
+
+  .newsletter-signup {
+    display: flex;
+    gap: var(--wa-space-xs);
+    flex-direction: column;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--wa-space-l);
+    border-top: 1px solid var(--wa-color-surface-border);
+    flex-wrap: wrap;
+    gap: var(--wa-space-m);
+  }
+
+  .footer-bottom p {
+    margin: 0;
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-s);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: var(--wa-space-m);
+  }
+
+  .footer-links a {
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+  }
+
+  .footer-links a:hover {
+    color: var(--wa-color-text-link);
+    text-decoration: underline;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .content-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--wa-space-s);
+    }
+    
+    .header-nav {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .article-title {
+      font-size: var(--wa-font-size-3xl);
+    }
+    
+    .article-meta {
+      flex-direction: column;
+      gap: var(--wa-space-s);
+    }
+    
+    .sharing-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .footer-content {
+      grid-template-columns: 1fr;
+    }
+    
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .newsletter-signup {
+      flex-direction: row;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .newsletter-signup {
+      flex-direction: column;
+    }
+  }
+</style>

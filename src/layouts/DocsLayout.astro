@@ -1,0 +1,743 @@
+---
+import BasePage from './BasePage.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  colorScheme?: 'light' | 'dark' | 'auto';
+  showToc?: boolean;
+  showBreadcrumbs?: boolean;
+  showEditButton?: boolean;
+  editUrl?: string;
+  lastModified?: Date;
+  author?: string;
+  section?: string;
+  nextPage?: { title: string; href: string };
+  prevPage?: { title: string; href: string };
+}
+
+const { 
+  title,
+  description,
+  theme = 'default',
+  colorScheme = 'auto',
+  showToc = true,
+  showBreadcrumbs = true,
+  showEditButton = false,
+  editUrl,
+  lastModified,
+  author,
+  section,
+  nextPage,
+  prevPage,
+  ...rest
+} = Astro.props;
+
+// Generate table of contents from headings (this would be enhanced with actual heading extraction)
+const tocItems = [
+  { level: 2, title: "Getting Started", href: "#getting-started" },
+  { level: 2, title: "Installation", href: "#installation" },
+  { level: 3, title: "Prerequisites", href: "#prerequisites" },
+  { level: 2, title: "Configuration", href: "#configuration" },
+];
+---
+
+<BasePage 
+  title={title} 
+  description={description}
+  theme={theme}
+  colorScheme={colorScheme}
+  mobileBreakpoint="920px"
+  {...rest}
+>
+  <!-- Header with branding and controls -->
+  <div slot="header" class="docs-header">
+    <div class="docs-branding">
+      <a href="/" class="brand-link">
+        <wa-icon name="book" variant="solid"></wa-icon>
+        <span class="brand-text">Documentation</span>
+      </a>
+      {section && <wa-badge variant="neutral" class="section-badge">{section}</wa-badge>}
+    </div>
+    
+    <div class="docs-controls">
+      <!-- Theme selector -->
+      <wa-select class="theme-selector" appearance="filled" size="small" value={theme}>
+        <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
+        <wa-option value="default">Default</wa-option>
+        <wa-option value="awesome">Awesome</wa-option>
+        <wa-option value="shoelace">Shoelace</wa-option>
+        <wa-option value="brutalist">Brutalist</wa-option>
+        <wa-option value="glossy">Glossy</wa-option>
+        <wa-option value="matter">Matter</wa-option>
+        <wa-option value="mellow">Mellow</wa-option>
+        <wa-option value="playful">Playful</wa-option>
+        <wa-option value="premium">Premium</wa-option>
+        <wa-option value="tailspin">Tailspin</wa-option>
+      </wa-select>
+
+      <!-- Color scheme selector -->
+      <wa-select class="color-scheme-selector" appearance="filled" size="small" value={colorScheme}>
+        <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
+        <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
+        <wa-option value="light">
+          <wa-icon slot="start" name="sun" variant="regular"></wa-icon>
+          Light
+        </wa-option>
+        <wa-option value="dark">
+          <wa-icon slot="start" name="moon" variant="regular"></wa-icon>
+          Dark
+        </wa-option>
+        <wa-divider></wa-divider>
+        <wa-option value="auto">
+          <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
+          <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
+          System
+        </wa-option>
+      </wa-select>
+
+      <!-- Search button -->
+      <wa-button appearance="outlined" size="small" class="search-trigger">
+        <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+        Search
+        <kbd slot="end" class="search-shortcut">/</kbd>
+      </wa-button>
+    </div>
+  </div>
+
+  <!-- Breadcrumbs in subheader -->
+  {showBreadcrumbs && (
+    <div slot="subheader" class="docs-breadcrumbs">
+      <wa-breadcrumb>
+        <wa-breadcrumb-item href="/">
+          <wa-icon slot="start" name="house" variant="solid"></wa-icon>
+          Home
+        </wa-breadcrumb-item>
+        <wa-breadcrumb-item href="/docs">Documentation</wa-breadcrumb-item>
+        {section && <wa-breadcrumb-item href={`/docs/${section.toLowerCase()}`}>{section}</wa-breadcrumb-item>}
+        <wa-breadcrumb-item>{title}</wa-breadcrumb-item>
+      </wa-breadcrumb>
+    </div>
+  )}
+
+  <!-- Navigation sidebar -->
+  <div slot="navigation-header" class="nav-header">
+    <wa-input class="nav-search" placeholder="Search docs..." size="small">
+      <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+    </wa-input>
+  </div>
+
+  <nav slot="navigation" class="docs-navigation">
+    <div class="nav-section">
+      <h3 class="nav-section-title">Getting Started</h3>
+      <ul class="nav-list">
+        <li><a href="/docs/installation" class="nav-link">Installation</a></li>
+        <li><a href="/docs/quickstart" class="nav-link">Quick Start</a></li>
+        <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <h3 class="nav-section-title">Components</h3>
+      <ul class="nav-list">
+        <li><a href="/docs/components/layout" class="nav-link current">Layout</a></li>
+        <li><a href="/docs/components/navigation" class="nav-link">Navigation</a></li>
+        <li><a href="/docs/components/content" class="nav-link">Content</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <h3 class="nav-section-title">Theming</h3>
+      <ul class="nav-list">
+        <li><a href="/docs/theming/colors" class="nav-link">Colors</a></li>
+        <li><a href="/docs/theming/typography" class="nav-link">Typography</a></li>
+        <li><a href="/docs/theming/customization" class="nav-link">Customization</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content with article wrapper -->
+  <article class="docs-article">
+    <!-- Article header -->
+    <header class="article-header">
+      <h1 class="article-title">{title}</h1>
+      {description && <p class="article-description">{description}</p>}
+      
+      <div class="article-meta">
+        {author && <span class="article-author">By {author}</span>}
+        {lastModified && (
+          <time class="article-date" datetime={lastModified.toISOString()}>
+            Updated {lastModified.toLocaleDateString()}
+          </time>
+        )}
+        {showEditButton && editUrl && (
+          <a href={editUrl} class="edit-link">
+            <wa-icon name="pencil" variant="regular"></wa-icon>
+            Edit this page
+          </a>
+        )}
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="article-content">
+      <slot />
+    </div>
+
+    <!-- Navigation footer -->
+    {(prevPage || nextPage) && (
+      <nav class="article-nav">
+        {prevPage && (
+          <a href={prevPage.href} class="nav-prev">
+            <wa-icon name="arrow-left" variant="regular"></wa-icon>
+            <div>
+              <span class="nav-label">Previous</span>
+              <span class="nav-title">{prevPage.title}</span>
+            </div>
+          </a>
+        )}
+        
+        {nextPage && (
+          <a href={nextPage.href} class="nav-next">
+            <div>
+              <span class="nav-label">Next</span>
+              <span class="nav-title">{nextPage.title}</span>
+            </div>
+            <wa-icon name="arrow-right" variant="regular"></wa-icon>
+          </a>
+        )}
+      </nav>
+    )}
+  </article>
+
+  <!-- Table of contents sidebar -->
+  {showToc && (
+    <aside slot="aside" class="docs-toc">
+      <div class="toc-header">
+        <h3 class="toc-title">On this page</h3>
+      </div>
+      
+      <nav class="toc-nav">
+        <ul class="toc-list">
+          {tocItems.map(item => (
+            <li class={`toc-item toc-level-${item.level}`}>
+              <a href={item.href} class="toc-link">{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )}
+
+  <!-- Footer -->
+  <div slot="footer" class="docs-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="/docs">Getting Started</a></li>
+          <li><a href="/docs/components">Components</a></li>
+          <li><a href="/docs/theming">Theming</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="/community">Discussions</a></li>
+          <li><a href="/contributing">Contributing</a></li>
+          <li><a href="/changelog">Changelog</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="/examples">Examples</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/support">Support</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024 MyST Awesome Theme. Built with Web Awesome and Astro.</p>
+    </div>
+  </div>
+</BasePage>
+
+<script>
+  // Theme selector functionality
+  const themeSelector = document.querySelector('.theme-selector');
+  const colorSchemeSelector = document.querySelector('.color-scheme-selector');
+  
+  if (themeSelector) {
+    themeSelector.addEventListener('wa-change', (e) => {
+      window.setTheme(e.target.value);
+    });
+  }
+  
+  if (colorSchemeSelector) {
+    colorSchemeSelector.addEventListener('wa-change', (e) => {
+      window.setColorScheme(e.target.value);
+    });
+  }
+
+  // Table of contents active link tracking
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  
+  function updateActiveTocLink() {
+    let current = '';
+    
+    headings.forEach(heading => {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 100) {
+        current = heading.id;
+      }
+    });
+    
+    tocLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', updateActiveTocLink);
+  updateActiveTocLink();
+
+  // Search functionality placeholder
+  const searchTrigger = document.querySelector('.search-trigger');
+  if (searchTrigger) {
+    searchTrigger.addEventListener('click', () => {
+      // Implement search modal/functionality
+      console.log('Search triggered');
+    });
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      searchTrigger?.click();
+    }
+  });
+</script>
+
+<style>
+  /* Documentation-specific styles */
+  
+  /* Header */
+  .docs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: var(--wa-space-m);
+  }
+
+  .docs-branding {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+    text-decoration: none;
+    color: var(--wa-color-text-normal);
+    font-weight: var(--wa-font-weight-semibold);
+    font-size: var(--wa-font-size-l);
+  }
+
+  .brand-link:hover {
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .brand-text {
+    font-family: var(--wa-font-family-heading);
+  }
+
+  .section-badge {
+    font-size: var(--wa-font-size-xs);
+  }
+
+  .docs-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  .search-shortcut {
+    font-family: var(--wa-font-family-code);
+    font-size: var(--wa-font-size-xs);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    background-color: var(--wa-color-neutral-fill-quiet);
+    border: 1px solid var(--wa-color-neutral-border-normal);
+    border-radius: var(--wa-border-radius-s);
+  }
+
+  /* Breadcrumbs */
+  .docs-breadcrumbs {
+    width: 100%;
+  }
+
+  /* Navigation */
+  .nav-header {
+    padding: var(--wa-space-m);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .nav-search {
+    width: 100%;
+  }
+
+  .docs-navigation {
+    padding: var(--wa-space-m);
+  }
+
+  .nav-section {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .nav-section-title {
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 var(--wa-space-s) 0;
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-list li {
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .nav-link {
+    display: block;
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+  }
+
+  .nav-link:hover {
+    background-color: var(--wa-color-neutral-fill-quiet);
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .nav-link.current {
+    background-color: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+    font-weight: var(--wa-font-weight-semibold);
+  }
+
+  /* Article */
+  .docs-article {
+    max-width: 46rem;
+    margin: 0 auto;
+  }
+
+  .article-header {
+    margin-bottom: var(--wa-space-xl);
+    padding-bottom: var(--wa-space-l);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .article-title {
+    font-size: var(--wa-font-size-3xl);
+    font-weight: var(--wa-font-weight-bold);
+    line-height: var(--wa-line-height-tight);
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .article-description {
+    font-size: var(--wa-font-size-l);
+    color: var(--wa-color-text-quiet);
+    margin: 0 0 var(--wa-space-m) 0;
+    line-height: var(--wa-line-height-relaxed);
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-m);
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
+  }
+
+  .edit-link {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-2xs);
+    color: var(--wa-color-text-link);
+    text-decoration: none;
+    margin-left: auto;
+  }
+
+  .edit-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Article content */
+  .article-content {
+    line-height: var(--wa-line-height-relaxed);
+  }
+
+  .article-content h2,
+  .article-content h3,
+  .article-content h4,
+  .article-content h5,
+  .article-content h6 {
+    margin-top: var(--wa-space-xl);
+    margin-bottom: var(--wa-space-m);
+    scroll-margin-top: var(--wa-space-xl);
+  }
+
+  .article-content p {
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin-bottom: var(--wa-space-m);
+    padding-left: var(--wa-space-l);
+  }
+
+  .article-content li {
+    margin-bottom: var(--wa-space-xs);
+  }
+
+  .article-content code {
+    background-color: var(--wa-color-neutral-fill-quiet);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    border-radius: var(--wa-border-radius-s);
+    font-size: 0.9em;
+  }
+
+  .article-content pre {
+    background-color: var(--wa-color-surface-lowered);
+    padding: var(--wa-space-m);
+    border-radius: var(--wa-border-radius-m);
+    overflow-x: auto;
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .article-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  /* Article navigation */
+  .article-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--wa-space-m);
+    margin-top: var(--wa-space-2xl);
+    padding-top: var(--wa-space-l);
+    border-top: 1px solid var(--wa-color-surface-border);
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-m);
+    background-color: var(--wa-color-surface-lowered);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-m);
+    text-decoration: none;
+    color: var(--wa-color-text-normal);
+    transition: all var(--wa-transition-normal);
+    flex: 1;
+    max-width: 50%;
+  }
+
+  .nav-prev:hover,
+  .nav-next:hover {
+    background-color: var(--wa-color-brand-fill-quiet);
+    border-color: var(--wa-color-brand-border-normal);
+    color: var(--wa-color-brand-on-quiet);
+  }
+
+  .nav-next {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .nav-label {
+    display: block;
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
+    font-weight: var(--wa-font-weight-normal);
+  }
+
+  .nav-title {
+    display: block;
+    font-weight: var(--wa-font-weight-semibold);
+  }
+
+  /* Table of contents */
+  .docs-toc {
+    width: 15rem;
+  }
+
+  .toc-header {
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .toc-title {
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    margin: 0;
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin-bottom: var(--wa-space-3xs);
+  }
+
+  .toc-level-3 {
+    padding-left: var(--wa-space-m);
+  }
+
+  .toc-level-4 {
+    padding-left: var(--wa-space-l);
+  }
+
+  .toc-link {
+    display: block;
+    padding: var(--wa-space-2xs) var(--wa-space-xs);
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+    border-left: 2px solid transparent;
+  }
+
+  .toc-link:hover {
+    color: var(--wa-color-text-normal);
+    background-color: var(--wa-color-neutral-fill-quiet);
+  }
+
+  .toc-link.active {
+    color: var(--wa-color-brand-fill-loud);
+    border-left-color: var(--wa-color-brand-fill-loud);
+    background-color: var(--wa-color-brand-fill-quiet);
+  }
+
+  /* Footer */
+  .docs-footer {
+    width: 100%;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--wa-space-l);
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .footer-section h4 {
+    font-size: var(--wa-font-size-m);
+    font-weight: var(--wa-font-weight-semibold);
+    margin: 0 0 var(--wa-space-s) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .footer-section ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-section li {
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .footer-section a {
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+  }
+
+  .footer-section a:hover {
+    color: var(--wa-color-text-link);
+    text-decoration: underline;
+  }
+
+  .footer-bottom {
+    padding-top: var(--wa-space-l);
+    border-top: 1px solid var(--wa-color-surface-border);
+    text-align: center;
+  }
+
+  .footer-bottom p {
+    margin: 0;
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-s);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 920px) {
+    .docs-controls {
+      flex-wrap: wrap;
+    }
+    
+    .article-nav {
+      flex-direction: column;
+    }
+    
+    .nav-prev,
+    .nav-next {
+      max-width: 100%;
+    }
+    
+    .footer-content {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .docs-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--wa-space-s);
+    }
+    
+    .docs-controls {
+      justify-content: center;
+    }
+    
+    .article-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--wa-space-s);
+    }
+    
+    .edit-link {
+      margin-left: 0;
+    }
+  }
+</style>

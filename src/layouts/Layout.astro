@@ -1,49 +1,17 @@
 ---
+// This is now a simple wrapper around BasePage for backward compatibility
+import BasePage from './BasePage.astro';
+
 interface Props {
 	title?: string;
+	description?: string;
+	theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+	colorScheme?: 'light' | 'dark' | 'auto';
 }
 
-const { title = "MyST Awesomeness" } = Astro.props;
-
-// Import Web Awesome CSS for proper bundling and tree shaking
-import "@awesome.me/webawesome/dist/styles/webawesome.css";
-import "@awesome.me/webawesome/dist/styles/themes/default.css";
+const { title = "MyST Awesomeness", ...rest } = Astro.props;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-
-		<link rel="icon" type="image/png" href="/favicon.png" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
-
-<style>
-	html {
-	}
-	h1, h2, h3, h4, h5, h6 {
-		font-family: var(--wa-font-family-heading);
-		font-weight: var(--wa-font-weight-bold);
-	}
-	body {
-		font-family: var(--wa-font-family-body);
-		font-weight: var(--wa-font-weight-normal);
-	}
-	code {
-		font-family: var(--wa-font-family-code);
-	}
-	a {
-		text-decoration: var(--wa-link-decoration-default);
-		color: var(--wa-color-text-link)
-	}
-	a:hover {
-		text-decoration: var(--wa-link-decoration-hover);
-	}
-</style>
+<BasePage title={title} {...rest}>
+	<slot />
+</BasePage>

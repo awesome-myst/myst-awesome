@@ -1,0 +1,430 @@
+---
+interface NavItem {
+  title: string;
+  href?: string;
+  icon?: string;
+  iconFamily?: 'regular' | 'solid' | 'brands';
+  current?: boolean;
+  children?: NavItem[];
+  badge?: string;
+  badgeVariant?: 'brand' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+interface Props {
+  items: NavItem[];
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  collapsible?: boolean;
+  showIcons?: boolean;
+}
+
+const {
+  items = [],
+  showSearch = true,
+  searchPlaceholder = "Search...",
+  collapsible = true,
+  showIcons = true
+} = Astro.props;
+---
+
+<nav class="navigation-menu">
+  {showSearch && (
+    <div class="nav-search">
+      <wa-input class="search-input" placeholder={searchPlaceholder} size="small">
+        <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+      </wa-input>
+    </div>
+  )}
+  
+  <div class="nav-content">
+    {items.map(section => (
+      <div class="nav-section">
+        {section.title && (
+          <div class="nav-section-header">
+            {section.href ? (
+              <a href={section.href} class="nav-section-title-link">
+                {showIcons && section.icon && (
+                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                )}
+                {section.title}
+                {section.badge && (
+                  <wa-badge variant={section.badgeVariant || 'neutral'} size="small">
+                    {section.badge}
+                  </wa-badge>
+                )}
+              </a>
+            ) : (
+              <h3 class="nav-section-title">
+                {showIcons && section.icon && (
+                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                )}
+                {section.title}
+                {section.badge && (
+                  <wa-badge variant={section.badgeVariant || 'neutral'} size="small">
+                    {section.badge}
+                  </wa-badge>
+                )}
+              </h3>
+            )}
+            
+            {collapsible && section.children && section.children.length > 0 && (
+              <wa-button class="nav-toggle" appearance="plain" size="small">
+                <wa-icon name="chevron-down" class="nav-expand-icon"></wa-icon>
+                <wa-icon name="chevron-up" class="nav-collapse-icon" style="display: none;"></wa-icon>
+              </wa-button>
+            )}
+          </div>
+        )}
+        
+        {section.children && section.children.length > 0 && (
+          <ul class="nav-list">
+            {section.children.map(item => (
+              <li class="nav-item">
+                <a 
+                  href={item.href} 
+                  class={`nav-link ${item.current ? 'current' : ''}`}
+                  aria-current={item.current ? 'page' : undefined}
+                >
+                  {showIcons && item.icon && (
+                    <wa-icon name={item.icon} variant={item.iconFamily || 'regular'}></wa-icon>
+                  )}
+                  <span class="nav-link-text">{item.title}</span>
+                  {item.badge && (
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small">
+                      {item.badge}
+                    </wa-badge>
+                  )}
+                </a>
+                
+                {item.children && item.children.length > 0 && (
+                  <ul class="nav-sublist">
+                    {item.children.map(subItem => (
+                      <li class="nav-subitem">
+                        <a 
+                          href={subItem.href} 
+                          class={`nav-sublink ${subItem.current ? 'current' : ''}`}
+                          aria-current={subItem.current ? 'page' : undefined}
+                        >
+                          {showIcons && subItem.icon && (
+                            <wa-icon name={subItem.icon} variant={subItem.iconFamily || 'regular'}></wa-icon>
+                          )}
+                          <span class="nav-link-text">{subItem.title}</span>
+                          {subItem.badge && (
+                            <wa-badge variant={subItem.badgeVariant || 'neutral'} size="small">
+                              {subItem.badge}
+                            </wa-badge>
+                          )}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    ))}
+  </div>
+</nav>
+
+<script>
+  // Navigation menu functionality
+  const navMenu = document.querySelector('.navigation-menu');
+  const searchInput = navMenu?.querySelector('.search-input');
+  const navToggles = navMenu?.querySelectorAll('.nav-toggle');
+  const navLinks = navMenu?.querySelectorAll('.nav-link, .nav-sublink');
+  
+  // Search functionality
+  if (searchInput) {
+    searchInput.addEventListener('wa-input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const navItems = navMenu.querySelectorAll('.nav-item, .nav-subitem');
+      
+      navItems.forEach(item => {
+        const link = item.querySelector('.nav-link, .nav-sublink');
+        const text = link?.textContent?.toLowerCase() || '';
+        const shouldShow = text.includes(query);
+        
+        item.style.display = shouldShow ? 'block' : 'none';
+        
+        // Show parent sections if any child matches
+        if (shouldShow) {
+          let parent = item.closest('.nav-section');
+          while (parent) {
+            parent.style.display = 'block';
+            parent = parent.parentElement?.closest('.nav-section');
+          }
+        }
+      });
+      
+      // Hide sections with no visible items
+      if (query) {
+        const sections = navMenu.querySelectorAll('.nav-section');
+        sections.forEach(section => {
+          const visibleItems = section.querySelectorAll('.nav-item:not([style*="display: none"]), .nav-subitem:not([style*="display: none"])');
+          section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+        });
+      } else {
+        // Reset all visibility when search is cleared
+        const allItems = navMenu.querySelectorAll('.nav-section, .nav-item, .nav-subitem');
+        allItems.forEach(item => {
+          item.style.display = 'block';
+        });
+      }
+    });
+  }
+  
+  // Collapsible sections
+  navToggles.forEach(toggle => {
+    const section = toggle.closest('.nav-section');
+    const navList = section?.querySelector('.nav-list');
+    const expandIcon = toggle.querySelector('.nav-expand-icon');
+    const collapseIcon = toggle.querySelector('.nav-collapse-icon');
+    
+    if (navList && expandIcon && collapseIcon) {
+      toggle.addEventListener('click', () => {
+        const isCollapsed = navList.style.display === 'none';
+        
+        if (isCollapsed) {
+          navList.style.display = 'block';
+          expandIcon.style.display = 'none';
+          collapseIcon.style.display = 'block';
+          section.classList.remove('collapsed');
+        } else {
+          navList.style.display = 'none';
+          expandIcon.style.display = 'block';
+          collapseIcon.style.display = 'none';
+          section.classList.add('collapsed');
+        }
+      });
+    }
+  });
+  
+  // Keyboard navigation
+  navMenu?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const focusableElements = Array.from(navMenu.querySelectorAll('a, button, input'));
+      const currentIndex = focusableElements.indexOf(document.activeElement);
+      
+      let nextIndex;
+      if (e.key === 'ArrowDown') {
+        nextIndex = currentIndex + 1;
+        if (nextIndex >= focusableElements.length) nextIndex = 0;
+      } else {
+        nextIndex = currentIndex - 1;
+        if (nextIndex < 0) nextIndex = focusableElements.length - 1;
+      }
+      
+      focusableElements[nextIndex]?.focus();
+    }
+  });
+</script>
+
+<style>
+  .navigation-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Search */
+  .nav-search {
+    padding: var(--wa-space-m);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+    margin-bottom: var(--wa-space-s);
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  /* Content */
+  .nav-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 var(--wa-space-m) var(--wa-space-m);
+  }
+
+  /* Sections */
+  .nav-section {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .nav-section.collapsed .nav-list {
+    display: none;
+  }
+
+  .nav-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--wa-space-s);
+  }
+
+  .nav-section-title,
+  .nav-section-title-link {
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+  }
+
+  .nav-section-title-link {
+    text-decoration: none;
+    transition: color var(--wa-transition-fast);
+  }
+
+  .nav-section-title-link:hover {
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  /* Lists */
+  .nav-list,
+  .nav-sublist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-sublist {
+    margin-top: var(--wa-space-xs);
+    padding-left: var(--wa-space-l);
+  }
+
+  .nav-item,
+  .nav-subitem {
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  /* Links */
+  .nav-link,
+  .nav-sublink {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-normal);
+  }
+
+  .nav-link:hover,
+  .nav-sublink:hover {
+    background-color: var(--wa-color-neutral-fill-quiet);
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .nav-link.current,
+  .nav-sublink.current {
+    background-color: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+    font-weight: var(--wa-font-weight-semibold);
+  }
+
+  .nav-sublink {
+    font-size: var(--wa-font-size-xs);
+    padding-left: var(--wa-space-m);
+  }
+
+  .nav-link-text {
+    flex: 1;
+  }
+
+  /* Icons */
+  .nav-link wa-icon,
+  .nav-sublink wa-icon,
+  .nav-section-title wa-icon,
+  .nav-section-title-link wa-icon {
+    flex-shrink: 0;
+  }
+
+  /* Badges */
+  .nav-link wa-badge,
+  .nav-sublink wa-badge,
+  .nav-section-title wa-badge,
+  .nav-section-title-link wa-badge {
+    margin-left: auto;
+  }
+
+  /* Toggle buttons */
+  .nav-toggle {
+    flex-shrink: 0;
+  }
+
+  /* Focus styles */
+  .nav-link:focus-visible,
+  .nav-sublink:focus-visible,
+  .nav-section-title-link:focus-visible {
+    outline: var(--wa-focus-ring);
+    outline-offset: var(--wa-focus-ring-offset);
+  }
+
+  /* Custom scrollbar */
+  .nav-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .nav-content::-webkit-scrollbar-track {
+    background: var(--wa-color-surface-default);
+  }
+
+  .nav-content::-webkit-scrollbar-thumb {
+    background: var(--wa-color-neutral-fill-normal);
+    border-radius: var(--wa-border-radius-s);
+  }
+
+  .nav-content::-webkit-scrollbar-thumb:hover {
+    background: var(--wa-color-neutral-fill-loud);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .nav-search {
+      padding: var(--wa-space-s);
+    }
+    
+    .nav-content {
+      padding: 0 var(--wa-space-s) var(--wa-space-s);
+    }
+  }
+
+  /* Animation for collapsible sections */
+  .nav-list {
+    transition: all var(--wa-transition-normal);
+    overflow: hidden;
+  }
+
+  .nav-section.collapsed .nav-list {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .nav-link.current,
+    .nav-sublink.current {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link,
+    .nav-sublink,
+    .nav-section-title-link,
+    .nav-list {
+      transition: none;
+    }
+  }
+</style>

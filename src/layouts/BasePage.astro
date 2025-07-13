@@ -1,0 +1,549 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  colorScheme?: 'light' | 'dark' | 'auto';
+  mobileBreakpoint?: string;
+  disableSticky?: string[];
+  navOpen?: boolean;
+}
+
+const {
+  title = "MyST Awesome Theme",
+  description = "A modern documentation theme built with Web Awesome and Astro",
+  theme = 'default',
+  colorScheme = 'auto',
+  mobileBreakpoint = '768px',
+  disableSticky = [],
+  navOpen = false
+} = Astro.props;
+
+// Import Web Awesome CSS for proper bundling and tree shaking
+import "@awesome.me/webawesome/dist/styles/webawesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/default.css";
+---
+
+<!doctype html>
+<html lang="en" class="wa-cloak">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>{title}</title>
+
+    <!-- Theme and color scheme initialization -->
+    <script>
+      // Set initial color scheme before page renders to prevent flashing
+      const colorScheme = localStorage.getItem('color-scheme') || 'auto';
+      const isDark = colorScheme === 'dark' || (colorScheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('wa-dark', isDark);
+
+      // Set initial theme
+      const savedTheme = localStorage.getItem('theme') || 'default';
+      if (savedTheme !== 'default') {
+        document.documentElement.classList.add(`wa-theme-${savedTheme}`);
+      }
+    </script>
+  </head>
+
+  <body data-theme={colorScheme}>
+    <!-- Skip to content link for accessibility -->
+    <div class="skip-links">
+      <a href="#main-content" class="skip-link wa-visually-hidden">
+        <slot name="skip-to-content">Skip to content</slot>
+      </a>
+    </div>
+
+    <!-- Main page layout container -->
+    <div class="page-layout" data-mobile-breakpoint={mobileBreakpoint} data-nav-open={navOpen}>
+
+      <!-- Banner slot (optional) -->
+      {Astro.slots.has('banner') && (
+        <div class={`page-banner ${disableSticky.includes('banner') ? '' : 'sticky'}`}>
+          <slot name="banner" />
+        </div>
+      )}
+
+      <!-- Header slot -->
+      {Astro.slots.has('header') && (
+        <header class={`page-header ${disableSticky.includes('header') ? '' : 'sticky'}`}>
+          <slot name="header" />
+        </header>
+      )}
+
+      <!-- Subheader slot -->
+      {Astro.slots.has('subheader') && (
+        <div class={`page-subheader ${disableSticky.includes('subheader') ? '' : 'sticky'}`}>
+          <slot name="subheader" />
+        </div>
+      )}
+
+      <!-- Main body container -->
+      <div class="page-body">
+
+        <!-- Navigation menu -->
+        {(Astro.slots.has('navigation') || Astro.slots.has('navigation-header') || Astro.slots.has('navigation-footer')) && (
+          <>
+            <!-- Desktop navigation -->
+            <nav class={`page-menu ${disableSticky.includes('menu') ? '' : 'sticky'}`} data-view="desktop">
+              {Astro.slots.has('navigation-header') && (
+                <div class="navigation-header">
+                  <slot name="navigation-header" />
+                </div>
+              )}
+
+              <div class="navigation-content">
+                <slot name="navigation" />
+              </div>
+
+              {Astro.slots.has('navigation-footer') && (
+                <div class="navigation-footer">
+                  <slot name="navigation-footer" />
+                </div>
+              )}
+            </nav>
+
+            <!-- Mobile navigation drawer -->
+            <wa-drawer class="mobile-nav-drawer" placement="start" light-dismiss>
+              {Astro.slots.has('navigation-header') && (
+                <div class="navigation-header" slot="header">
+                  <slot name="navigation-header" />
+                </div>
+              )}
+
+              <div class="navigation-content">
+                <slot name="navigation" />
+              </div>
+
+              {Astro.slots.has('navigation-footer') && (
+                <div class="navigation-footer" slot="footer">
+                  <slot name="navigation-footer" />
+                </div>
+              )}
+            </wa-drawer>
+          </>
+        )}
+
+        <!-- Main content area -->
+        <main id="main-content" class="page-main">
+          {Astro.slots.has('main-header') && (
+            <div class="main-header">
+              <slot name="main-header" />
+            </div>
+          )}
+
+          <div class="main-content">
+            <slot />
+          </div>
+
+          {Astro.slots.has('main-footer') && (
+            <div class="main-footer">
+              <slot name="main-footer" />
+            </div>
+          )}
+        </main>
+
+        <!-- Aside/sidebar -->
+        {Astro.slots.has('aside') && (
+          <aside class={`page-aside ${disableSticky.includes('aside') ? '' : 'sticky'}`}>
+            <slot name="aside" />
+          </aside>
+        )}
+      </div>
+
+      <!-- Footer -->
+      {Astro.slots.has('footer') && (
+        <footer class="page-footer">
+          <slot name="footer" />
+        </footer>
+      )}
+    </div>
+
+    <!-- Mobile navigation toggle button -->
+    <wa-button class="mobile-nav-toggle" appearance="plain" data-mobile-only>
+      <wa-icon name="bars" label="Toggle navigation"></wa-icon>
+    </wa-button>
+
+    <!-- Theme and navigation scripts -->
+    <script>
+      // Mobile navigation functionality
+      const drawer = document.querySelector('.mobile-nav-drawer');
+      const toggleButton = document.querySelector('.mobile-nav-toggle');
+      const pageLayout = document.querySelector('.page-layout');
+
+      if (drawer && toggleButton) {
+        toggleButton.addEventListener('click', () => {
+          drawer.open = !drawer.open;
+        });
+
+        drawer.addEventListener('wa-hide', () => {
+          pageLayout.setAttribute('data-nav-open', 'false');
+        });
+
+        drawer.addEventListener('wa-show', () => {
+          pageLayout.setAttribute('data-nav-open', 'true');
+        });
+      }
+
+      // Responsive behavior
+      const mobileBreakpoint = pageLayout.getAttribute('data-mobile-breakpoint') || '768px';
+      const mediaQuery = window.matchMedia(`(max-width: ${mobileBreakpoint})`);
+
+      function handleViewportChange(e) {
+        const isMobile = e.matches;
+        pageLayout.setAttribute('data-view', isMobile ? 'mobile' : 'desktop');
+
+        // Show/hide appropriate navigation
+        const desktopNav = document.querySelector('[data-view="desktop"]');
+        if (desktopNav) {
+          desktopNav.style.display = isMobile ? 'none' : 'flex';
+        }
+
+        if (toggleButton) {
+          toggleButton.style.display = isMobile ? 'block' : 'none';
+        }
+      }
+
+      mediaQuery.addListener(handleViewportChange);
+      handleViewportChange(mediaQuery);
+
+      // Color scheme switching
+      function setColorScheme(scheme) {
+        localStorage.setItem('color-scheme', scheme);
+        const isDark = scheme === 'dark' || (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('wa-dark', isDark);
+        document.body.setAttribute('data-theme', scheme);
+      }
+
+      // Theme switching
+      function setTheme(theme) {
+        localStorage.setItem('theme', theme);
+
+        // Remove existing theme classes
+        document.documentElement.classList.remove(
+          'wa-theme-awesome', 'wa-theme-shoelace', 'wa-theme-brutalist',
+          'wa-theme-glossy', 'wa-theme-matter', 'wa-theme-mellow',
+          'wa-theme-playful', 'wa-theme-premium', 'wa-theme-tailspin'
+        );
+
+        if (theme !== 'default') {
+          document.documentElement.classList.add(`wa-theme-${theme}`);
+        }
+      }
+
+      // Expose functions globally for theme controls
+      window.setColorScheme = setColorScheme;
+      window.setTheme = setTheme;
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Reset and base styles */
+  html, body {
+    min-height: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: var(--wa-font-family-body);
+    font-weight: var(--wa-font-weight-normal);
+    color: var(--wa-color-text-normal);
+    background-color: var(--wa-color-surface-default);
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--wa-font-family-heading);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-text-normal);
+  }
+
+  code {
+    font-family: var(--wa-font-family-code);
+  }
+
+  a {
+    text-decoration: var(--wa-link-decoration-default);
+    color: var(--wa-color-text-link);
+  }
+
+  a:hover {
+    text-decoration: var(--wa-link-decoration-hover);
+  }
+
+  /* Skip links */
+  .skip-links {
+    position: relative;
+    z-index: 1000;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: var(--wa-space-s);
+    left: var(--wa-space-s);
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    background-color: var(--wa-color-brand-fill-loud);
+    color: var(--wa-color-brand-on-loud);
+    border-radius: var(--wa-border-radius-m);
+    text-decoration: none;
+    font-weight: var(--wa-font-weight-semibold);
+    z-index: 1001;
+  }
+
+  .skip-link:focus {
+    position: absolute;
+    clip: auto;
+    width: auto;
+    height: auto;
+  }
+
+  /* Main page layout */
+  .page-layout {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    grid-template-areas:
+      "banner"
+      "header"
+      "subheader"
+      "body"
+      "footer";
+    min-height: 100vh;
+  }
+
+  /* Banner */
+  .page-banner {
+    grid-area: banner;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--wa-space-s) var(--wa-space-m);
+    background-color: var(--wa-color-surface-raised);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .page-banner.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Header */
+  .page-header {
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-m);
+    background-color: var(--wa-color-surface-default);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .page-header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+
+  /* Subheader */
+  .page-subheader {
+    grid-area: subheader;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-s) var(--wa-space-m);
+    background-color: var(--wa-color-surface-lowered);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .page-subheader.sticky {
+    position: sticky;
+    top: var(--header-height, 0);
+    z-index: 98;
+  }
+
+  /* Body container */
+  .page-body {
+    grid-area: body;
+    display: grid;
+    grid-template-columns: var(--menu-width, auto) var(--main-width, 1fr) var(--aside-width, auto);
+    grid-template-areas: "menu main aside";
+    min-height: 0;
+  }
+
+  /* Navigation menu */
+  .page-menu {
+    grid-area: menu;
+    display: flex;
+    flex-direction: column;
+    width: var(--menu-width, 15rem);
+    background-color: var(--wa-color-surface-lowered);
+    border-right: 1px solid var(--wa-color-surface-border);
+    overflow-y: auto;
+  }
+
+  .page-menu.sticky {
+    position: sticky;
+    top: var(--sticky-top, 0);
+    height: calc(100vh - var(--sticky-top, 0));
+  }
+
+  .navigation-header,
+  .navigation-footer {
+    padding: var(--wa-space-m);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .navigation-footer {
+    border-bottom: none;
+    border-top: 1px solid var(--wa-color-surface-border);
+    margin-top: auto;
+  }
+
+  .navigation-content {
+    flex: 1;
+    padding: var(--wa-space-m);
+    overflow-y: auto;
+  }
+
+  /* Mobile navigation */
+  .mobile-nav-drawer {
+    --size: 280px;
+  }
+
+  .mobile-nav-toggle {
+    position: fixed;
+    top: var(--wa-space-m);
+    left: var(--wa-space-m);
+    z-index: 1000;
+    display: none;
+  }
+
+  /* Main content */
+  .page-main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--wa-space-l);
+  }
+
+  .main-header,
+  .main-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-m) 0;
+  }
+
+  .main-footer {
+    border-top: 1px solid var(--wa-color-surface-border);
+    margin-top: auto;
+  }
+
+  .main-content {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  /* Aside/sidebar */
+  .page-aside {
+    grid-area: aside;
+    display: flex;
+    flex-direction: column;
+    width: var(--aside-width, 15rem);
+    padding: var(--wa-space-l);
+    background-color: var(--wa-color-surface-lowered);
+    border-left: 1px solid var(--wa-color-surface-border);
+    overflow-y: auto;
+  }
+
+  .page-aside.sticky {
+    position: sticky;
+    top: var(--sticky-top, 0);
+    height: calc(100vh - var(--sticky-top, 0));
+  }
+
+  /* Footer */
+  .page-footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-l);
+    background-color: var(--wa-color-surface-lowered);
+    border-top: 1px solid var(--wa-color-surface-border);
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    .page-body {
+      grid-template-columns: 1fr;
+      grid-template-areas: "main";
+    }
+
+    .page-menu {
+      display: none;
+    }
+
+    .page-aside {
+      display: none;
+    }
+
+    .mobile-nav-toggle {
+      display: block !important;
+    }
+
+    .page-main {
+      padding: var(--wa-space-m);
+    }
+  }
+
+  /* Custom properties for layout customization */
+  :root {
+    --menu-width: auto;
+    --main-width: 1fr;
+    --aside-width: auto;
+    --header-height: 0px;
+    --subheader-height: 0px;
+    --banner-height: 0px;
+    --sticky-top: calc(var(--banner-height) + var(--header-height) + var(--subheader-height));
+  }
+
+  /* Utility classes */
+  [data-mobile-only] {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    [data-mobile-only] {
+      display: block;
+    }
+
+    [data-desktop-only] {
+      display: none;
+    }
+  }
+
+  /* Theme-specific adjustments */
+  .wa-dark {
+    color-scheme: dark;
+  }
+
+  /* Focus management */
+  :focus-visible {
+    outline: var(--wa-focus-ring);
+    outline-offset: var(--wa-focus-ring-offset);
+  }
+</style>

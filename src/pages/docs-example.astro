@@ -1,0 +1,332 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import NavigationMenu from '../components/NavigationMenu.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+// Sample navigation data
+const navItems = [
+  {
+    title: "Getting Started",
+    icon: "rocket",
+    children: [
+      { title: "Installation", href: "/docs/installation" },
+      { title: "Quick Start", href: "/docs/quickstart", current: true },
+      { title: "Configuration", href: "/docs/configuration" }
+    ]
+  },
+  {
+    title: "Components",
+    icon: "puzzle-piece",
+    children: [
+      { title: "Layout", href: "/docs/components/layout", badge: "New", badgeVariant: "success" },
+      { title: "Navigation", href: "/docs/components/navigation" },
+      { title: "Content", href: "/docs/components/content" }
+    ]
+  },
+  {
+    title: "Theming",
+    icon: "palette",
+    children: [
+      { title: "Colors", href: "/docs/theming/colors" },
+      { title: "Typography", href: "/docs/theming/typography" },
+      { title: "Customization", href: "/docs/theming/customization" }
+    ]
+  }
+];
+
+// Sample table of contents
+const tocItems = [
+  { level: 2, title: "Overview", href: "#overview", id: "overview" },
+  { level: 2, title: "Features", href: "#features", id: "features" },
+  { level: 3, title: "Layout System", href: "#layout-system", id: "layout-system" },
+  { level: 3, title: "Theme Support", href: "#theme-support", id: "theme-support" },
+  { level: 2, title: "Getting Started", href: "#getting-started", id: "getting-started" },
+  { level: 3, title: "Installation", href: "#installation", id: "installation" },
+  { level: 3, title: "Basic Usage", href: "#basic-usage", id: "basic-usage" },
+  { level: 2, title: "Examples", href: "#examples", id: "examples" }
+];
+---
+
+<DocsLayout 
+  title="MyST Awesome Theme Documentation"
+  description="A comprehensive guide to using the MyST Awesome Theme with Web Awesome components and Astro."
+  section="Documentation"
+  showToc={true}
+  showBreadcrumbs={true}
+  showEditButton={true}
+  editUrl="https://github.com/example/myst-awesome-theme/edit/main/docs/index.md"
+  author="MyST Team"
+  lastModified={new Date('2024-01-15')}
+  nextPage={{ title: "Installation Guide", href: "/docs/installation" }}
+  prevPage={{ title: "Introduction", href: "/docs/intro" }}
+>
+  <!-- Custom navigation in the sidebar -->
+  <NavigationMenu 
+    slot="navigation" 
+    items={navItems}
+    showSearch={true}
+    searchPlaceholder="Search documentation..."
+    collapsible={true}
+    showIcons={true}
+  />
+
+  <!-- Custom table of contents -->
+  <TableOfContents 
+    slot="aside"
+    items={tocItems}
+    title="On this page"
+    sticky={true}
+    collapsible={false}
+    showNumbers={false}
+  />
+
+  <!-- Main content -->
+  <div class="docs-content">
+    <h2 id="overview">Overview</h2>
+    <p>
+      The MyST Awesome Theme is a modern, responsive documentation theme built with 
+      <a href="https://astro.build">Astro</a> and <a href="https://webawesome.com">Web Awesome</a> components. 
+      It provides a clean, professional interface for technical documentation with excellent 
+      typography, accessibility, and user experience.
+    </p>
+
+    <wa-callout variant="info">
+      <wa-icon slot="start" name="info-circle" variant="solid"></wa-icon>
+      <strong>Note:</strong> This theme is designed to work seamlessly with MyST Markdown 
+      and provides enhanced features for technical documentation.
+    </wa-callout>
+
+    <h2 id="features">Features</h2>
+    <p>The theme includes a comprehensive set of features designed for modern documentation:</p>
+
+    <ul>
+      <li><strong>Responsive Design:</strong> Works perfectly on desktop, tablet, and mobile devices</li>
+      <li><strong>Dark Mode Support:</strong> Automatic and manual theme switching</li>
+      <li><strong>Multiple Themes:</strong> Choose from various Web Awesome themes</li>
+      <li><strong>Accessible:</strong> WCAG 2.1 AA compliant with keyboard navigation</li>
+      <li><strong>Fast Performance:</strong> Optimized for speed with Astro's static generation</li>
+      <li><strong>Search Integration:</strong> Built-in search functionality</li>
+    </ul>
+
+    <h3 id="layout-system">Layout System</h3>
+    <p>
+      The theme uses a flexible layout system inspired by Web Awesome's page component, 
+      providing multiple slots for content organization:
+    </p>
+
+    <div class="feature-grid">
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="layout" variant="solid"></wa-icon>
+          <strong>Header & Navigation</strong>
+        </div>
+        <p>Customizable header with branding, navigation, and theme controls.</p>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="sidebar" variant="solid"></wa-icon>
+          <strong>Sidebar Navigation</strong>
+        </div>
+        <p>Collapsible navigation menu with search and hierarchical organization.</p>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="file-text" variant="solid"></wa-icon>
+          <strong>Content Area</strong>
+        </div>
+        <p>Main content area optimized for readability and technical documentation.</p>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="list" variant="solid"></wa-icon>
+          <strong>Table of Contents</strong>
+        </div>
+        <p>Automatic table of contents generation with active section highlighting.</p>
+      </wa-card>
+    </div>
+
+    <h3 id="theme-support">Theme Support</h3>
+    <p>
+      The theme leverages Web Awesome's comprehensive theming system, allowing you to 
+      choose from multiple pre-built themes or create your own custom theme:
+    </p>
+
+    <wa-tab-group>
+      <wa-tab panel="default">Default</wa-tab>
+      <wa-tab panel="awesome">Awesome</wa-tab>
+      <wa-tab panel="shoelace">Shoelace</wa-tab>
+      <wa-tab panel="custom">Custom</wa-tab>
+
+      <wa-tab-panel name="default">
+        <p>The default theme provides a clean, professional appearance suitable for most documentation needs.</p>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="awesome">
+        <p>The awesome theme features vibrant colors and modern styling for a more dynamic look.</p>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="shoelace">
+        <p>The shoelace theme offers a familiar interface inspired by the Shoelace design system.</p>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="custom">
+        <p>Create your own custom theme by overriding CSS custom properties and Web Awesome design tokens.</p>
+      </wa-tab-panel>
+    </wa-tab-group>
+
+    <h2 id="getting-started">Getting Started</h2>
+    <p>Follow these steps to set up the MyST Awesome Theme in your project:</p>
+
+    <h3 id="installation">Installation</h3>
+    <p>Install the theme and its dependencies using your preferred package manager:</p>
+
+    <pre><code>npm install myst-awesome-theme @awesome.me/webawesome</code></pre>
+
+    <wa-callout variant="warning">
+      <wa-icon slot="start" name="exclamation-triangle" variant="solid"></wa-icon>
+      <strong>Requirements:</strong> This theme requires Astro 4.0+ and Node.js 18+.
+    </wa-callout>
+
+    <h3 id="basic-usage">Basic Usage</h3>
+    <p>Import and use the layout components in your Astro pages:</p>
+
+    <pre><code>---
+import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
+---
+
+&lt;DocsLayout title="My Documentation"&gt;
+  &lt;h1&gt;Welcome to my docs!&lt;/h1&gt;
+  &lt;p&gt;This is the main content area.&lt;/p&gt;
+&lt;/DocsLayout&gt;</code></pre>
+
+    <h2 id="examples">Examples</h2>
+    <p>Here are some examples of the theme components in action:</p>
+
+    <div class="example-section">
+      <h4>Alert Components</h4>
+      <div class="example-grid">
+        <wa-callout variant="success">
+          <wa-icon slot="start" name="check-circle" variant="solid"></wa-icon>
+          <strong>Success:</strong> Your changes have been saved successfully.
+        </wa-callout>
+
+        <wa-callout variant="warning">
+          <wa-icon slot="start" name="exclamation-triangle" variant="solid"></wa-icon>
+          <strong>Warning:</strong> This action cannot be undone.
+        </wa-callout>
+
+        <wa-callout variant="danger">
+          <wa-icon slot="start" name="exclamation-circle" variant="solid"></wa-icon>
+          <strong>Error:</strong> Failed to process your request.
+        </wa-callout>
+      </div>
+    </div>
+
+    <div class="example-section">
+      <h4>Interactive Elements</h4>
+      <div class="button-group">
+        <wa-button variant="brand">Primary Action</wa-button>
+        <wa-button variant="neutral">Secondary</wa-button>
+        <wa-button appearance="outlined">Outlined</wa-button>
+        <wa-button appearance="plain">Plain</wa-button>
+      </div>
+    </div>
+
+    <div class="example-section">
+      <h4>Form Elements</h4>
+      <div class="form-example">
+        <wa-input label="Name" placeholder="Enter your name"></wa-input>
+        <wa-textarea label="Message" placeholder="Enter your message"></wa-textarea>
+        <wa-select label="Category">
+          <wa-option value="general">General</wa-option>
+          <wa-option value="technical">Technical</wa-option>
+          <wa-option value="feedback">Feedback</wa-option>
+        </wa-select>
+      </div>
+    </div>
+  </div>
+</DocsLayout>
+
+<script>
+  // Import Web Awesome components
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+  import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
+  import '@awesome.me/webawesome/dist/components/tab/tab.js';
+  import '@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
+  import '@awesome.me/webawesome/dist/components/select/select.js';
+  import '@awesome.me/webawesome/dist/components/option/option.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  .docs-content {
+    max-width: none; /* Override the article max-width for this example */
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--wa-space-l);
+    margin: var(--wa-space-l) 0;
+  }
+
+  .feature-grid wa-card {
+    height: 100%;
+  }
+
+  .feature-grid wa-card [slot="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .example-section {
+    margin: var(--wa-space-xl) 0;
+    padding: var(--wa-space-l);
+    background-color: var(--wa-color-surface-lowered);
+    border-radius: var(--wa-border-radius-m);
+    border: 1px solid var(--wa-color-surface-border);
+  }
+
+  .example-section h4 {
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+  }
+
+  .example-grid {
+    display: grid;
+    gap: var(--wa-space-m);
+  }
+
+  .button-group {
+    display: flex;
+    gap: var(--wa-space-s);
+    flex-wrap: wrap;
+  }
+
+  .form-example {
+    display: grid;
+    gap: var(--wa-space-m);
+    max-width: 400px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .button-group {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

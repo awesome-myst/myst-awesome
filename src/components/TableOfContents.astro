@@ -1,0 +1,301 @@
+---
+interface TocItem {
+  level: number;
+  title: string;
+  href: string;
+  id?: string;
+}
+
+interface Props {
+  items: TocItem[];
+  title?: string;
+  maxLevel?: number;
+  sticky?: boolean;
+  collapsible?: boolean;
+  showNumbers?: boolean;
+}
+
+const {
+  items = [],
+  title = "Table of Contents",
+  maxLevel = 4,
+  sticky = true,
+  collapsible = false,
+  showNumbers = false
+} = Astro.props;
+
+// Filter items by max level
+const filteredItems = items.filter(item => item.level <= maxLevel);
+---
+
+<aside class={`table-of-contents ${sticky ? 'sticky' : ''}`}>
+  <div class="toc-header">
+    <h3 class="toc-title">{title}</h3>
+    {collapsible && (
+      <wa-button class="toc-toggle" appearance="plain" size="small">
+        <wa-icon name="chevron-up" class="toc-collapse-icon"></wa-icon>
+        <wa-icon name="chevron-down" class="toc-expand-icon" style="display: none;"></wa-icon>
+      </wa-button>
+    )}
+  </div>
+  
+  <nav class="toc-nav">
+    <ul class="toc-list">
+      {filteredItems.map((item, index) => (
+        <li class={`toc-item toc-level-${item.level}`}>
+          <a href={item.href} class="toc-link" data-toc-target={item.id || item.href.slice(1)}>
+            {showNumbers && <span class="toc-number">{index + 1}.</span>}
+            {item.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<script>
+  // Table of contents functionality
+  const toc = document.querySelector('.table-of-contents');
+  const tocToggle = toc?.querySelector('.toc-toggle');
+  const tocNav = toc?.querySelector('.toc-nav');
+  const tocLinks = toc?.querySelectorAll('.toc-link');
+  
+  // Collapsible functionality
+  if (tocToggle && tocNav) {
+    const collapseIcon = tocToggle.querySelector('.toc-collapse-icon');
+    const expandIcon = tocToggle.querySelector('.toc-expand-icon');
+    
+    tocToggle.addEventListener('click', () => {
+      const isCollapsed = tocNav.style.display === 'none';
+      
+      if (isCollapsed) {
+        tocNav.style.display = 'block';
+        collapseIcon.style.display = 'block';
+        expandIcon.style.display = 'none';
+      } else {
+        tocNav.style.display = 'none';
+        collapseIcon.style.display = 'none';
+        expandIcon.style.display = 'block';
+      }
+    });
+  }
+  
+  // Active link tracking
+  if (tocLinks.length > 0) {
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6[id]');
+    
+    function updateActiveTocLink() {
+      let current = '';
+      const scrollPosition = window.scrollY + 100; // Offset for sticky headers
+      
+      headings.forEach(heading => {
+        const rect = heading.getBoundingClientRect();
+        const elementTop = rect.top + window.scrollY;
+        
+        if (elementTop <= scrollPosition) {
+          current = heading.id;
+        }
+      });
+      
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        const target = link.getAttribute('data-toc-target');
+        if (target === current) {
+          link.classList.add('active');
+          
+          // Scroll the active link into view within the TOC
+          link.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'nearest'
+          });
+        }
+      });
+    }
+    
+    // Throttled scroll handler for performance
+    let ticking = false;
+    function handleScroll() {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateActiveTocLink();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    updateActiveTocLink(); // Initial call
+    
+    // Smooth scroll to sections when clicking TOC links
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('data-toc-target');
+        const element = document.getElementById(target);
+        
+        if (element) {
+          const headerOffset = 80; // Account for sticky headers
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .table-of-contents {
+    width: 100%;
+    max-width: 15rem;
+    background-color: var(--wa-color-surface-lowered);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-m);
+    padding: var(--wa-space-m);
+  }
+
+  .table-of-contents.sticky {
+    position: sticky;
+    top: var(--wa-space-l);
+    max-height: calc(100vh - var(--wa-space-2xl));
+    overflow-y: auto;
+  }
+
+  .toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--wa-space-m);
+    padding-bottom: var(--wa-space-s);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .toc-title {
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .toc-nav {
+    transition: all var(--wa-transition-normal);
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .toc-level-2 {
+    padding-left: 0;
+  }
+
+  .toc-level-3 {
+    padding-left: var(--wa-space-m);
+  }
+
+  .toc-level-4 {
+    padding-left: var(--wa-space-l);
+  }
+
+  .toc-level-5 {
+    padding-left: var(--wa-space-xl);
+  }
+
+  .toc-level-6 {
+    padding-left: calc(var(--wa-space-xl) + var(--wa-space-m));
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wa-space-2xs);
+    padding: var(--wa-space-2xs) var(--wa-space-xs);
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-normal);
+    border-radius: var(--wa-border-radius-s);
+    border-left: 2px solid transparent;
+    transition: all var(--wa-transition-fast);
+  }
+
+  .toc-link:hover {
+    color: var(--wa-color-text-normal);
+    background-color: var(--wa-color-neutral-fill-quiet);
+  }
+
+  .toc-link.active {
+    color: var(--wa-color-brand-fill-loud);
+    background-color: var(--wa-color-brand-fill-quiet);
+    border-left-color: var(--wa-color-brand-fill-loud);
+    font-weight: var(--wa-font-weight-medium);
+  }
+
+  .toc-number {
+    font-family: var(--wa-font-family-code);
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-text-quiet);
+    min-width: 1.5em;
+    flex-shrink: 0;
+  }
+
+  .toc-link.active .toc-number {
+    color: var(--wa-color-brand-on-quiet);
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    .table-of-contents {
+      max-width: 100%;
+      margin-bottom: var(--wa-space-l);
+    }
+
+    .table-of-contents.sticky {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  /* Custom scrollbar for TOC */
+  .table-of-contents::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .table-of-contents::-webkit-scrollbar-track {
+    background: var(--wa-color-surface-default);
+  }
+
+  .table-of-contents::-webkit-scrollbar-thumb {
+    background: var(--wa-color-neutral-fill-normal);
+    border-radius: var(--wa-border-radius-s);
+  }
+
+  .table-of-contents::-webkit-scrollbar-thumb:hover {
+    background: var(--wa-color-neutral-fill-loud);
+  }
+
+  /* Focus styles */
+  .toc-link:focus-visible {
+    outline: var(--wa-focus-ring);
+    outline-offset: var(--wa-focus-ring-offset);
+  }
+
+  .toc-toggle:focus-visible {
+    outline: var(--wa-focus-ring);
+    outline-offset: var(--wa-focus-ring-offset);
+  }
+</style>

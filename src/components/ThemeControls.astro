@@ -1,0 +1,104 @@
+---
+interface Props {
+  showThemeSelector?: boolean;
+  showColorSchemeSelector?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  appearance?: 'filled' | 'outlined' | 'plain';
+  currentTheme?: string;
+  currentColorScheme?: string;
+}
+
+const {
+  showThemeSelector = true,
+  showColorSchemeSelector = true,
+  size = 'small',
+  appearance = 'filled',
+  currentTheme = 'default',
+  currentColorScheme = 'auto'
+} = Astro.props;
+---
+
+<div class="theme-controls">
+  {showThemeSelector && (
+    <wa-select class="theme-selector" appearance={appearance} size={size} value={currentTheme}>
+      <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
+      <wa-option value="default">Default</wa-option>
+      <wa-option value="awesome">Awesome</wa-option>
+      <wa-option value="shoelace">Shoelace</wa-option>
+      <wa-divider></wa-divider>
+      <wa-option value="brutalist">Brutalist</wa-option>
+      <wa-option value="glossy">Glossy</wa-option>
+      <wa-option value="matter">Matter</wa-option>
+      <wa-option value="mellow">Mellow</wa-option>
+      <wa-option value="playful">Playful</wa-option>
+      <wa-option value="premium">Premium</wa-option>
+      <wa-option value="tailspin">Tailspin</wa-option>
+    </wa-select>
+  )}
+
+  {showColorSchemeSelector && (
+    <wa-select class="color-scheme-selector" appearance={appearance} size={size} value={currentColorScheme}>
+      <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
+      <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
+      <wa-option value="light">
+        <wa-icon slot="start" name="sun" variant="regular"></wa-icon>
+        Light
+      </wa-option>
+      <wa-option value="dark">
+        <wa-icon slot="start" name="moon" variant="regular"></wa-icon>
+        Dark
+      </wa-option>
+      <wa-divider></wa-divider>
+      <wa-option value="auto">
+        <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
+        <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
+        System
+      </wa-option>
+    </wa-select>
+  )}
+</div>
+
+<script>
+  // Theme selector functionality
+  const themeSelector = document.querySelector('.theme-selector');
+  const colorSchemeSelector = document.querySelector('.color-scheme-selector');
+  
+  if (themeSelector) {
+    // Set initial value from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    themeSelector.value = savedTheme;
+    
+    themeSelector.addEventListener('wa-change', (e) => {
+      if (window.setTheme) {
+        window.setTheme(e.target.value);
+      }
+    });
+  }
+  
+  if (colorSchemeSelector) {
+    // Set initial value from localStorage
+    const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
+    colorSchemeSelector.value = savedColorScheme;
+    
+    colorSchemeSelector.addEventListener('wa-change', (e) => {
+      if (window.setColorScheme) {
+        window.setColorScheme(e.target.value);
+      }
+    });
+  }
+</script>
+
+<style>
+  .theme-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  @media (max-width: 640px) {
+    .theme-controls {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>

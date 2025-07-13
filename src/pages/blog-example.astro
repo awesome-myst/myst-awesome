@@ -1,0 +1,434 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+
+const publishDate = new Date('2024-01-10');
+const lastModified = new Date('2024-01-15');
+const tags = ['Web Development', 'Astro', 'Web Awesome', 'Documentation', 'Design Systems'];
+---
+
+<ContentLayout
+  title="Building Modern Documentation with MyST Awesome Theme"
+  description="Learn how to create beautiful, accessible documentation using the MyST Awesome Theme, Web Awesome components, and Astro's static site generation."
+  author="Jane Developer"
+  publishDate={publishDate}
+  lastModified={lastModified}
+  tags={tags}
+  category="Tutorial"
+  readingTime="8 min read"
+  showAuthor={true}
+  showDate={true}
+  showTags={true}
+  showReadingTime={true}
+  showTableOfContents={true}
+  heroImage="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&h=600&fit=crop"
+  heroImageAlt="Modern workspace with laptop showing code editor"
+>
+  <div class="blog-content">
+    <h2 id="introduction">Introduction</h2>
+    <p>
+      In today's fast-paced development environment, having well-structured, accessible,
+      and visually appealing documentation is crucial for project success. The MyST Awesome Theme
+      combines the power of <a href="https://astro.build">Astro's static site generation</a>
+      with <a href="https://webawesome.com">Web Awesome's component library</a> to create
+      a documentation experience that's both developer-friendly and user-focused.
+    </p>
+
+    <wa-callout variant="info">
+      <wa-icon slot="start" name="lightbulb" variant="solid"></wa-icon>
+      <strong>Pro Tip:</strong> This theme is perfect for technical documentation, API references,
+      tutorials, and knowledge bases.
+    </wa-callout>
+
+    <h2 id="main-content">Why Choose MyST Awesome Theme?</h2>
+    <p>
+      Traditional documentation tools often fall short in providing the flexibility and
+      modern user experience that today's projects demand. Here's why the MyST Awesome Theme
+      stands out:
+    </p>
+
+    <h3 id="subsection">Performance First</h3>
+    <p>
+      Built on Astro's island architecture, the theme delivers exceptional performance
+      with minimal JavaScript overhead. Pages load instantly, and interactive components
+      are hydrated only when needed.
+    </p>
+
+    <div class="feature-showcase">
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="rocket" variant="solid"></wa-icon>
+          <strong>Lightning Fast</strong>
+        </div>
+        <p>Static generation with selective hydration ensures optimal loading times.</p>
+        <wa-button slot="footer" size="small" appearance="outlined">Learn More</wa-button>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="mobile" variant="solid"></wa-icon>
+          <strong>Mobile Optimized</strong>
+        </div>
+        <p>Responsive design that works perfectly on all device sizes.</p>
+        <wa-button slot="footer" size="small" appearance="outlined">View Demo</wa-button>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="universal-access" variant="solid"></wa-icon>
+          <strong>Accessible</strong>
+        </div>
+        <p>WCAG 2.1 AA compliant with full keyboard navigation support.</p>
+        <wa-button slot="footer" size="small" appearance="outlined">Accessibility Guide</wa-button>
+      </wa-card>
+    </div>
+
+    <h2 id="conclusion">Getting Started</h2>
+    <p>
+      Setting up the MyST Awesome Theme is straightforward and can be accomplished in just a few steps.
+      Let's walk through the process:
+    </p>
+
+    <h3>Step 1: Installation</h3>
+    <p>First, install the theme and its dependencies:</p>
+
+    <pre><code>npm install myst-awesome-theme @awesome.me/webawesome
+# or
+yarn add myst-awesome-theme @awesome.me/webawesome
+# or
+pnpm add myst-awesome-theme @awesome.me/webawesome</code></pre>
+
+    <h3>Step 2: Configuration</h3>
+    <p>Configure your Astro project to use the theme components:</p>
+
+    <pre><code>// astro.config.mjs
+import &#123; defineConfig &#125; from 'astro/config';
+
+export default defineConfig(&#123;
+  // Your Astro configuration
+  integrations: [
+    // Add any required integrations
+  ],
+&#125;</code></pre>
+
+    <h3>Step 3: Create Your First Page</h3>
+    <p>Use the layout components to create your documentation pages:</p>
+
+    <pre><code>---
+// src/pages/docs/index.astro
+import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
+---
+
+&lt;DocsLayout title="My Documentation"&gt;
+  &lt;h1&gt;Welcome to My Docs&lt;/h1&gt;
+  &lt;p&gt;Start writing your documentation here!&lt;/p&gt;
+&lt;/DocsLayout&gt;</code></pre>
+
+    <wa-callout variant="success">
+      <wa-icon slot="start" name="check-circle" variant="solid"></wa-icon>
+      <strong>Success!</strong> You now have a fully functional documentation site with
+      modern styling, responsive design, and accessibility features built-in.
+    </wa-callout>
+
+    <h2>Advanced Features</h2>
+    <p>
+      The MyST Awesome Theme includes several advanced features that make it stand out
+      from other documentation solutions:
+    </p>
+
+    <h3>Theme Customization</h3>
+    <p>
+      Easily customize the appearance using Web Awesome's comprehensive theming system.
+      Choose from pre-built themes or create your own:
+    </p>
+
+    <wa-tab-group>
+      <wa-tab panel="themes">Built-in Themes</wa-tab>
+      <wa-tab panel="custom">Custom Themes</wa-tab>
+      <wa-tab panel="tokens">Design Tokens</wa-tab>
+
+      <wa-tab-panel name="themes">
+        <p>The theme includes several pre-built options:</p>
+        <ul>
+          <li><strong>Default:</strong> Clean and professional</li>
+          <li><strong>Awesome:</strong> Vibrant and modern</li>
+          <li><strong>Shoelace:</strong> Familiar and accessible</li>
+          <li><strong>Brutalist:</strong> Bold and distinctive</li>
+        </ul>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="custom">
+        <p>Create custom themes by overriding CSS custom properties:</p>
+        <pre><code>:root &#123;
+  --wa-color-brand-fill-loud: #your-brand-color;
+  --wa-font-family-heading: 'Your Font', sans-serif;
+&#125;</code></pre>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="tokens">
+        <p>Use Web Awesome's design tokens for consistent styling:</p>
+        <ul>
+          <li>Color tokens for semantic color usage</li>
+          <li>Typography tokens for consistent text styling</li>
+          <li>Spacing tokens for layout consistency</li>
+          <li>Border and shadow tokens for visual effects</li>
+        </ul>
+      </wa-tab-panel>
+    </wa-tab-group>
+
+    <h3>Interactive Components</h3>
+    <p>
+      Enhance your documentation with interactive Web Awesome components:
+    </p>
+
+    <div class="component-demo">
+      <h4>Form Elements</h4>
+      <div class="form-grid">
+        <wa-input label="Search" placeholder="Type to search...">
+          <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+        </wa-input>
+
+        <wa-select label="Category">
+          <wa-option value="all">All Categories</wa-option>
+          <wa-option value="guides">Guides</wa-option>
+          <wa-option value="api">API Reference</wa-option>
+          <wa-option value="tutorials">Tutorials</wa-option>
+        </wa-select>
+
+        <wa-button variant="brand">
+          <wa-icon slot="start" name="search"></wa-icon>
+          Search
+        </wa-button>
+      </div>
+
+      <h4>Progress Indicators</h4>
+      <div class="progress-demo">
+        <wa-progress-bar value="75" label="Documentation Progress"></wa-progress-bar>
+        <wa-progress-ring value="60"></wa-progress-ring>
+      </div>
+
+      <h4>Data Display</h4>
+      <wa-details summary="View Code Example">
+        <pre><code>// Example component usage
+import &#123; DocsLayout &#125; from 'myst-awesome-theme';
+
+export default function MyPage() &#123;
+  return (
+    &lt;DocsLayout title="My Page"&gt;
+      &lt;h1&gt;Hello World&lt;/h1&gt;
+    &lt;/DocsLayout&gt;
+  );
+&#125;</code></pre>
+      </wa-details>
+    </div>
+
+    <h2>Best Practices</h2>
+    <p>
+      To get the most out of the MyST Awesome Theme, consider these best practices:
+    </p>
+
+    <div class="best-practices">
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="file-text" variant="solid"></wa-icon>
+          <strong>Content Structure</strong>
+        </div>
+        <ul>
+          <li>Use semantic heading hierarchy (h1 → h2 → h3)</li>
+          <li>Keep paragraphs concise and scannable</li>
+          <li>Include code examples and interactive demos</li>
+          <li>Use callouts to highlight important information</li>
+        </ul>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="palette" variant="solid"></wa-icon>
+          <strong>Visual Design</strong>
+        </div>
+        <ul>
+          <li>Maintain consistent spacing using design tokens</li>
+          <li>Choose appropriate color variants for different content types</li>
+          <li>Use icons to improve visual hierarchy</li>
+          <li>Test your theme in both light and dark modes</li>
+        </ul>
+      </wa-card>
+
+      <wa-card>
+        <div slot="header">
+          <wa-icon name="users" variant="solid"></wa-icon>
+          <strong>User Experience</strong>
+        </div>
+        <ul>
+          <li>Provide clear navigation with breadcrumbs</li>
+          <li>Include a table of contents for longer pages</li>
+          <li>Add search functionality for better discoverability</li>
+          <li>Ensure all interactive elements are keyboard accessible</li>
+        </ul>
+      </wa-card>
+    </div>
+
+    <h2>Conclusion</h2>
+    <p>
+      The MyST Awesome Theme represents a new approach to documentation that prioritizes
+      both developer experience and end-user satisfaction. By combining Astro's performance
+      benefits with Web Awesome's comprehensive component library, you can create documentation
+      that's not only functional but also delightful to use.
+    </p>
+
+    <p>
+      Whether you're building API documentation, user guides, or technical tutorials,
+      the MyST Awesome Theme provides the foundation you need to create professional,
+      accessible, and engaging content.
+    </p>
+
+    <wa-callout variant="brand">
+      <wa-icon slot="start" name="rocket" variant="solid"></wa-icon>
+      <strong>Ready to get started?</strong> Check out our
+      <a href="/docs/installation">installation guide</a> and begin building
+      amazing documentation today!
+    </wa-callout>
+  </div>
+</ContentLayout>
+
+<script>
+  // Import Web Awesome components used in this page
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+  import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
+  import '@awesome.me/webawesome/dist/components/tab/tab.js';
+  import '@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/select/select.js';
+  import '@awesome.me/webawesome/dist/components/option/option.js';
+  import '@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js';
+  import '@awesome.me/webawesome/dist/components/progress-ring/progress-ring.js';
+  import '@awesome.me/webawesome/dist/components/details/details.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  .blog-content {
+    max-width: none; /* Override the article max-width for this example */
+  }
+
+  .feature-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--wa-space-l);
+    margin: var(--wa-space-xl) 0;
+  }
+
+  .feature-showcase wa-card {
+    height: 100%;
+  }
+
+  .feature-showcase wa-card [slot="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    color: var(--wa-color-brand-fill-loud);
+    font-size: var(--wa-font-size-m);
+  }
+
+  .component-demo {
+    background-color: var(--wa-color-surface-lowered);
+    padding: var(--wa-space-l);
+    border-radius: var(--wa-border-radius-m);
+    border: 1px solid var(--wa-color-surface-border);
+    margin: var(--wa-space-xl) 0;
+  }
+
+  .component-demo h4 {
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-text-normal);
+    font-size: var(--wa-font-size-m);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: var(--wa-space-m);
+    align-items: end;
+    margin-bottom: var(--wa-space-xl);
+  }
+
+  .progress-demo {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-l);
+    margin-bottom: var(--wa-space-xl);
+  }
+
+  .progress-demo wa-progress-bar {
+    flex: 1;
+  }
+
+  .best-practices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--wa-space-l);
+    margin: var(--wa-space-xl) 0;
+  }
+
+  .best-practices wa-card {
+    height: 100%;
+  }
+
+  .best-practices wa-card [slot="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    color: var(--wa-color-success-fill-loud);
+    font-size: var(--wa-font-size-m);
+  }
+
+  .best-practices ul {
+    margin: 0;
+    padding-left: var(--wa-space-l);
+  }
+
+  .best-practices li {
+    margin-bottom: var(--wa-space-xs);
+    line-height: var(--wa-line-height-relaxed);
+  }
+
+  /* Code blocks */
+  pre {
+    background-color: var(--wa-color-surface-lowered);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-m);
+    padding: var(--wa-space-l);
+    overflow-x: auto;
+    margin: var(--wa-space-m) 0;
+  }
+
+  code {
+    font-family: var(--wa-font-family-code);
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-normal);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .feature-showcase,
+    .best-practices {
+      grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .progress-demo {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .component-demo {
+      padding: var(--wa-space-m);
+    }
+  }
+</style>
