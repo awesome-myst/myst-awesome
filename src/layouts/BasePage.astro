@@ -211,6 +211,16 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       mediaQuery.addListener(handleViewportChange);
       handleViewportChange(mediaQuery);
 
+      // Add fallback classes for browsers without :has() support
+      const pageBody = document.querySelector('.page-body');
+      const hasMenu = document.querySelector('.page-menu');
+      const hasAside = document.querySelector('.page-aside');
+
+      if (pageBody) {
+        if (hasMenu) pageBody.classList.add('has-menu');
+        if (hasAside) pageBody.classList.add('has-aside');
+      }
+
       // Color scheme switching
       function setColorScheme(scheme) {
         localStorage.setItem('color-scheme', scheme);
@@ -303,7 +313,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
   /* Main page layout */
   .page-layout {
-    display: grid;
+    display: grid !important;
     grid-template-rows: auto auto auto 1fr auto;
     grid-template-areas:
       "banner"
@@ -373,9 +383,72 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
   .page-body {
     grid-area: body;
     display: grid;
-    grid-template-columns: var(--menu-width, auto) var(--main-width, 1fr) var(--aside-width, auto);
+    grid-template-columns: 0 1fr 0;
     grid-template-areas: "menu main aside";
     min-height: 0;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Dynamic grid layout based on content presence */
+  .page-body:not(:has(.page-menu)):not(:has(.page-aside)) {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+  }
+
+  .page-body:has(.page-menu):not(:has(.page-aside)) {
+    grid-template-columns: var(--menu-width, 15rem) 1fr;
+    grid-template-areas: "menu main";
+  }
+
+  .page-body:not(:has(.page-menu)):has(.page-aside) {
+    grid-template-columns: 1fr var(--aside-width, 15rem);
+    grid-template-areas: "main aside";
+  }
+
+  .page-body:has(.page-menu):has(.page-aside) {
+    grid-template-columns: var(--menu-width, 15rem) 1fr var(--aside-width, 15rem);
+    grid-template-areas: "menu main aside";
+  }
+
+  /* Fallback for browsers without :has() support */
+  @supports not (selector(:has(*))) {
+    .page-body {
+      grid-template-columns: 1fr;
+      grid-template-areas: "main";
+    }
+
+    .page-body.has-menu {
+      grid-template-columns: 15rem 1fr;
+      grid-template-areas: "menu main";
+    }
+
+    .page-body.has-aside {
+      grid-template-columns: 1fr 15rem;
+      grid-template-areas: "main aside";
+    }
+
+    .page-body.has-menu.has-aside {
+      grid-template-columns: 15rem 1fr 15rem;
+      grid-template-areas: "menu main aside";
+    }
+  }
+
+  /* Override :has() with explicit classes for more reliable behavior */
+  .page-body.has-menu {
+    grid-template-columns: 15rem 1fr !important;
+    grid-template-areas: "menu main" !important;
+  }
+
+  .page-body.has-aside {
+    grid-template-columns: 1fr 15rem !important;
+    grid-template-areas: "main aside" !important;
+  }
+
+  .page-body.has-menu.has-aside {
+    grid-template-columns: 15rem 1fr 15rem !important;
+    grid-template-areas: "menu main aside" !important;
   }
 
   /* Navigation menu */
@@ -383,7 +456,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     grid-area: menu;
     display: flex;
     flex-direction: column;
-    width: var(--menu-width, 15rem);
+    min-width: var(--menu-width, 15rem);
+    width: 100%;
     background-color: var(--wa-color-surface-lowered);
     border-right: 1px solid var(--wa-color-surface-border);
     overflow-y: auto;
@@ -432,7 +506,10 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     display: flex;
     flex-direction: column;
     min-width: 0;
+    width: 100%;
+    max-width: 100%;
     padding: var(--wa-space-l);
+    overflow-x: hidden;
   }
 
   .main-header,
@@ -452,7 +529,10 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
   .main-content {
     flex: 1;
+    width: 100%;
     max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
   }
 
   /* Aside/sidebar */
@@ -460,7 +540,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     grid-area: aside;
     display: flex;
     flex-direction: column;
-    width: var(--aside-width, 15rem);
+    min-width: var(--aside-width, 15rem);
+    width: 100%;
     padding: var(--wa-space-l);
     background-color: var(--wa-color-surface-lowered);
     border-left: 1px solid var(--wa-color-surface-border);
@@ -512,13 +593,32 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
   /* Custom properties for layout customization */
   :root {
-    --menu-width: auto;
+    --menu-width: 0;
     --main-width: 1fr;
-    --aside-width: auto;
+    --aside-width: 0;
     --header-height: 0px;
     --subheader-height: 0px;
     --banner-height: 0px;
     --sticky-top: calc(var(--banner-height) + var(--header-height) + var(--subheader-height));
+  }
+
+  /* Layout when navigation is present */
+  .page-layout:has(.page-menu) {
+    --menu-width: 15rem;
+  }
+
+  /* Layout when aside is present */
+  .page-layout:has(.page-aside) {
+    --aside-width: 15rem;
+  }
+
+  /* Explicit class-based approach for layout control */
+  .page-body.has-menu {
+    --menu-width: 15rem;
+  }
+
+  .page-body.has-aside {
+    --aside-width: 15rem;
   }
 
   /* Utility classes */
