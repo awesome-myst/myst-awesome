@@ -1,0 +1,15 @@
+---
+import BasePage from '../layouts/BasePage.astro';
+import CustomNavigationMenu from '../custom/CustomNavigationMenu.astro';
+
+const navItems = [
+  {
+    title: "Test",
+    href: "#test"
+  }
+];
+---
+
+<BasePage title="Simple Test">
+  <CustomNavigationMenu items={navItems} />
+</BasePage>

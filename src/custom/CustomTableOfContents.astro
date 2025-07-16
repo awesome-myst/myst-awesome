@@ -1,0 +1,377 @@
+---
+/**
+ * Custom Table of Contents Example
+ * This demonstrates how to create a custom component that overrides the default TableOfContents
+ * 
+ * Features demonstrated:
+ * - Compact card-based design
+ * - Progress indicator
+ * - Animated hover effects
+ * - Different color scheme
+ */
+
+interface TocItem {
+  level: number;
+  title: string;
+  href: string;
+  id?: string;
+}
+
+interface Props {
+  items: TocItem[];
+  title?: string;
+  sticky?: boolean;
+  collapsible?: boolean;
+  showNumbers?: boolean;
+}
+
+const {
+  items = [],
+  title = "Contents",
+  sticky = true,
+  collapsible = false,
+  showNumbers = false
+} = Astro.props;
+---
+
+<aside class={`custom-table-of-contents ${sticky ? 'custom-sticky' : ''}`}>
+  <wa-card class="custom-toc-card">
+    <div slot="header" class="custom-toc-header">
+      <div class="custom-header-content">
+        <wa-icon name="list-ul" variant="solid" class="custom-toc-icon"></wa-icon>
+        <h3 class="custom-toc-title">{title}</h3>
+        <wa-badge variant="success" size="small">{items.length}</wa-badge>
+      </div>
+      {collapsible && (
+        <wa-button class="custom-toggle" appearance="plain" size="small">
+          <wa-icon name="chevron-down" class="custom-expand-icon"></wa-icon>
+          <wa-icon name="chevron-up" class="custom-collapse-icon" style="display: none;"></wa-icon>
+        </wa-button>
+      )}
+    </div>
+
+    <div class="custom-progress-container">
+      <div class="custom-progress-bar">
+        <div class="custom-progress-fill"></div>
+      </div>
+      <span class="custom-progress-text">0% read</span>
+    </div>
+
+    <div class="custom-toc-content">
+      {items.length > 0 ? (
+        <ul class="custom-toc-list">
+          {items.map((item, index) => (
+            <li class={`custom-toc-item custom-level-${item.level}`}>
+              <a 
+                href={item.href} 
+                class="custom-toc-link"
+                data-target={item.id || item.href.slice(1)}
+              >
+                <div class="custom-link-content">
+                  {showNumbers && (
+                    <span class="custom-item-number">{index + 1}</span>
+                  )}
+                  <span class="custom-item-title">{item.title}</span>
+                </div>
+                <div class="custom-level-indicator">
+                  {Array.from({ length: item.level - 1 }, () => (
+                    <div class="custom-level-dot"></div>
+                  ))}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="custom-empty-state">
+          <wa-icon name="document" variant="regular" class="custom-empty-icon"></wa-icon>
+          <p class="custom-empty-text">No headings found</p>
+        </div>
+      )}
+    </div>
+  </wa-card>
+</aside>
+
+<style>
+  .custom-table-of-contents {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .custom-table-of-contents.custom-sticky {
+    position: sticky;
+    top: var(--wa-space-l);
+    height: fit-content;
+    max-height: calc(100vh - var(--wa-space-xl));
+  }
+
+  .custom-toc-card {
+    --wa-card-padding: 0;
+    border: 2px solid var(--wa-color-success-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: linear-gradient(145deg, var(--wa-color-surface-default) 0%, var(--wa-color-success-fill-quiet) 100%);
+  }
+
+  .custom-toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--wa-space-m);
+    background: var(--wa-color-success-fill-quiet);
+    border-bottom: 1px solid var(--wa-color-success-border);
+  }
+
+  .custom-header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  .custom-toc-icon {
+    color: var(--wa-color-success-fill-loud);
+  }
+
+  .custom-toc-title {
+    font-size: var(--wa-font-size-m);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-success-on-quiet);
+    margin: 0;
+  }
+
+  .custom-toggle {
+    color: var(--wa-color-success-on-quiet);
+  }
+
+  .custom-progress-container {
+    padding: var(--wa-space-s) var(--wa-space-m);
+    background: var(--wa-color-surface-lowered);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+  }
+
+  .custom-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--wa-color-neutral-fill-quiet);
+    border-radius: var(--wa-border-radius-s);
+    overflow: hidden;
+    margin-bottom: var(--wa-space-xs);
+  }
+
+  .custom-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--wa-color-success-fill-loud) 0%, var(--wa-color-brand-fill-loud) 100%);
+    transition: width var(--wa-transition-slow);
+  }
+
+  .custom-progress-text {
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-text-quiet);
+    font-weight: var(--wa-font-weight-medium);
+  }
+
+  .custom-toc-content {
+    padding: var(--wa-space-s);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .custom-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--wa-space-2xs);
+  }
+
+  .custom-toc-item {
+    margin: 0;
+  }
+
+  .custom-toc-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    border-radius: var(--wa-border-radius-s);
+    transition: all var(--wa-transition-fast);
+    border: 1px solid transparent;
+    background: var(--wa-color-surface-default);
+  }
+
+  .custom-toc-link:hover {
+    background: var(--wa-color-success-fill-quiet);
+    border-color: var(--wa-color-success-border);
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-toc-link.custom-active {
+    background: var(--wa-color-success-fill-loud);
+    color: var(--wa-color-success-on-loud);
+    font-weight: var(--wa-font-weight-semibold);
+    border-color: var(--wa-color-success-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .custom-link-content {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    flex: 1;
+  }
+
+  .custom-item-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: var(--wa-color-success-fill-quiet);
+    color: var(--wa-color-success-on-quiet);
+    border-radius: 50%;
+    font-size: var(--wa-font-size-xs);
+    font-weight: var(--wa-font-weight-bold);
+    flex-shrink: 0;
+  }
+
+  .custom-item-title {
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-tight);
+  }
+
+  .custom-level-indicator {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .custom-level-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--wa-color-success-fill-normal);
+    border-radius: 50%;
+  }
+
+  /* Level-specific styling */
+  .custom-level-2 .custom-toc-link {
+    padding-left: var(--wa-space-s);
+  }
+
+  .custom-level-3 .custom-toc-link {
+    padding-left: var(--wa-space-m);
+    font-size: var(--wa-font-size-xs);
+  }
+
+  .custom-level-4 .custom-toc-link {
+    padding-left: var(--wa-space-l);
+    font-size: var(--wa-font-size-xs);
+    opacity: 0.8;
+  }
+
+  .custom-empty-state {
+    text-align: center;
+    padding: var(--wa-space-l);
+    color: var(--wa-color-text-quiet);
+  }
+
+  .custom-empty-icon {
+    font-size: var(--wa-font-size-xl);
+    margin-bottom: var(--wa-space-s);
+    opacity: 0.5;
+  }
+
+  .custom-empty-text {
+    margin: 0;
+    font-size: var(--wa-font-size-s);
+  }
+
+  /* Custom scrollbar */
+  .custom-toc-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-toc-content::-webkit-scrollbar-track {
+    background: var(--wa-color-surface-default);
+  }
+
+  .custom-toc-content::-webkit-scrollbar-thumb {
+    background: var(--wa-color-success-fill-normal);
+    border-radius: var(--wa-border-radius-s);
+  }
+
+  .custom-toc-content::-webkit-scrollbar-thumb:hover {
+    background: var(--wa-color-success-fill-loud);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .custom-table-of-contents {
+      max-width: 100%;
+    }
+    
+    .custom-toc-content {
+      max-height: 40vh;
+    }
+  }
+
+  /* Focus styles */
+  .custom-toc-link:focus-visible {
+    outline: 2px solid var(--wa-color-success-fill-loud);
+    outline-offset: 2px;
+  }
+
+  .custom-toggle:focus-visible {
+    outline: 2px solid var(--wa-color-success-fill-loud);
+    outline-offset: 2px;
+  }
+
+  /* Animation for items */
+  .custom-toc-item {
+    animation: slideInRight 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  .custom-toc-item:nth-child(1) { animation-delay: 0.1s; }
+  .custom-toc-item:nth-child(2) { animation-delay: 0.2s; }
+  .custom-toc-item:nth-child(3) { animation-delay: 0.3s; }
+  .custom-toc-item:nth-child(4) { animation-delay: 0.4s; }
+  .custom-toc-item:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes slideInRight {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .custom-toc-link,
+    .custom-toc-item,
+    .custom-progress-fill {
+      transition: none;
+      animation: none;
+    }
+    
+    .custom-toc-item {
+      opacity: 1;
+      transform: none;
+    }
+    
+    .custom-toc-link:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Import required Web Awesome components
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+  import '@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>

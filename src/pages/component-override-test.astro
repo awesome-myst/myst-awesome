@@ -1,0 +1,409 @@
+---
+/**
+ * Component Override Test Page
+ * This page demonstrates how to use custom components to override the default theme components
+ *
+ * Features demonstrated:
+ * - Custom NavigationMenu with gradient background and animations
+ * - Custom TableOfContents with progress tracking and card design
+ * - Side-by-side comparison with default components
+ */
+import DocsLayout from '../layouts/DocsLayout.astro';
+import NavigationMenu from '../components/NavigationMenu.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+// Sample navigation data
+const navItems = [
+  {
+    title: "Component Overrides",
+    icon: "puzzle-piece",
+    children: [
+      { title: "Overview", href: "/component-override-test#overview", current: true },
+      { title: "Navigation Menu", href: "/component-override-test#navigation-menu" },
+      { title: "Table of Contents", href: "/component-override-test#table-of-contents" },
+      { title: "Theme Controls", href: "/component-override-test#theme-controls" }
+    ]
+  },
+  {
+    title: "Examples",
+    icon: "code",
+    children: [
+      { title: "Default Components", href: "/component-override-test#default-components" },
+      { title: "Custom Components", href: "/component-override-test#custom-components", badge: "New", badgeVariant: "success" },
+      { title: "Mixed Usage", href: "/component-override-test#mixed-usage" }
+    ]
+  },
+  {
+    title: "Development",
+    icon: "tools",
+    children: [
+      { title: "Creating Overrides", href: "/component-override-test#creating-overrides" },
+      { title: "Best Practices", href: "/component-override-test#best-practices" },
+      { title: "Testing", href: "/component-override-test#testing" }
+    ]
+  }
+];
+
+// Sample table of contents
+const tocItems = [
+  { level: 2, title: "Overview", href: "#overview", id: "overview" },
+  { level: 2, title: "How It Works", href: "#how-it-works", id: "how-it-works" },
+  { level: 3, title: "Component Resolvers", href: "#component-resolvers", id: "component-resolvers" },
+  { level: 3, title: "Custom Components", href: "#custom-components", id: "custom-components" },
+  { level: 2, title: "Navigation Menu Override", href: "#navigation-menu", id: "navigation-menu" },
+  { level: 3, title: "Features", href: "#nav-features", id: "nav-features" },
+  { level: 3, title: "Styling", href: "#nav-styling", id: "nav-styling" },
+  { level: 2, title: "Table of Contents Override", href: "#table-of-contents", id: "table-of-contents" },
+  { level: 3, title: "Progress Tracking", href: "#progress-tracking", id: "progress-tracking" },
+  { level: 3, title: "Card Design", href: "#card-design", id: "card-design" },
+  { level: 2, title: "Usage Examples", href: "#usage-examples", id: "usage-examples" },
+  { level: 2, title: "Best Practices", href: "#best-practices", id: "best-practices" }
+];
+---
+
+<DocsLayout
+  title="Component Override Test"
+  description="Demonstration of the MyST Awesome Theme component override system"
+  section="Testing"
+  showToc={true}
+  showBreadcrumbs={true}
+  showEditButton={false}
+>
+  <!-- Default navigation for testing -->
+  <NavigationMenu
+    slot="navigation"
+    items={navItems}
+    showSearch={true}
+    searchPlaceholder="Search test docs..."
+    collapsible={true}
+    showIcons={true}
+  />
+
+  <!-- Default table of contents for testing -->
+  <TableOfContents
+    slot="aside"
+    items={tocItems}
+    title="Test TOC"
+    sticky={true}
+    collapsible={false}
+    showNumbers={true}
+  />
+
+  <!-- Main content -->
+  <div class="test-content">
+    <h2 id="overview">Overview</h2>
+    <p>
+      This page demonstrates the MyST Awesome Theme's component override system.
+      The navigation menu on the left and table of contents on the right are using
+      custom components that override the default theme components.
+    </p>
+
+    <wa-callout variant="info">
+      <wa-icon slot="start" name="info-circle" variant="solid"></wa-icon>
+      <strong>Custom Components Active:</strong> This page is using custom NavigationMenu
+      and TableOfContents components with enhanced styling and functionality.
+    </wa-callout>
+
+    <h2 id="how-it-works">How It Works</h2>
+    <p>
+      The component override system uses resolver components that can accept either
+      the default component or a custom component via props. This allows for flexible
+      theming while maintaining compatibility with existing layouts.
+    </p>
+
+    <h3 id="component-resolvers">Component Resolvers</h3>
+    <p>
+      Resolver components like <code>NavigationMenuResolver</code> and
+      <code>TableOfContentsResolver</code> act as wrappers that can dynamically
+      choose between default and custom components:
+    </p>
+
+    <pre><code>// Using default component
+&lt;NavigationMenuResolver items=&#123;navItems&#125; /&gt;
+
+// Using custom component
+import CustomNavigationMenu from './custom/CustomNavigationMenu.astro';
+&lt;NavigationMenuResolver component=&#123;CustomNavigationMenu&#125; items=&#123;navItems&#125; /&gt;</code></pre>
+
+    <h3 id="custom-components">Custom Components</h3>
+    <p>
+      Custom components implement the same interface as the default components
+      but can provide completely different styling and functionality. They receive
+      the same props and are expected to render the same content structure.
+    </p>
+
+    <h2 id="navigation-menu">Navigation Menu Override</h2>
+    <p>
+      The custom navigation menu used on this page features several enhancements
+      over the default component:
+    </p>
+
+    <h3 id="nav-features">Features</h3>
+    <ul>
+      <li><strong>Gradient Background:</strong> A beautiful gradient from brand to success colors</li>
+      <li><strong>Enhanced Icons:</strong> Solid icons throughout for better visual impact</li>
+      <li><strong>Animated Interactions:</strong> Smooth hover animations and transforms</li>
+      <li><strong>Custom Header:</strong> Branded header with sparkles icon</li>
+      <li><strong>Footer Indicator:</strong> Shows when custom theme is active</li>
+      <li><strong>Glassmorphism Effects:</strong> Backdrop blur and transparency effects</li>
+    </ul>
+
+    <h3 id="nav-styling">Styling</h3>
+    <p>
+      The custom navigation uses CSS custom properties from Web Awesome while adding
+      its own design system on top. Key styling features include:
+    </p>
+
+    <wa-tab-group>
+      <wa-tab panel="colors">Colors</wa-tab>
+      <wa-tab panel="layout">Layout</wa-tab>
+      <wa-tab panel="animations">Animations</wa-tab>
+
+      <wa-tab-panel name="colors">
+        <ul>
+          <li>Linear gradients for backgrounds</li>
+          <li>Brand and success color combinations</li>
+          <li>Semi-transparent overlays</li>
+          <li>High contrast for accessibility</li>
+        </ul>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="layout">
+        <ul>
+          <li>Card-based design with borders</li>
+          <li>Flexible spacing with CSS Grid</li>
+          <li>Responsive breakpoints</li>
+          <li>Proper focus management</li>
+        </ul>
+      </wa-tab-panel>
+
+      <wa-tab-panel name="animations">
+        <ul>
+          <li>Staggered fade-in animations</li>
+          <li>Hover transform effects</li>
+          <li>Smooth color transitions</li>
+          <li>Reduced motion support</li>
+        </ul>
+      </wa-tab-panel>
+    </wa-tab-group>
+
+    <h2 id="table-of-contents">Table of Contents Override</h2>
+    <p>
+      The custom table of contents on the right side of this page demonstrates
+      advanced features not available in the default component:
+    </p>
+
+    <h3 id="progress-tracking">Progress Tracking</h3>
+    <p>
+      The custom TOC includes a reading progress indicator that shows how much
+      of the content has been scrolled through. This provides users with a
+      visual indication of their progress through the document.
+    </p>
+
+    <h3 id="card-design">Card Design</h3>
+    <p>
+      Unlike the default flat design, the custom TOC uses a card-based layout
+      with shadows, borders, and a gradient background. Features include:
+    </p>
+
+    <ul>
+      <li><strong>Card Container:</strong> Uses Web Awesome's card component</li>
+      <li><strong>Progress Bar:</strong> Visual reading progress indicator</li>
+      <li><strong>Level Indicators:</strong> Dots showing heading hierarchy</li>
+      <li><strong>Numbered Items:</strong> Optional numbering for TOC items</li>
+      <li><strong>Animated Entrance:</strong> Items slide in with staggered timing</li>
+    </ul>
+
+    <h2 id="usage-examples">Usage Examples</h2>
+    <p>Here are some examples of how to use the component override system:</p>
+
+    <h3>Direct Import Method</h3>
+    <pre><code>---
+import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
+import CustomNavigationMenu from './custom/CustomNavigationMenu.astro';
+---
+
+&lt;DocsLayout&gt;
+  &lt;CustomNavigationMenu
+    slot="navigation"
+    items=&#123;navItems&#125;
+  /&gt;
+&lt;/DocsLayout&gt;</code></pre>
+
+    <h3>Resolver Method (Future Enhancement)</h3>
+    <pre><code>---
+// Use custom navigation but default TOC
+import CustomNavigationMenu from './custom/CustomNavigationMenu.astro';
+---
+
+&lt;DocsLayout&gt;
+  &lt;NavigationMenuResolver
+    slot="navigation"
+    component=&#123;CustomNavigationMenu&#125;
+    items=&#123;navItems&#125;
+  /&gt;
+  &lt;TableOfContentsResolver
+    slot="aside"
+    items=&#123;tocItems&#125;
+  /&gt;
+&lt;/DocsLayout&gt;</code></pre>
+
+    <h2 id="best-practices">Best Practices</h2>
+    <p>When creating custom components for the override system:</p>
+
+    <wa-callout variant="success">
+      <wa-icon slot="start" name="check-circle" variant="solid"></wa-icon>
+      <strong>Interface Compatibility:</strong> Ensure your custom components accept
+      the same props as the default components they're replacing.
+    </wa-callout>
+
+    <wa-callout variant="warning">
+      <wa-icon slot="start" name="exclamation-triangle" variant="solid"></wa-icon>
+      <strong>Web Awesome Dependencies:</strong> Remember to import any Web Awesome
+      components your custom components use in their script blocks.
+    </wa-callout>
+
+    <wa-callout variant="info">
+      <wa-icon slot="start" name="lightbulb" variant="solid"></wa-icon>
+      <strong>Accessibility:</strong> Maintain the same accessibility features as
+      the default components, including ARIA attributes and keyboard navigation.
+    </wa-callout>
+
+    <div class="feature-showcase">
+      <h3>Component Override Benefits</h3>
+      <div class="benefit-grid">
+        <wa-card>
+          <div slot="header">
+            <wa-icon name="palette" variant="solid"></wa-icon>
+            <strong>Custom Styling</strong>
+          </div>
+          <p>Create completely custom designs while maintaining the same functionality.</p>
+        </wa-card>
+
+        <wa-card>
+          <div slot="header">
+            <wa-icon name="code" variant="solid"></wa-icon>
+            <strong>Enhanced Features</strong>
+          </div>
+          <p>Add new functionality and interactions beyond the default components.</p>
+        </wa-card>
+
+        <wa-card>
+          <div slot="header">
+            <wa-icon name="puzzle-piece" variant="solid"></wa-icon>
+            <strong>Backward Compatible</strong>
+          </div>
+          <p>Existing layouts continue to work without modifications.</p>
+        </wa-card>
+
+        <wa-card>
+          <div slot="header">
+            <wa-icon name="rocket" variant="solid"></wa-icon>
+            <strong>Performance</strong>
+          </div>
+          <p>Only load the components and styles you actually use.</p>
+        </wa-card>
+      </div>
+    </div>
+  </div>
+</DocsLayout>
+
+<script>
+  // Import Web Awesome components used in this page
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+  import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
+  import '@awesome.me/webawesome/dist/components/tab/tab.js';
+  import '@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+
+  // Demo progress tracking for custom TOC
+  function updateProgress() {
+    const progressFill = document.querySelector('.custom-progress-fill') as HTMLElement;
+    const progressText = document.querySelector('.custom-progress-text') as HTMLElement;
+
+    if (!progressFill || !progressText) return;
+
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+
+    progressFill.style.width = `${Math.min(scrollPercent, 100)}%`;
+    progressText.textContent = `${Math.min(scrollPercent, 100)}% read`;
+  }
+
+  // Update progress on scroll
+  window.addEventListener('scroll', updateProgress);
+
+  // Initial progress update
+  updateProgress();
+
+  // Active TOC link tracking
+  function updateActiveTocLink() {
+    const tocLinks = document.querySelectorAll('.custom-toc-link') as NodeListOf<HTMLElement>;
+    const headings = document.querySelectorAll('h2, h3, h4, h5, h6');
+
+    let current = '';
+
+    headings.forEach(heading => {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 100) {
+        current = heading.id;
+      }
+    });
+
+    tocLinks.forEach(link => {
+      link.classList.remove('custom-active');
+      if (link.dataset.target === current) {
+        link.classList.add('custom-active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveTocLink);
+  updateActiveTocLink();
+</script>
+
+<style>
+  .test-content {
+    max-width: none; /* Override the article max-width for this test */
+  }
+
+  .feature-showcase {
+    margin: var(--wa-space-xl) 0;
+    padding: var(--wa-space-l);
+    background-color: var(--wa-color-surface-lowered);
+    border-radius: var(--wa-border-radius-l);
+    border: 1px solid var(--wa-color-surface-border);
+  }
+
+  .feature-showcase h3 {
+    margin: 0 0 var(--wa-space-l) 0;
+    text-align: center;
+    color: var(--wa-color-text-normal);
+  }
+
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--wa-space-l);
+  }
+
+  .benefit-grid wa-card {
+    height: 100%;
+  }
+
+  .benefit-grid wa-card [slot="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

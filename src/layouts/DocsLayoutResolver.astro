@@ -1,0 +1,51 @@
+---
+/**
+ * Configurable DocsLayout component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default layout):
+ *    <DocsLayoutResolver title="My Docs" {...props}>
+ *      <slot />
+ *    </DocsLayoutResolver>
+ * 
+ * 2. With custom layout:
+ *    import CustomDocsLayout from './custom/MyDocsLayout.astro';
+ *    <DocsLayoutResolver component={CustomDocsLayout} title="My Docs" {...props}>
+ *      <slot />
+ *    </DocsLayoutResolver>
+ */
+import DefaultDocsLayout from '../layouts/DocsLayout.astro';
+
+interface Props {
+  component?: any;
+  title?: string;
+  description?: string;
+  theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  colorScheme?: 'light' | 'dark' | 'auto';
+  showToc?: boolean;
+  showBreadcrumbs?: boolean;
+  showEditButton?: boolean;
+  editUrl?: string;
+  lastModified?: Date;
+  author?: string;
+  section?: string;
+  nextPage?: { title: string; href: string };
+  prevPage?: { title: string; href: string };
+}
+
+const { component: CustomComponent, ...layoutProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...layoutProps}>
+    <slot name="navigation" slot="navigation" />
+    <slot name="aside" slot="aside" />
+    <slot />
+  </CustomComponent>
+) : (
+  <DefaultDocsLayout {...layoutProps}>
+    <slot name="navigation" slot="navigation" />
+    <slot name="aside" slot="aside" />
+    <slot />
+  </DefaultDocsLayout>
+)}

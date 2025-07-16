@@ -8,6 +8,7 @@ export default defineConfig({
   },
   reporter: "html",
   use: {
+    baseURL: "http://localhost:4321",
     actionTimeout: 0,
     trace: "on-first-retry",
   },
@@ -26,8 +27,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "cd ../docs && deno task dev",
-    url: "http://localhost:3100",
+    command: "deno task dev",
+    url: "http://localhost:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

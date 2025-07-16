@@ -1,0 +1,40 @@
+---
+/**
+ * Configurable ThemeControls component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <ThemeControlsResolver />
+ * 
+ * 2. With custom component:
+ *    import CustomControls from './custom/MyThemeControls.astro';
+ *    <ThemeControlsResolver component={CustomControls} />
+ */
+import DefaultThemeControls from './ThemeControls.astro';
+
+interface Props {
+  component?: any;
+  showThemeSelector?: boolean;
+  showColorSchemeSelector?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  appearance?: 'filled' | 'outlined' | 'plain';
+  currentTheme?: string;
+  currentColorScheme?: string;
+}
+
+const { component: CustomComponent, ...controlsProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...controlsProps} />
+) : (
+  <DefaultThemeControls {...controlsProps} />
+)}
+
+<script>
+  // Import Web Awesome components for ThemeControls
+  import '@awesome.me/webawesome/dist/components/select/select.js';
+  import '@awesome.me/webawesome/dist/components/option/option.js';
+  import '@awesome.me/webawesome/dist/components/divider/divider.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>

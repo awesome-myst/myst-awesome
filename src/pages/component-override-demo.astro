@@ -1,0 +1,58 @@
+---
+/**
+ * Component Override Demo
+ * Simple demonstration of component override capabilities
+ */
+import DocsLayout from '../layouts/DocsLayout.astro';
+import CustomNavigationMenu from '../custom/CustomNavigationMenu.astro';
+import CustomTableOfContents from '../custom/CustomTableOfContents.astro';
+
+// Simple test data
+const navItems = [
+  {
+    title: "Test Section",
+    icon: "folder",
+    children: [
+      { title: "Overview", href: "/component-override-demo#overview", current: true },
+      { title: "Examples", href: "/component-override-demo#examples" }
+    ]
+  }
+];
+
+const tocItems = [
+  { level: 2, title: "Overview", href: "#overview", id: "overview" },
+  { level: 2, title: "Custom Components", href: "#custom-components", id: "custom-components" },
+  { level: 2, title: "Examples", href: "#examples", id: "examples" }
+];
+---
+
+<DocsLayout title="Component Override Demo" description="Testing custom components">
+  <!-- Custom navigation -->
+  <CustomNavigationMenu 
+    slot="navigation" 
+    items={navItems}
+    showSearch={false}
+    showIcons={true}
+  />
+
+  <!-- Custom table of contents -->
+  <CustomTableOfContents 
+    slot="aside"
+    items={tocItems}
+    title="Demo TOC"
+    sticky={true}
+    showNumbers={true}
+  />
+
+  <!-- Main content -->
+  <div>
+    <h2 id="overview">Overview</h2>
+    <p>This page demonstrates custom component overrides in action.</p>
+
+    <h2 id="custom-components">Custom Components</h2>
+    <p>The navigation and table of contents on this page are using custom components.</p>
+
+    <h2 id="examples">Examples</h2>
+    <p>You can see the custom styling and enhanced features in the sidebar components.</p>
+  </div>
+</DocsLayout>

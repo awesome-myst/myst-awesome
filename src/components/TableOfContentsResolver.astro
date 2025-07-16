@@ -1,0 +1,37 @@
+---
+/**
+ * Configurable TableOfContents component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <TableOfContentsResolver items={tocItems} />
+ * 
+ * 2. With custom component:
+ *    import CustomToc from './custom/MyTableOfContents.astro';
+ *    <TableOfContentsResolver component={CustomToc} items={tocItems} />
+ */
+import DefaultTableOfContents from './TableOfContents.astro';
+
+interface Props {
+  component?: any;
+  items: any[];
+  title?: string;
+  sticky?: boolean;
+  collapsible?: boolean;
+  showNumbers?: boolean;
+}
+
+const { component: CustomComponent, ...tocProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...tocProps} />
+) : (
+  <DefaultTableOfContents {...tocProps} />
+)}
+
+<script>
+  // Import Web Awesome components for TableOfContents
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>

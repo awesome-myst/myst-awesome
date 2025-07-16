@@ -1,0 +1,320 @@
+---
+/**
+ * Custom Navigation Menu Example
+ * This demonstrates how to create a custom component that overrides the default NavigationMenu
+ * 
+ * Features demonstrated:
+ * - Custom styling and layout
+ * - Different icon usage
+ * - Simplified structure
+ * - Custom colors and spacing
+ */
+
+interface NavItem {
+  title: string;
+  href?: string;
+  icon?: string;
+  iconFamily?: 'regular' | 'solid' | 'brands';
+  current?: boolean;
+  children?: NavItem[];
+  badge?: string;
+  badgeVariant?: 'brand' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+interface Props {
+  items: NavItem[];
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  collapsible?: boolean;
+  showIcons?: boolean;
+}
+
+const {
+  items = [],
+  showSearch = true,
+  searchPlaceholder = "Search...",
+  collapsible = true,
+  showIcons = true
+} = Astro.props;
+---
+
+<nav class="custom-navigation-menu">
+  <div class="custom-nav-header">
+    <h2 class="custom-nav-title">
+      <wa-icon name="sparkles" variant="solid"></wa-icon>
+      Custom Navigation
+    </h2>
+  </div>
+
+  {showSearch && (
+    <div class="custom-search">
+      <wa-input 
+        class="custom-search-input" 
+        placeholder={searchPlaceholder} 
+        size="small"
+        appearance="outlined"
+      >
+        <wa-icon slot="start" name="magnifying-glass" variant="solid"></wa-icon>
+      </wa-input>
+    </div>
+  )}
+  
+  <div class="custom-nav-content">
+    {items.map(section => (
+      <div class="custom-nav-section">
+        {section.title && (
+          <div class="custom-section-header">
+            <h3 class="custom-section-title">
+              {showIcons && section.icon && (
+                <wa-icon name={section.icon} variant="solid" class="custom-section-icon"></wa-icon>
+              )}
+              {section.title}
+              {section.badge && (
+                <wa-badge variant={section.badgeVariant || 'brand'} size="small" class="custom-badge">
+                  {section.badge}
+                </wa-badge>
+              )}
+            </h3>
+          </div>
+        )}
+        
+        {section.children && section.children.length > 0 && (
+          <ul class="custom-nav-list">
+            {section.children.map(item => (
+              <li class="custom-nav-item">
+                <a 
+                  href={item.href} 
+                  class={`custom-nav-link ${item.current ? 'custom-current' : ''}`}
+                  aria-current={item.current ? 'page' : undefined}
+                >
+                  <div class="custom-link-content">
+                    {showIcons && item.icon && (
+                      <wa-icon name={item.icon} variant="regular" class="custom-item-icon"></wa-icon>
+                    )}
+                    <span class="custom-link-text">{item.title}</span>
+                  </div>
+                  {item.badge && (
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge">
+                      {item.badge}
+                    </wa-badge>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    ))}
+  </div>
+  
+  <div class="custom-nav-footer">
+    <div class="custom-footer-content">
+      <wa-icon name="magic-wand" variant="solid"></wa-icon>
+      <span>Custom Theme Active</span>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .custom-navigation-menu {
+    width: 100%;
+    background: linear-gradient(135deg, var(--wa-color-brand-fill-quiet) 0%, var(--wa-color-success-fill-quiet) 100%);
+    border-radius: var(--wa-border-radius-l);
+    padding: var(--wa-space-m);
+    border: 2px solid var(--wa-color-brand-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-nav-header {
+    margin-bottom: var(--wa-space-l);
+    padding-bottom: var(--wa-space-m);
+    border-bottom: 2px solid var(--wa-color-brand-border);
+  }
+
+  .custom-nav-title {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    font-size: var(--wa-font-size-l);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-brand-on-quiet);
+    margin: 0;
+  }
+
+  .custom-search {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .custom-search-input {
+    width: 100%;
+  }
+
+  .custom-nav-content {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .custom-nav-section {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .custom-section-header {
+    margin-bottom: var(--wa-space-s);
+  }
+
+  .custom-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    font-size: var(--wa-font-size-m);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-brand-on-quiet);
+    margin: 0;
+  }
+
+  .custom-section-icon {
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .custom-badge {
+    margin-left: auto;
+  }
+
+  .custom-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--wa-space-xs);
+  }
+
+  .custom-nav-item {
+    margin: 0;
+  }
+
+  .custom-nav-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--wa-space-s);
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    border-radius: var(--wa-border-radius-m);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid transparent;
+    transition: all var(--wa-transition-fast);
+    backdrop-filter: blur(10px);
+  }
+
+  .custom-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--wa-color-brand-border);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-nav-link.custom-current {
+    background-color: var(--wa-color-brand-fill-loud);
+    color: var(--wa-color-brand-on-loud);
+    font-weight: var(--wa-font-weight-semibold);
+    border-color: var(--wa-color-brand-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .custom-link-content {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  .custom-item-icon {
+    flex-shrink: 0;
+  }
+
+  .custom-link-text {
+    font-size: var(--wa-font-size-s);
+    line-height: var(--wa-line-height-normal);
+  }
+
+  .custom-item-badge {
+    flex-shrink: 0;
+  }
+
+  .custom-nav-footer {
+    padding-top: var(--wa-space-m);
+    border-top: 2px solid var(--wa-color-brand-border);
+  }
+
+  .custom-footer-content {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-medium);
+    color: var(--wa-color-brand-on-quiet);
+    justify-content: center;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .custom-navigation-menu {
+      padding: var(--wa-space-s);
+      border-radius: var(--wa-border-radius-m);
+    }
+    
+    .custom-nav-title {
+      font-size: var(--wa-font-size-m);
+    }
+    
+    .custom-nav-link {
+      padding: var(--wa-space-xs);
+    }
+  }
+
+  /* Focus styles */
+  .custom-nav-link:focus-visible {
+    outline: 2px solid var(--wa-color-brand-fill-loud);
+    outline-offset: 2px;
+  }
+
+  /* Animation for appearing items */
+  .custom-nav-item {
+    animation: fadeInUp 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .custom-nav-item:nth-child(1) { animation-delay: 0.1s; }
+  .custom-nav-item:nth-child(2) { animation-delay: 0.2s; }
+  .custom-nav-item:nth-child(3) { animation-delay: 0.3s; }
+  .custom-nav-item:nth-child(4) { animation-delay: 0.4s; }
+  .custom-nav-item:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .custom-nav-link,
+    .custom-nav-item {
+      transition: none;
+      animation: none;
+    }
+    
+    .custom-nav-item {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Import required Web Awesome components
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/badge/badge.js';
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+</script>
