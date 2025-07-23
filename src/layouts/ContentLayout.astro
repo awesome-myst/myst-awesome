@@ -21,7 +21,7 @@ interface Props {
   heroImageAlt?: string;
 }
 
-const { 
+const {
   title,
   description,
   theme = 'default',
@@ -54,8 +54,8 @@ const tocItems = showTableOfContents ? [
 ] : [];
 ---
 
-<BasePage 
-  title={title} 
+<BasePage
+  title={title}
   description={description}
   theme={theme}
   colorScheme={colorScheme}
@@ -70,14 +70,14 @@ const tocItems = showTableOfContents ? [
         <span class="brand-text">MyST Blog</span>
       </a>
     </div>
-    
+
     <nav class="header-nav">
       <a href="/blog" class="nav-link">Blog</a>
       <a href="/docs" class="nav-link">Docs</a>
       <a href="/about" class="nav-link">About</a>
       <a href="/contact" class="nav-link">Contact</a>
     </nav>
-    
+
     <div class="header-controls">
       <!-- Color scheme toggle -->
       <wa-button class="theme-toggle" appearance="plain" size="small">
@@ -101,13 +101,13 @@ const tocItems = showTableOfContents ? [
       {category && (
         <wa-badge variant="brand" class="category-badge">{category}</wa-badge>
       )}
-      
+
       <h1 class="article-title">{title}</h1>
-      
+
       {description && (
         <p class="article-description">{description}</p>
       )}
-      
+
       <div class="article-meta">
         {showAuthor && author && (
           <div class="meta-item author">
@@ -115,27 +115,27 @@ const tocItems = showTableOfContents ? [
             <span class="author-name">{author}</span>
           </div>
         )}
-        
+
         {showDate && publishDate && (
           <div class="meta-item date">
             <wa-icon name="calendar" variant="regular"></wa-icon>
             <time datetime={publishDate.toISOString()}>
-              {publishDate.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              {publishDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}
             </time>
           </div>
         )}
-        
+
         {showReadingTime && (
           <div class="meta-item reading-time">
             <wa-icon name="clock" variant="regular"></wa-icon>
             <span>{estimatedReadingTime}</span>
           </div>
         )}
-        
+
         {lastModified && (
           <div class="meta-item updated">
             <wa-icon name="pencil" variant="regular"></wa-icon>
@@ -145,7 +145,7 @@ const tocItems = showTableOfContents ? [
           </div>
         )}
       </div>
-      
+
       {showTags && tags.length > 0 && (
         <div class="article-tags">
           {tags.map(tag => (
@@ -186,7 +186,7 @@ const tocItems = showTableOfContents ? [
           </wa-button>
         </div>
       </div>
-      
+
       {showTags && tags.length > 0 && (
         <div class="tags-section">
           <h3 class="tags-title">Tags</h3>
@@ -208,7 +208,7 @@ const tocItems = showTableOfContents ? [
       <div class="toc-header">
         <h3 class="toc-title">Table of Contents</h3>
       </div>
-      
+
       <nav class="toc-nav">
         <ul class="toc-list">
           {tocItems.map(item => (
@@ -228,7 +228,7 @@ const tocItems = showTableOfContents ? [
         <h4>MyST Blog</h4>
         <p>Exploring the intersection of technology, design, and creativity through thoughtful writing and practical insights.</p>
       </div>
-      
+
       <div class="footer-section">
         <h4>Categories</h4>
         <ul>
@@ -238,7 +238,7 @@ const tocItems = showTableOfContents ? [
           <li><a href="/blog/thoughts">Thoughts</a></li>
         </ul>
       </div>
-      
+
       <div class="footer-section">
         <h4>Connect</h4>
         <div class="social-links">
@@ -256,7 +256,7 @@ const tocItems = showTableOfContents ? [
           </a>
         </div>
       </div>
-      
+
       <div class="footer-section">
         <h4>Subscribe</h4>
         <p>Get notified about new articles and updates.</p>
@@ -268,7 +268,7 @@ const tocItems = showTableOfContents ? [
         </div>
       </div>
     </div>
-    
+
     <div class="footer-bottom">
       <p>&copy; 2024 MyST Blog. All rights reserved.</p>
       <div class="footer-links">
@@ -283,7 +283,7 @@ const tocItems = showTableOfContents ? [
 <script>
   // Theme toggle functionality
   const themeToggle = document.querySelector('.theme-toggle');
-  
+
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const currentScheme = localStorage.getItem('color-scheme') || 'auto';
@@ -295,17 +295,17 @@ const tocItems = showTableOfContents ? [
   // Table of contents active link tracking
   const tocLinks = document.querySelectorAll('.toc-link');
   const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-  
+
   function updateActiveTocLink() {
     let current = '';
-    
+
     headings.forEach(heading => {
       const rect = heading.getBoundingClientRect();
       if (rect.top <= 100) {
         current = heading.id;
       }
     });
-    
+
     tocLinks.forEach(link => {
       link.classList.remove('active');
       if (link.getAttribute('href') === `#${current}`) {
@@ -313,7 +313,7 @@ const tocItems = showTableOfContents ? [
       }
     });
   }
-  
+
   if (tocLinks.length > 0) {
     window.addEventListener('scroll', updateActiveTocLink);
     updateActiveTocLink();
@@ -321,13 +321,13 @@ const tocItems = showTableOfContents ? [
 
   // Sharing functionality
   const shareButtons = document.querySelectorAll('.share-button');
-  
+
   shareButtons.forEach(button => {
     button.addEventListener('click', (e) => {
       const buttonText = button.textContent.trim();
       const url = window.location.href;
       const title = document.title;
-      
+
       switch (buttonText) {
         case 'Twitter':
           window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
@@ -356,7 +356,7 @@ const tocItems = showTableOfContents ? [
   if (newsletterForm) {
     const input = newsletterForm.querySelector('wa-input');
     const button = newsletterForm.querySelector('wa-button');
-    
+
     button.addEventListener('click', () => {
       const email = input.value;
       if (email) {
@@ -372,7 +372,7 @@ const tocItems = showTableOfContents ? [
 
 <style>
   /* Content layout specific styles */
-  
+
   /* Header */
   .content-header {
     display: flex;
@@ -524,6 +524,15 @@ const tocItems = showTableOfContents ? [
     height: auto;
     border-radius: var(--wa-border-radius-m);
     margin: var(--wa-space-l) 0;
+  }
+
+  .article-tags {
+    margin-top: var(--wa-space-l);
+    margin-bottom: var(--wa-space-l);
+    display: flex;
+    justify-content: center;
+    gap: var(--wa-space-s);
+    flex-wrap: wrap;
   }
 
   /* Article footer */
@@ -745,35 +754,35 @@ const tocItems = showTableOfContents ? [
       align-items: stretch;
       gap: var(--wa-space-s);
     }
-    
+
     .header-nav {
       justify-content: center;
       flex-wrap: wrap;
     }
-    
+
     .article-title {
       font-size: var(--wa-font-size-3xl);
     }
-    
+
     .article-meta {
       flex-direction: column;
       gap: var(--wa-space-s);
     }
-    
+
     .sharing-buttons {
       flex-direction: column;
       align-items: center;
     }
-    
+
     .footer-content {
       grid-template-columns: 1fr;
     }
-    
+
     .footer-bottom {
       flex-direction: column;
       text-align: center;
     }
-    
+
     .newsletter-signup {
       flex-direction: row;
     }
