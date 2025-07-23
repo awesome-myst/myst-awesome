@@ -38,7 +38,7 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
       </wa-button>
     )}
   </div>
-  
+
   <nav class="toc-nav">
     <ul class="toc-list">
       {filteredItems.map((item, index) => (
@@ -59,15 +59,15 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
   const tocToggle = toc?.querySelector('.toc-toggle');
   const tocNav = toc?.querySelector('.toc-nav');
   const tocLinks = toc?.querySelectorAll('.toc-link');
-  
+
   // Collapsible functionality
   if (tocToggle && tocNav) {
     const collapseIcon = tocToggle.querySelector('.toc-collapse-icon');
     const expandIcon = tocToggle.querySelector('.toc-expand-icon');
-    
+
     tocToggle.addEventListener('click', () => {
       const isCollapsed = tocNav.style.display === 'none';
-      
+
       if (isCollapsed) {
         tocNav.style.display = 'block';
         collapseIcon.style.display = 'block';
@@ -79,30 +79,30 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
       }
     });
   }
-  
+
   // Active link tracking
   if (tocLinks.length > 0) {
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6[id]');
-    
+
     function updateActiveTocLink() {
       let current = '';
       const scrollPosition = window.scrollY + 100; // Offset for sticky headers
-      
+
       headings.forEach(heading => {
         const rect = heading.getBoundingClientRect();
         const elementTop = rect.top + window.scrollY;
-        
+
         if (elementTop <= scrollPosition) {
           current = heading.id;
         }
       });
-      
+
       tocLinks.forEach(link => {
         link.classList.remove('active');
         const target = link.getAttribute('data-toc-target');
         if (target === current) {
           link.classList.add('active');
-          
+
           // Scroll the active link into view within the TOC
           link.scrollIntoView({
             behavior: 'smooth',
@@ -112,7 +112,7 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
         }
       });
     }
-    
+
     // Throttled scroll handler for performance
     let ticking = false;
     function handleScroll() {
@@ -124,22 +124,22 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
         ticking = true;
       }
     }
-    
+
     window.addEventListener('scroll', handleScroll);
     updateActiveTocLink(); // Initial call
-    
+
     // Smooth scroll to sections when clicking TOC links
     tocLinks.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const target = link.getAttribute('data-toc-target');
         const element = document.getElementById(target);
-        
+
         if (element) {
           const headerOffset = 80; // Account for sticky headers
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          
+
           window.scrollTo({
             top: offsetPosition,
             behavior: 'smooth'

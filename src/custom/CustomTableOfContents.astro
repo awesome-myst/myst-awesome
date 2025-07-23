@@ -2,7 +2,7 @@
 /**
  * Custom Table of Contents Example
  * This demonstrates how to create a custom component that overrides the default TableOfContents
- * 
+ *
  * Features demonstrated:
  * - Compact card-based design
  * - Progress indicator
@@ -62,8 +62,8 @@ const {
         <ul class="custom-toc-list">
           {items.map((item, index) => (
             <li class={`custom-toc-item custom-level-${item.level}`}>
-              <a 
-                href={item.href} 
+              <a
+                href={item.href}
                 class="custom-toc-link"
                 data-target={item.id || item.href.slice(1)}
               >
@@ -312,7 +312,7 @@ const {
     .custom-table-of-contents {
       max-width: 100%;
     }
-    
+
     .custom-toc-content {
       max-height: 40vh;
     }
@@ -357,12 +357,12 @@ const {
       transition: none;
       animation: none;
     }
-    
+
     .custom-toc-item {
       opacity: 1;
       transform: none;
     }
-    
+
     .custom-toc-link:hover {
       transform: none;
     }
@@ -372,6 +372,27 @@ const {
 <script>
   // Import required Web Awesome components
   import '@awesome.me/webawesome/dist/components/card/card.js';
-  import '@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/badge/badge.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+
+  // Update scroll progress & active TOC link
+  window.addEventListener('scroll', () => {
+    const fill = document.querySelector('.custom-progress-fill');
+    const text = document.querySelector('.custom-progress-text');
+    const links = document.querySelectorAll('.custom-toc-link');
+    const scrollTop = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.floor((scrollTop / height) * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (text) text.textContent = pct + '% read';
+
+    links.forEach(link => {
+      const id = link.dataset.target;
+      const el = document.getElementById(id);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      link.classList.toggle('custom-active', r.top <= 0 && r.bottom > 0);
+    });
+  });
 </script>
