@@ -273,13 +273,13 @@ const tocItems = [
   const colorSchemeSelector = document.querySelector('.color-scheme-selector');
   
   if (themeSelector) {
-    themeSelector.addEventListener('wa-change', (e) => {
+    themeSelector.addEventListener('change', (e) => {
       window.setTheme(e.target.value);
     });
   }
   
   if (colorSchemeSelector) {
-    colorSchemeSelector.addEventListener('wa-change', (e) => {
+    colorSchemeSelector.addEventListener('change', (e) => {
       window.setColorScheme(e.target.value);
     });
   }
