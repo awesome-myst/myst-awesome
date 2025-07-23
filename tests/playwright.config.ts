@@ -6,6 +6,8 @@ export default defineConfig({
   expect: {
     timeout: 5000,
   },
+  workers: process.env.CI ? 1 : undefined,
+  fullyParallel: true,
   reporter: [["html", { open: "never" }]],
   use: {
     baseURL: "http://localhost:4321",
