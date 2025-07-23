@@ -6,7 +6,7 @@ export default defineConfig({
   expect: {
     timeout: 5000,
   },
-  reporter: "html",
+  reporter: [["html", { open: "never" }]],
   use: {
     baseURL: "http://localhost:4321",
     actionTimeout: 0,
