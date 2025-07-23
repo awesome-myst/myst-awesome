@@ -3,14 +3,46 @@ import Layout from '../layouts/Layout.astro';
 
 ---
 
-<Layout title="MyST Awesomeness Demo">
-	<h3>Heading Level 3</h3>
-	<p>Try changing the number of <code>#</code>s to change the <code>depth</code>.</p>
-	<wa-icon name="home"></wa-icon>
-	<wa-button variant="brand">Click Me</wa-button>
+<Layout title="MyST Awesome Theme Demo">
+	<main class="container">
+		<h1>MyST Awesome Theme</h1>
+		<p>
+			This is a demonstration of the MyST Awesome Theme, an <a href="https://astro.build/">Astro</a> integration
+			for <a href="https://docs.webawesome.com/">Web Awesome</a> for rendering <a href="https://mystmd.org">MyST-MD</a>.
+		</p>
+		<h2>Page Examples</h2>
+		<ul>
+			<li><a href="/blog-example">Blog Example</a> - A demonstration of a blog layout.</li>
+			<li><a href="/component-override-demo">Component Override Demo</a> - Shows how to override theme components.</li>
+			<li><a href="/docs-example">Docs Example</a> - A sample documentation page.</li>
+			<li><a href="/working-demo">Working Demo</a> - A live demo of various components.</li>
+			<li><a href="/simple-test">Simple Test</a> - A minimal test page.</li>
+		</ul>
+	</main>
 </Layout>
 
-<script>
-import "@awesome.me/webawesome/dist/components/button/button.js"
-import "@awesome.me/webawesome/dist/components/icon/icon.js"
-</script>
+<style>
+	.container {
+		max-width: 80ch;
+		margin: 0 auto;
+		padding: 2rem;
+	}
+	h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin-bottom: 1rem;
+	}
+	p {
+		margin-bottom: 2rem;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+	li {
+		margin-bottom: 1rem;
+	}
+	a {
+		font-weight: 600;
+	}
+</style>
