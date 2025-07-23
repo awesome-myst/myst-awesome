@@ -170,10 +170,10 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
     <!-- Theme and navigation scripts -->
     <script>
-      // Mobile navigation functionality
-      const drawer = document.querySelector('.mobile-nav-drawer');
-      const toggleButton = document.querySelector('.mobile-nav-toggle');
-      const pageLayout = document.querySelector('.page-layout');
+            // Mobile navigation functionality
+      const drawer = document.querySelector('.mobile-nav-drawer') as any;
+      const toggleButton = document.querySelector<HTMLElement>('.mobile-nav-toggle');
+      const pageLayout = document.querySelector('.page-layout') as HTMLElement;
 
       if (drawer && toggleButton) {
         toggleButton.addEventListener('click', () => {
@@ -193,22 +193,30 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       const mobileBreakpoint = pageLayout.getAttribute('data-mobile-breakpoint') || '768px';
       const mediaQuery = window.matchMedia(`(max-width: ${mobileBreakpoint})`);
 
-      function handleViewportChange(e) {
+      function handleViewportChange(e: MediaQueryList | MediaQueryListEvent) {
         const isMobile = e.matches;
         pageLayout.setAttribute('data-view', isMobile ? 'mobile' : 'desktop');
 
-        // Show/hide appropriate navigation
-        const desktopNav = document.querySelector('[data-view="desktop"]');
+        const desktopNav = document.querySelector<HTMLElement>('[data-view="desktop"]');
+        const aside = document.querySelector<HTMLElement>('.page-aside');
+
         if (desktopNav) {
-          desktopNav.style.display = isMobile ? 'none' : 'flex';
+          const hasCustomNav = desktopNav.querySelector('.custom-navigation-menu');
+          desktopNav.style.display = isMobile && !hasCustomNav ? 'none' : 'flex';
+        }
+        
+        if (toggleButton) {
+            const hasCustomNav = document.querySelector('.custom-navigation-menu');
+            toggleButton.style.display = isMobile && !hasCustomNav ? 'block' : 'none';
         }
 
-        if (toggleButton) {
-          toggleButton.style.display = isMobile ? 'block' : 'none';
+        if (aside) {
+            const hasCustomToc = aside.querySelector('.custom-table-of-contents');
+            aside.style.display = isMobile && !hasCustomToc ? 'none' : 'flex';
         }
       }
 
-      mediaQuery.addListener(handleViewportChange);
+      mediaQuery.addEventListener('change', handleViewportChange);
       handleViewportChange(mediaQuery);
 
       // Add fallback classes for browsers without :has() support
@@ -222,7 +230,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       }
 
       // Color scheme switching
-      function setColorScheme(scheme) {
+      function setColorScheme(scheme: 'light' | 'dark' | 'auto') {
         localStorage.setItem('color-scheme', scheme);
         const isDark = scheme === 'dark' || (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.toggle('wa-dark', isDark);
@@ -230,7 +238,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       }
 
       // Theme switching
-      function setTheme(theme) {
+      function setTheme(theme: string) {
         localStorage.setItem('theme', theme);
 
         // Remove existing theme classes
@@ -246,8 +254,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       }
 
       // Expose functions globally for theme controls
-      window.setColorScheme = setColorScheme;
-      window.setTheme = setTheme;
+      (window as any).setColorScheme = setColorScheme;
+      (window as any).setTheme = setTheme;
     </script>
   </body>
 </html>
@@ -572,18 +580,6 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     .page-body {
       grid-template-columns: 1fr;
       grid-template-areas: "main";
-    }
-
-    .page-menu {
-      display: none;
-    }
-
-    .page-aside {
-      display: none;
-    }
-
-    .mobile-nav-toggle {
-      display: block !important;
     }
 
     .page-main {

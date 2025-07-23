@@ -1,7 +1,24 @@
 ---
 /**
  * Custom Navigation Menu Example
- * This demonstrates how to create a custom component that overrides the default NavigationMenu
+ * This demonstrates how to create a custo                <a 
+                  href={item.href} 
+                  class={`custom-nav-link ${item.current ? 'custom-current' : ''}`}
+                  aria-current={item.current ? 'page' : undefined}
+                  tabindex="0"
+                >
+                  <div class="custom-link-content">
+                    {showIcons && item.icon && (
+                      <wa-icon name={item.icon} variant="regular" class="custom-item-icon"></wa-icon>
+                    )}
+                    <span class="custom-link-text">{item.title}</span>
+                  </div>
+                  {item.badge && (
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge" data-testid="nav-badge">
+                      {item.badge}
+                    </wa-badge>
+                  )}
+                </a>overrides the default NavigationMenu
  * 
  * Features demonstrated:
  * - Custom styling and layout
@@ -94,7 +111,7 @@ const {
                     <span class="custom-link-text">{item.title}</span>
                   </div>
                   {item.badge && (
-                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge">
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge" data-testid="nav-badge">
                       {item.badge}
                     </wa-badge>
                   )}

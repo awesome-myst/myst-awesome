@@ -147,7 +147,7 @@ test.describe("Component Override System", () => {
     const customNav = page.locator(".custom-navigation-menu").first();
 
     // Check for badges in navigation
-    const badges = customNav.locator("wa-badge");
+    const badges = customNav.locator('[data-testid="nav-badge"]');
     expect(await badges.count()).toBeGreaterThan(0);
 
     // Check for icons in navigation
@@ -170,9 +170,17 @@ test.describe("Component Override System", () => {
     const firstNavLink = page.locator(".custom-nav-link").first();
     await firstNavLink.focus();
 
-    // The focused element should be the link we focused
-    const focusedElement = page.locator(":focus");
-    await expect(focusedElement).toBe(firstNavLink);
+    // The focused element should be the link we focused or a descendant
+    const focusedElementHandle = await page.evaluateHandle(
+      () => document.activeElement
+    );
+    const isFocusedElementDescendantOrSelf = await firstNavLink.evaluate(
+      (node, focusedElement) =>
+        node.contains(focusedElement) || node === focusedElement,
+      focusedElementHandle
+    );
+
+    expect(isFocusedElementDescendantOrSelf).toBe(true);
   });
 
   test("should work on mobile viewports", async ({ page }) => {
