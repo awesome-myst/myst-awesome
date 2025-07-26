@@ -7,6 +7,7 @@ A modern, responsive documentation theme built with [Astro](https://astro.build)
 
 ## ✨ Features
 
+- **📝 MyST Integration**: Seamless integration with MyST Markdown
 - **🎨 Multiple Themes**: Choose from 10 built-in Web Awesome themes
 - **🌓 Dark Mode**: Automatic and manual light/dark mode switching
 - **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile
@@ -14,7 +15,6 @@ A modern, responsive documentation theme built with [Astro](https://astro.build)
 - **⚡ Fast Performance**: Optimized for speed with Astro's static generation
 - **🔍 Search Ready**: Built-in search functionality support
 - **� Component Overrides**: Customize any component with your own implementations
-- **📝 MyST Integration**: Seamless integration with MyST Markdown
 
 ## 🚀 Quick Start
 
