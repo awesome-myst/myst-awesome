@@ -20,6 +20,7 @@
     "myst-ext-tabs": "^1.0.9",
     "myst-parser": "^1.5.2",
     "myst-roles": "^1.5.2",
+    "mystmd": "^1.6.0",
     "unist-builder": "^4.0.0"
   },
   "devDependencies": {
