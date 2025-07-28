@@ -14,9 +14,11 @@ A modern, responsive documentation theme built with [Astro](https://astro.build)
 - **♿ Accessible**: WCAG 2.1 AA compliant with keyboard navigation
 - **⚡ Fast Performance**: Optimized for speed with Astro's static generation
 - **🔍 Search Ready**: Built-in search functionality support
-- **� Component Overrides**: Customize any component with your own implementations
+- **🔧 Component Overrides**: Customize any component with your own implementations
 
 ## 🚀 Quick Start
+
+This project uses **pnpm workspaces** for monorepo management.
 
 ### Installation
 
@@ -25,11 +27,30 @@ A modern, responsive documentation theme built with [Astro](https://astro.build)
 git clone https://github.com/awesome-myst/myst-awesome-theme.git
 cd myst-awesome-theme
 
-# Install dependencies (using Deno)
-deno install
+# Install dependencies (using pnpm)
+pnpm install
 
-# Start development server
-deno task dev
+# Start development server (theme)
+pnpm dev
+
+# Start documentation server (MyST content)
+pnpm dev-docs
+```
+
+### Workspace Structure
+
+```
+├── packages/
+│   └── myst-awesome-theme/     # Main theme package
+│       ├── src/                # Astro components and layouts
+│       ├── tests/              # Playwright tests
+│       └── package.json
+├── docs/                       # MyST documentation content
+│   ├── index.md
+│   ├── myst.yml
+│   └── package.json
+├── pnpm-workspace.yaml         # Workspace configuration
+└── package.json                # Root workspace package
 ```
 
 ### Basic Usage
@@ -121,35 +142,37 @@ See the [Component Override Guide](./docs/COMPONENT_OVERRIDES.md) for detailed d
 
 ## 🧞 Commands
 
+## 📚 Available Commands
+
 All commands are run from the root of the project:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `deno install`            | Install dependencies                             |
-| `deno task dev`           | Start Astro dev server at `localhost:4321`      |
-| `deno task build`         | Build production site to `./dist/`              |
-| `deno task preview`       | Preview build locally                            |
-| `deno task test`          | Run Playwright tests                             |
-| `cd docs && deno task dev`| Start MyST content server at `localhost:3100`   |
-| `deno task start-myst`    | Start headless MyST server only                 |
+| Command                    | Action                                           |
+| :------------------------- | :----------------------------------------------- |
+| `pnpm install`             | Install dependencies for all packages           |
+| `pnpm dev`                 | Start Astro dev server at `localhost:4321`      |
+| `pnpm build`               | Build production site to `./dist/`              |
+| `pnpm preview`             | Preview build locally                            |
+| `pnpm test`                | Run Playwright tests                             |
+| `pnpm dev-docs`            | Start MyST documentation development             |
+| `pnpm start-myst`          | Start headless MyST server only                 |
 
 ## 🎯 Development Workflow
 
 ### Theme Development (Astro)
 ```sh
-deno task dev              # Main dev server at :4321
-deno task build           # Production build to dist/
+pnpm dev                   # Main dev server at :4321
+pnpm build                 # Production build to dist/
 ```
 
 ### Documentation Development (MyST)
 ```sh
-cd docs && deno task dev  # MyST content server at :3100
-deno task start-myst      # Headless MyST server only
+pnpm dev-docs              # MyST content server at :3100
+pnpm start-myst            # Headless MyST server only
 ```
 
 ### Testing
 ```sh
-deno task test           # Playwright tests (requires both servers)
+pnpm test                  # Playwright tests (requires both servers)
 ```
 
 **Note**: Tests require both Astro (:4321) and MyST (:3100) servers running.
@@ -222,7 +245,7 @@ See [Copilot Instructions](./.github/copilot-instructions.md) for detailed devel
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes following the coding conventions
-4. Test your changes: `deno task test`
+4. Test your changes: `pnpm test`
 5. Commit your changes: `git commit -m 'Add amazing feature'`
 6. Push to the branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request

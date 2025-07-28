@@ -1,0 +1,29 @@
+{
+  "name": "myst-awesome-theme",
+  "type": "module",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*",
+    "./layouts/*": "./src/layouts/*",
+    "./lib/*": "./src/lib/*"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "pnpm --filter=. exec playwright test --config=tests/playwright.config.ts"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@awesome.me/webawesome": "^3.0.0-beta.3",
+    "astro": "5.12.3",
+    "@awesome-myst/myst-zod": "^0.4.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1"
+  }
+}

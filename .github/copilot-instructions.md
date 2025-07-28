@@ -4,7 +4,8 @@
 
 This is an **Astro + Web Awesome + MyST integration** that provides a modern documentation theme. Key architectural decisions:
 
-- **Dual Build System**: Astro for the theme components (`src/`) + MyST for content compilation (`docs/`)
+- **Dual Build System**: Astro for the theme components (`packages/myst-awesome-theme/src/`) + MyST for content compilation (`docs/`)
+- **pnpm Workspace**: Monorepo structure with `myst-awesome-theme` as a workspace package dependency for `myst-awesome-docs`
 - **Slot-Based Layouts**: Uses Web Awesome's page component pattern with named slots (`header`, `navigation`, `aside`, `main`)
 - **Theme System**: Web Awesome provides 10 built-in themes via CSS classes (`wa-theme-{name}`) and CSS custom properties
 - **Component Hydration**: Web Awesome components are imported in `<script>` blocks for client-side hydration
@@ -14,19 +15,21 @@ This is an **Astro + Web Awesome + MyST integration** that provides a modern doc
 ### Development Commands
 ```bash
 # Theme development (Astro)
-deno task dev              # Main dev server at :4321
-deno task build           # Production build to dist/
+pnpm dev                  # Main dev server at :4321
+pnpm build               # Production build to dist/
 
 # Documentation development (MyST)
-cd docs && deno task dev  # MyST content server at :3100
-deno task start-myst      # Headless MyST server only
+pnpm dev-docs            # MyST content server at :3100
+pnpm start-myst          # Headless MyST server only
 
 # Testing
-deno task test           # Playwright tests (requires both servers)
+pnpm test                # Playwright tests (requires both servers)
 ```
 
 ### Dual Server Setup
-Tests require **both** Astro (:4321) and MyST (:3100) servers. Playwright config automatically starts MyST server, but manually run both for development.
+Tests require **both** Astro (:4321) and MyST (:3100) servers. Playwright config automatically starts both servers for testing.
+
+## Project-Specific Patterns
 
 ## Project-Specific Patterns
 
@@ -102,16 +105,19 @@ interface Props {
 
 ## File Structure Significance
 
-- `src/layouts/` - Reusable page layouts with slot-based architecture
-- `src/components/` - Astro components wrapping Web Awesome functionality  
-- `src/pages/` - Route definitions with example implementations
-- `docs/` - MyST content and configuration (separate build system)
-- `tests/` - Playwright tests for cross-browser layout verification
+- `packages/myst-awesome-theme/src/layouts/` - Reusable page layouts with slot-based architecture
+- `packages/myst-awesome-theme/src/components/` - Astro components wrapping Web Awesome functionality  
+- `packages/myst-awesome-theme/src/pages/` - Route definitions with example implementations
+- `packages/myst-awesome-theme/tests/` - Playwright tests for cross-browser layout verification
+- `docs/` - MyST content and configuration (separate build system, workspace package)
 - `context/` - Reference implementation (Furo theme) for comparison
+- `pnpm-workspace.yaml` - Workspace configuration
+- Root `package.json` - Workspace root with aggregated commands
 
 ## Dependencies & Versions
 
+- **pnpm 9.x** as package manager with workspace support
 - **Astro 5.x** with TypeScript strict mode
 - **Web Awesome 3.x** beta for latest component features
 - **MyST 1.3.x** for content compilation
-- **Deno** as runtime (not Node.js) - use `deno task` commands
+- **Workspace Dependencies**: `myst-awesome-docs` depends on `myst-awesome-theme` via `workspace:*`

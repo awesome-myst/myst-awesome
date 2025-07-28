@@ -1,22 +1,16 @@
 {
-  "name": "myst-awesome-theme",
+  "name": "myst-awesome-workspace",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "test": "npx playwright test --config=tests/playwright.config.ts"
+    "dev": "pnpm --filter=myst-awesome-theme dev",
+    "build": "pnpm --filter=myst-awesome-theme build",
+    "preview": "pnpm --filter=myst-awesome-theme preview",
+    "test": "pnpm --filter=myst-awesome-theme test",
+    "start-myst": "pnpm --filter=myst-awesome-docs run myst-content-server",
+    "dev-docs": "pnpm --filter=myst-awesome-docs dev",
+    "install-all": "pnpm install"
   },
-  "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@awesome.me/webawesome": "^3.0.0-beta.3",
-    "astro": "5.12.3",
-    "@awesome-myst/myst-zod": "^0.4.0",
-    "typescript": "^5.8.3"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.54.1"
-  }
+  "packageManager": "pnpm@10.13.1"
 }
