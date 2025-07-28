@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "Documentation for the myst-awesome-theme",
   "scripts": {
-    "dev": "concurrently \"pnpm run myst-content-server\" \"pnpm --filter=myst-awesome-theme dev\"",
+    "dev": "concurrently \"pnpm run myst-content-server\" \"astro dev\"",
+    "build": "concurrently \"pnpm run myst-content-server\" \"astro build\"",
+    "preview": "astro preview",
     "myst-content-server": "myst start --headless",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@awesome-myst/myst-zod": "^0.4.0",
+    "astro": "5.12.3",
     "myst-awesome-theme": "workspace:*",
     "myst-common": "^1.5.2",
     "myst-directives": "^1.5.2",
@@ -22,6 +26,7 @@
     "myst-parser": "^1.5.2",
     "myst-roles": "^1.5.2",
     "mystmd": "^1.6.0",
+    "typescript": "^5.8.3",
     "unist-builder": "^4.0.0"
   },
   "devDependencies": {
