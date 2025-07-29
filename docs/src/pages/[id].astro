@@ -5,9 +5,9 @@ import type { CollectionEntry } from 'astro:content';
 export async function getStaticPaths() {
   // Get all page entries from the pages collection
   const pages = await getCollection('pages');
-  
-  return pages.map((page) => ({
-    params: { id: page.id === '/' ? 'index' : page.id.slice(1) }, // Remove leading slash and handle root
+
+  return pages.filter((page) => page.id !== '/').map((page) => ({
+    params: { id: page.id.slice(1) }, // Remove leading slash
     props: { page },
   }));
 }

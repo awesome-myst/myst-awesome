@@ -1,0 +1,458 @@
+---
+import BasePage from '@awesome-myst/myst-awesome-theme/layouts/BasePage.astro';
+import NavigationMenu from '@awesome-myst/myst-awesome-theme/components/NavigationMenu.astro';
+import ThemeControls from '@awesome-myst/myst-awesome-theme/components/ThemeControls.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+// Get project configuration and pages data
+const projectData = await getCollection('projectFrontmatter');
+const pagesData = await getCollection('pages');
+
+const projectEntry = projectData[0];
+const title = projectEntry?.data.project?.title || 'MyST Awesome Theme';
+const description = projectEntry?.data.project?.description || 'A modern documentation theme built with Web Awesome and Astro';
+const githubUrl = projectEntry?.data.project?.github || '#';
+
+// Prepare navigation items from pages
+const navItems = pagesData.map(page => ({
+  title: page.id === '/' ? 'Home' : page.id.slice(1).charAt(0).toUpperCase() + page.id.slice(2),
+  href: page.id === '/' ? '/' : `/${page.id.slice(1)}`,
+  current: false
+}));
+---
+
+<BasePage 
+  title={title} 
+  description={description}
+  theme="awesome"
+  colorScheme="auto"
+>
+  <!-- Header -->
+  <div slot="header" class="site-header">
+    <div class="header-content">
+      <div class="site-branding">
+        <h1 class="site-title">{title}</h1>
+        <p class="site-tagline">Modern MyST Documentation Theme</p>
+      </div>
+      
+      <div class="header-actions">
+        <ThemeControls />
+        <wa-button variant="text" href={githubUrl} target="_blank">
+          <wa-icon name="github" slot="prefix"></wa-icon>
+          GitHub
+        </wa-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <NavigationMenu slot="navigation" items={navItems} />
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">MyST Awesome Theme</h1>
+        <p class="hero-description">
+          A beautiful, modern documentation theme that combines the power of MyST Markdown 
+          with the elegance of Web Awesome components and the performance of Astro.
+        </p>
+        <div class="hero-actions">
+          <wa-button variant="primary" size="large" href="/typography">
+            <wa-icon name="book-open" slot="prefix"></wa-icon>
+            Get Started
+          </wa-button>
+          <wa-button variant="text" size="large" href={githubUrl} target="_blank">
+            <wa-icon name="github" slot="prefix"></wa-icon>
+            View on GitHub
+          </wa-button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="feature-showcase">
+          <wa-card class="showcase-card">
+            <wa-icon name="palette" slot="header"></wa-icon>
+            <strong>10 Beautiful Themes</strong>
+            <div slot="footer">Switch themes instantly</div>
+          </wa-card>
+          <wa-card class="showcase-card">
+            <wa-icon name="zap" slot="header"></wa-icon>
+            <strong>Lightning Fast</strong>
+            <div slot="footer">Built with Astro</div>
+          </wa-card>
+          <wa-card class="showcase-card">
+            <wa-icon name="smartphone" slot="header"></wa-icon>
+            <strong>Mobile First</strong>
+            <div slot="footer">Responsive design</div>
+          </wa-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Why Choose MyST Awesome Theme?</h2>
+      <div class="features-grid">
+        <div class="feature">
+          <wa-icon name="markdown" class="feature-icon"></wa-icon>
+          <h3>MyST Markdown</h3>
+          <p>Write beautiful documentation with MyST's powerful markup language featuring directives, roles, and cross-references.</p>
+        </div>
+        
+        <div class="feature">
+          <wa-icon name="components" class="feature-icon"></wa-icon>
+          <h3>Web Awesome Components</h3>
+          <p>Built on top of Web Awesome's comprehensive component library with 10 stunning themes to choose from.</p>
+        </div>
+        
+        <div class="feature">
+          <wa-icon name="rocket" class="feature-icon"></wa-icon>
+          <h3>Astro Performance</h3>
+          <p>Zero JavaScript by default, with selective hydration for interactive components when you need them.</p>
+        </div>
+        
+        <div class="feature">
+          <wa-icon name="accessibility" class="feature-icon"></wa-icon>
+          <h3>Accessibility First</h3>
+          <p>WCAG 2.1 AA compliant with screen reader support, keyboard navigation, and semantic HTML.</p>
+        </div>
+        
+        <div class="feature">
+          <wa-icon name="dark-mode" class="feature-icon"></wa-icon>
+          <h3>Dark Mode Ready</h3>
+          <p>Automatic dark mode support with smooth transitions and consistent design across all themes.</p>
+        </div>
+        
+        <div class="feature">
+          <wa-icon name="search" class="feature-icon"></wa-icon>
+          <h3>Powerful Search</h3>
+          <p>Built-in search functionality with MyST's cross-reference system for finding content quickly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Section -->
+  <section class="quick-start">
+    <div class="container">
+      <h2 class="section-title">Quick Start</h2>
+      <div class="quick-start-content">
+        <div class="quick-start-text">
+          <p>Get up and running with MyST Awesome Theme in minutes:</p>
+          <ol class="quick-start-steps">
+            <li>Clone the repository or use as a template</li>
+            <li>Install dependencies with <code>pnpm install</code></li>
+            <li>Start development with <code>pnpm dev</code></li>
+            <li>Begin writing your documentation in MyST Markdown</li>
+          </ol>
+        </div>
+        <div class="quick-start-code">
+          <wa-card>
+            <div slot="header">Installation</div>
+            <pre><code>git clone https://github.com/awesome-myst/myst-awesome-theme.git
+cd myst-awesome-theme
+pnpm install
+pnpm dev</code></pre>
+          </wa-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer in main-footer slot -->
+  <footer slot="main-footer" class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>MyST Awesome Theme</h4>
+          <p>Built with ❤️ for the MyST community</p>
+        </div>
+        <div class="footer-section">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://mystmd.org">MyST Documentation</a></li>
+            <li><a href="https://awesome.me">Web Awesome</a></li>
+            <li><a href="https://astro.build">Astro</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Community</h4>
+          <ul>
+            <li><a href={githubUrl}>GitHub</a></li>
+            <li><a href="https://github.com/awesome-myst/myst-awesome-theme/issues">Issues</a></li>
+            <li><a href="https://github.com/awesome-myst/myst-awesome-theme/discussions">Discussions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 MyST Awesome Theme. Licensed under Apache 2.0.</p>
+      </div>
+    </div>
+  </footer>
+</BasePage>
+
+<script>
+  // Import Web Awesome components for client-side hydration
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  /* Site Header */
+  .site-header {
+    background: var(--wa-color-primary-50);
+    border-bottom: 1px solid var(--wa-color-neutral-200);
+    padding: var(--wa-space-large) 0;
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--wa-space-large);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--wa-space-large);
+  }
+
+  .site-title {
+    margin: 0;
+    font-size: var(--wa-font-size-2x-large);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-primary-700);
+  }
+
+  .site-tagline {
+    margin: var(--wa-space-x-small) 0 0 0;
+    color: var(--wa-color-neutral-600);
+    font-size: var(--wa-font-size-medium);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-medium);
+  }
+
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(135deg, var(--wa-color-primary-100) 0%, var(--wa-color-primary-50) 100%);
+    padding: var(--wa-space-3x-large) 0;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--wa-space-large);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--wa-space-3x-large);
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: var(--wa-font-size-4x-large);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-primary-800);
+    margin: 0 0 var(--wa-space-large) 0;
+    line-height: 1.1;
+  }
+
+  .hero-description {
+    font-size: var(--wa-font-size-large);
+    color: var(--wa-color-neutral-700);
+    margin: 0 0 var(--wa-space-2x-large) 0;
+    line-height: 1.6;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--wa-space-medium);
+    flex-wrap: wrap;
+  }
+
+  .feature-showcase {
+    display: grid;
+    gap: var(--wa-space-medium);
+  }
+
+  .showcase-card {
+    text-align: center;
+  }
+
+  /* Features Section */
+  .features {
+    padding: var(--wa-space-4x-large) 0;
+    background: var(--wa-color-neutral-50);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--wa-space-large);
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: var(--wa-font-size-3x-large);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-neutral-800);
+    margin: 0 0 var(--wa-space-3x-large) 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--wa-space-2x-large);
+  }
+
+  .feature {
+    text-align: center;
+    padding: var(--wa-space-large);
+  }
+
+  .feature-icon {
+    font-size: var(--wa-font-size-3x-large);
+    color: var(--wa-color-primary-600);
+    margin-bottom: var(--wa-space-medium);
+  }
+
+  .feature h3 {
+    font-size: var(--wa-font-size-large);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-neutral-800);
+    margin: 0 0 var(--wa-space-small) 0;
+  }
+
+  .feature p {
+    color: var(--wa-color-neutral-600);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Quick Start Section */
+  .quick-start {
+    padding: var(--wa-space-4x-large) 0;
+  }
+
+  .quick-start-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--wa-space-3x-large);
+    align-items: start;
+  }
+
+  .quick-start-steps {
+    padding-left: var(--wa-space-large);
+  }
+
+  .quick-start-steps li {
+    margin-bottom: var(--wa-space-small);
+    line-height: 1.6;
+  }
+
+  .quick-start-code pre {
+    background: var(--wa-color-neutral-900);
+    color: var(--wa-color-neutral-100);
+    padding: var(--wa-space-large);
+    border-radius: var(--wa-border-radius-medium);
+    overflow-x: auto;
+    font-family: var(--wa-font-mono);
+    line-height: 1.5;
+  }
+
+  code {
+    background: var(--wa-color-neutral-100);
+    color: var(--wa-color-neutral-800);
+    padding: var(--wa-space-3x-small) var(--wa-space-x-small);
+    border-radius: var(--wa-border-radius-small);
+    font-family: var(--wa-font-mono);
+    font-size: 0.9em;
+  }
+
+  /* Footer */
+  .site-footer {
+    background: var(--wa-color-neutral-900);
+    color: var(--wa-color-neutral-100);
+    padding: var(--wa-space-3x-large) 0 var(--wa-space-large) 0;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--wa-space-2x-large);
+    margin-bottom: var(--wa-space-2x-large);
+  }
+
+  .footer-section h4 {
+    color: var(--wa-color-neutral-100);
+    margin: 0 0 var(--wa-space-medium) 0;
+    font-weight: var(--wa-font-weight-semibold);
+  }
+
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-section li {
+    margin-bottom: var(--wa-space-x-small);
+  }
+
+  .footer-section a {
+    color: var(--wa-color-neutral-300);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-section a:hover {
+    color: var(--wa-color-primary-400);
+  }
+
+  .footer-bottom {
+    text-align: center;
+    padding-top: var(--wa-space-large);
+    border-top: 1px solid var(--wa-color-neutral-700);
+    color: var(--wa-color-neutral-400);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .header-content {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--wa-space-medium);
+    }
+
+    .hero-content {
+      grid-template-columns: 1fr;
+      gap: var(--wa-space-2x-large);
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: var(--wa-font-size-3x-large);
+    }
+
+    .quick-start-content {
+      grid-template-columns: 1fr;
+      gap: var(--wa-space-2x-large);
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+</style>
