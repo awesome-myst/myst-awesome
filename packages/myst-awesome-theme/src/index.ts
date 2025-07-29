@@ -5,6 +5,7 @@ export { default as DocsLayout } from "./layouts/DocsLayout.astro";
 export { default as NavigationMenu } from "./components/NavigationMenu.astro";
 export { default as TableOfContents } from "./components/TableOfContents.astro";
 export { default as ThemeControls } from "./components/ThemeControls.astro";
+export { default as Footer } from "./components/Footer.astro";
 
 // Export utilities
 export * from "./lib/getComponent";

@@ -1,6 +1,7 @@
 ---
 import BasePage from './BasePage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import Footer from '../components/Footer.astro';
 
 interface TocItem {
   level: number;
@@ -226,40 +227,7 @@ const {
   )}
 
   <!-- Footer -->
-  <div slot="footer" class="docs-footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>Documentation</h4>
-        <ul>
-          <li><a href="/docs">Getting Started</a></li>
-          <li><a href="/docs/components">Components</a></li>
-          <li><a href="/docs/theming">Theming</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4>Community</h4>
-        <ul>
-          <li><a href="/community">Discussions</a></li>
-          <li><a href="/contributing">Contributing</a></li>
-          <li><a href="/changelog">Changelog</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="/examples">Examples</a></li>
-          <li><a href="/blog">Blog</a></li>
-          <li><a href="/support">Support</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2024 MyST Awesome Theme. Built with Web Awesome and Astro.</p>
-    </div>
-  </div>
+  <Footer slot="footer" />
 </BasePage>
 
 <style>
@@ -526,79 +494,21 @@ const {
     font-weight: var(--wa-font-weight-semibold);
   }
 
-  /* Footer */
-  .docs-footer {
-    width: 100%;
-  }
-
-  .footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--wa-space-l);
-    margin-bottom: var(--wa-space-l);
-  }
-
-  .footer-section h4 {
-    font-size: var(--wa-font-size-m);
-    font-weight: var(--wa-font-weight-semibold);
-    margin: 0 0 var(--wa-space-s) 0;
-    color: var(--wa-color-text-normal);
-  }
-
-  .footer-section ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .footer-section li {
-    margin-bottom: var(--wa-space-2xs);
-  }
-
-  .footer-section a {
-    color: var(--wa-color-text-quiet);
-    text-decoration: none;
-    font-size: var(--wa-font-size-s);
-  }
-
-  .footer-section a:hover {
-    color: var(--wa-color-text-link);
-    text-decoration: underline;
-  }
-
-  .footer-bottom {
-    padding-top: var(--wa-space-l);
-    border-top: 1px solid var(--wa-color-surface-border);
-    text-align: center;
-  }
-
-  .footer-bottom p {
-    margin: 0;
-    color: var(--wa-color-text-quiet);
-    font-size: var(--wa-font-size-s);
-  }
-
   /* Responsive adjustments */
   @media (max-width: 920px) {
     .docs-controls {
       flex-wrap: wrap;
     }
-
+    
     .article-nav {
       flex-direction: column;
     }
-
+    
     .nav-prev,
     .nav-next {
       max-width: 100%;
     }
-
-    .footer-content {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 640px) {
+  }  @media (max-width: 640px) {
     .docs-header {
       flex-direction: column;
       align-items: stretch;
