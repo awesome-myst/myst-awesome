@@ -1,5 +1,5 @@
 {
-  "name": "myst-awesome-docs",
+  "name": "@awesome-myst/myst-awesome-docs",
   "version": "1.0.0",
   "description": "Documentation for the myst-awesome-theme",
   "scripts": {
