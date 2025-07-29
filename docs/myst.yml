@@ -13,7 +13,7 @@ project:
     jtex: https://mystmd.org/jtex/
     # spec: https://mystmd.org/spec/
   plugins:
-    - directives.mjs
+    - src/directives.mjs
   toc:
     - file: index.md
     - title: Authoring

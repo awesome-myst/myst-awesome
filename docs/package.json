@@ -14,7 +14,7 @@
   "dependencies": {
     "@awesome-myst/myst-zod": "^0.4.0",
     "astro": "5.12.3",
-    "myst-awesome-theme": "workspace:*",
+    "@awesome-myst/myst-awesome-theme": "workspace:*",
     "myst-common": "^1.5.2",
     "myst-directives": "^1.5.2",
     "myst-ext-button": "^0.0.1",
