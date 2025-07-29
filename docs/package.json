@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Documentation for the myst-awesome-theme",
   "scripts": {
-    "dev": "concurrently \"pnpm run myst-content-server\" \"astro dev\"",
-    "build": "concurrently \"pnpm run myst-content-server\" \"astro build\"",
+    "dev": "start-server-and-test myst-content-server http://localhost:3100/myst.xref.json \"astro dev\"",
+    "build": "start-server-and-test myst-content-server http://localhost:3100/myst.xref.json \"astro build\"",
     "preview": "astro preview",
     "myst-content-server": "myst start --headless",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +30,6 @@
     "unist-builder": "^4.0.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "start-server-and-test": "^2.0.12"
   }
 }
