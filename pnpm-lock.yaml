@@ -10,6 +10,9 @@ importers:
 
   docs:
     dependencies:
+      '@awesome-myst/myst-astro-collections':
+        specifier: workspace:*
+        version: link:../packages/myst-astro-collections
       '@awesome-myst/myst-awesome-theme':
         specifier: workspace:*
         version: link:../packages/myst-awesome-theme
@@ -62,6 +65,22 @@ importers:
       start-server-and-test:
         specifier: ^2.0.12
         version: 2.0.12
+
+  packages/myst-astro-collections:
+    dependencies:
+      '@awesome-myst/myst-zod':
+        specifier: ^0.4.0
+        version: 0.4.0
+      astro:
+        specifier: ^5.12.3
+        version: 5.12.3(@types/node@24.1.0)(rollup@4.46.0)(typescript@5.8.3)(yaml@2.8.0)
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
   packages/myst-awesome-theme:
     dependencies:

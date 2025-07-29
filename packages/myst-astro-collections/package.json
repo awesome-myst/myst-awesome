@@ -1,0 +1,48 @@
+{
+  "name": "@awesome-myst/myst-astro-collections",
+  "version": "1.0.0",
+  "description": "Astro content collections for MyST projects",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./collections": {
+      "types": "./dist/collections.d.ts",
+      "import": "./dist/collections.js"
+    },
+    "./loaders": {
+      "types": "./dist/loaders.d.ts",
+      "import": "./dist/loaders.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "astro",
+    "myst",
+    "content-collections",
+    "documentation"
+  ],
+  "author": "Matt McCormick",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@awesome-myst/myst-zod": "^0.4.0",
+    "astro": "^5.12.3",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "astro": "^5.0.0"
+  }
+}

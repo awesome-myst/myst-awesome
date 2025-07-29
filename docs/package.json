@@ -12,6 +12,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@awesome-myst/myst-astro-collections": "workspace:*",
     "@awesome-myst/myst-zod": "^0.4.0",
     "astro": "5.12.3",
     "@awesome-myst/myst-awesome-theme": "workspace:*",
