@@ -1,4 +1,6 @@
 ---
+import DocsLayout from '@awesome-myst/myst-awesome-theme/layouts/DocsLayout.astro';
+import NavigationMenu from '@awesome-myst/myst-awesome-theme/components/NavigationMenu.astro';
 import { getCollection, getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
@@ -7,7 +9,7 @@ export async function getStaticPaths() {
   const pages = await getCollection('pages');
 
   return pages.filter((page) => page.id !== '/').map((page) => ({
-    params: { id: `${page.id}` }, // Remove leading slash
+    params: { id: page.id.slice(1) }, // Remove leading slash for URL params
     props: { page },
   }));
 }
@@ -18,7 +20,11 @@ interface Props {
 
 const { page } = Astro.props;
 
-// Fetch the actual content from the MyST content server
+// Fetch all collections
+const allPages = await getCollection('pages');
+const projectConfig = await getEntry('projectFrontmatter', 'project');
+
+// Fetch the actual MyST content from the content server
 let pageContent: any = null;
 let pageError: string | null = null;
 
@@ -33,199 +39,309 @@ try {
   pageError = error instanceof Error ? error.message : 'Unknown error';
 }
 
-// Get project frontmatter for site-wide configuration
-const projectConfig = await getEntry('projectFrontmatter', 'project');
-
-const title = pageContent?.frontmatter?.title || 
-              pageContent?.title || 
-              projectConfig?.data.project?.title || 
+// Extract metadata
+const title = pageContent?.frontmatter?.title ||
+              pageContent?.title ||
+              page.data.url ||
               'MyST Page';
 
-const description = pageContent?.frontmatter?.description || 
-                   pageContent?.description || 
-                   projectConfig?.data.project?.description || 
+const description = pageContent?.frontmatter?.description ||
+                   pageContent?.description ||
+                   projectConfig?.data.project?.description ||
                    'A MyST Markdown page';
+
+// Create navigation items from all pages
+const navItems = allPages.map(p => ({
+  title: p.id === '/' ? 'Home' :
+         (p.id.slice(1).charAt(0).toUpperCase() + p.id.slice(2)) || 'Page',
+  href: p.id === '/' ? '/' : `/book/${p.id.slice(1)}`,
+  current: p.id === page.id,
+  icon: p.id === '/' ? 'home' : 'file-text'
+}));
+
+// Extract table of contents from MyST content
+const tocItems: Array<{level: number, title: string, href: string, id: string}> = [];
+
+if (pageContent?.mdast) {
+  // Simple extraction of headings from the MyST AST
+  const extractHeadings = (node: any): void => {
+    if (node.type === 'heading' && node.depth && node.depth <= 4) {
+      const text = node.children?.map((child: any) => child.value || '').join('') || '';
+      if (text) {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        tocItems.push({
+          level: node.depth,
+          title: text,
+          href: `#${id}`,
+          id: id
+        });
+      }
+    }
+    if (node.children) {
+      node.children.forEach(extractHeadings);
+    }
+  };
+
+  if (pageContent.mdast.children) {
+    pageContent.mdast.children.forEach(extractHeadings);
+  }
+}
+
+// Function to render MyST content as HTML (simplified)
+function renderMystContent(content: any): string {
+  if (!content?.mdast) {
+    return '<p>No content available</p>';
+  }
+
+  // This is a simplified renderer - in a real implementation you'd want
+  // to use a proper MyST-to-HTML renderer
+  const renderNode = (node: any): string => {
+    switch (node.type) {
+      case 'paragraph':
+        return `<p>${node.children?.map(renderNode).join('') || ''}</p>`;
+      case 'heading':
+        const level = Math.min(6, Math.max(1, node.depth || 2));
+        const text = node.children?.map(renderNode).join('') || '';
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return `<h${level} id="${id}">${text}</h${level}>`;
+      case 'text':
+        return node.value || '';
+      case 'emphasis':
+        return `<em>${node.children?.map(renderNode).join('') || ''}</em>`;
+      case 'strong':
+        return `<strong>${node.children?.map(renderNode).join('') || ''}</strong>`;
+      case 'inlineCode':
+        return `<code>${node.value || ''}</code>`;
+      case 'code':
+        return `<pre><code class="language-${node.lang || ''}">${node.value || ''}</code></pre>`;
+      case 'list':
+        const tag = node.ordered ? 'ol' : 'ul';
+        return `<${tag}>${node.children?.map(renderNode).join('') || ''}</${tag}>`;
+      case 'listItem':
+        return `<li>${node.children?.map(renderNode).join('') || ''}</li>`;
+      case 'blockquote':
+        return `<blockquote>${node.children?.map(renderNode).join('') || ''}</blockquote>`;
+      case 'link':
+        return `<a href="${node.url || '#'}">${node.children?.map(renderNode).join('') || ''}</a>`;
+      default:
+        return node.children?.map(renderNode).join('') || '';
+    }
+  };
+
+  return content.mdast.children?.map(renderNode).join('\n') || '';
+}
+
+// Get prev/next pages for navigation
+const currentIndex = allPages.findIndex(p => p.id === page.id);
+const prevPage = currentIndex > 0 ? allPages[currentIndex - 1] : null;
+const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1] : null;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-  </head>
-  <body>
-    <header>
-      <h1>{projectConfig?.data.site?.title || 'MyST Site'}</h1>
-      <nav>
-        <a href="/">Home</a>
-        <!-- Add more navigation items dynamically from pages collection -->
-      </nav>
-    </header>
+<DocsLayout
+  title={title}
+  description={description}
+  section="Book"
+  showToc={true}
+  tocItems={tocItems}
+  showBreadcrumbs={true}
+  showEditButton={true}
+  editUrl={`${projectConfig?.data.project?.github || ''}/edit/main/docs/${page.data.url === '/' ? 'index' : page.data.url.slice(1)}.md`}
+  author={projectConfig?.data.project?.authors?.[0] || 'MyST Team'}
+  lastModified={new Date()}
+  nextPage={nextPage ? {
+    title: nextPage.id === '/' ? 'Home' : nextPage.id.slice(1),
+    href: nextPage.id === '/' ? '/' : `/book/${nextPage.id.slice(1)}`
+  } : undefined}
+  prevPage={prevPage ? {
+    title: prevPage.id === '/' ? 'Home' : prevPage.id.slice(1),
+    href: prevPage.id === '/' ? '/' : `/book/${prevPage.id.slice(1)}`
+  } : undefined}
+>
+  <!-- Navigation Menu -->
+  <NavigationMenu
+    slot="navigation"
+    items={navItems}
+    showSearch={true}
+    searchPlaceholder="Search documentation..."
+    collapsible={true}
+    showIcons={true}
+  />
 
-    <main>
-      {pageError ? (
-        <div class="error">
-          <h2>Error Loading Page</h2>
-          <p>{pageError}</p>
-          <pre>Page URL: {page.data.url}</pre>
-          <pre>Data URL: {page.data.data}</pre>
-        </div>
-      ) : pageContent ? (
-        <article>
-          <h1>{title}</h1>
-          
-          {/* Display page metadata */}
-          <div class="page-meta">
-            <p><strong>Page URL:</strong> {page.data.url}</p>
-            <p><strong>Kind:</strong> {page.data.kind}</p>
-            {page.data.identifier && <p><strong>ID:</strong> {page.data.identifier}</p>}
-          </div>
+  <!-- Main Content -->
+  {pageError ? (
+    <div class="error-container">
+      <wa-callout variant="danger">
+        <wa-icon slot="start" name="exclamation-circle" variant="solid"></wa-icon>
+        <strong>Error Loading Page</strong>
+        <p>{pageError}</p>
+        <details>
+          <summary>Debug Information</summary>
+          <p><strong>Page URL:</strong> {page.data.url}</p>
+          <p><strong>Data URL:</strong> {page.data.data}</p>
+          <p><strong>Page ID:</strong> {page.id}</p>
+        </details>
+      </wa-callout>
+    </div>
+  ) : pageContent ? (
+    <article class="myst-content">
+      <!-- Page header with metadata -->
+      <header class="page-header">
+        <h1>{title}</h1>
+        {description && description !== title && (
+          <p class="page-description">{description}</p>
+        )}
 
-          {/* Render MyST content */}
-          <div class="content">
-            {pageContent.frontmatter && (
-              <div class="frontmatter">
-                <h2>Frontmatter</h2>
-                <pre>{JSON.stringify(pageContent.frontmatter, null, 2)}</pre>
-              </div>
-            )}
-            
-            {pageContent.mdast && (
-              <div class="ast-content">
-                <h2>Content AST</h2>
-                <pre>{JSON.stringify(pageContent.mdast, null, 2)}</pre>
-              </div>
-            )}
-            
-            {!pageContent.mdast && !pageContent.frontmatter && (
-              <div class="raw-content">
-                <h2>Raw Content</h2>
-                <pre>{JSON.stringify(pageContent, null, 2)}</pre>
-              </div>
-            )}
+        <div class="page-meta">
+          <div class="meta-item">
+            <wa-icon name="link" variant="solid"></wa-icon>
+            <span>URL: {page.data.url}</span>
           </div>
-        </article>
-      ) : (
-        <div class="loading">
-          <p>Loading page content...</p>
+          {page.data.identifier && (
+            <div class="meta-item">
+              <wa-icon name="hash" variant="solid"></wa-icon>
+              <span>ID: {page.data.identifier}</span>
+            </div>
+          )}
         </div>
+      </header>
+
+      <!-- Render MyST content -->
+      <div class="content-body" set:html={renderMystContent(pageContent)} />
+
+      <!-- Show frontmatter if available -->
+      {pageContent.frontmatter && Object.keys(pageContent.frontmatter).length > 0 && (
+        <details class="frontmatter-details">
+          <summary>
+            <wa-icon name="info-circle" variant="solid"></wa-icon>
+            Page Frontmatter
+          </summary>
+          <pre class="frontmatter-code">{JSON.stringify(pageContent.frontmatter, null, 2)}</pre>
+        </details>
       )}
-    </main>
+    </article>
+  ) : (
+    <div class="loading-container">
+      <wa-spinner size="large"></wa-spinner>
+      <p>Loading page content...</p>
+    </div>
+  )}
+</DocsLayout>
 
-    <footer>
-      <p>Powered by MyST Awesome Theme</p>
-    </footer>
-  </body>
-</html>
+<script>
+  // Import Web Awesome components for client-side hydration
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/spinner/spinner.js';
+</script>
 
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background: #f9f9f9;
-  }
-
-  header {
-    background: #2c3e50;
-    color: white;
-    padding: 1rem 2rem;
-  }
-
-  header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-
-  nav {
-    margin-top: 0.5rem;
-  }
-
-  nav a {
-    color: #ecf0f1;
-    text-decoration: none;
-    margin-right: 1rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s;
-  }
-
-  nav a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  article {
+  .error-container,
+  .loading-container {
     padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--wa-color-neutral-200);
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--wa-color-neutral-600);
+    margin: 0.5rem 0 1rem;
   }
 
   .page-meta {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
   }
 
-  .page-meta p {
-    margin: 0.25rem 0;
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--wa-color-neutral-600);
   }
 
-  .content {
-    margin-top: 1.5rem;
+  .content-body {
+    line-height: 1.7;
+    font-size: 1rem;
   }
 
-  .frontmatter, .ast-content, .raw-content {
-    margin-bottom: 2rem;
-  }
-
-  .frontmatter h2, .ast-content h2, .raw-content h2 {
-    color: #2c3e50;
-    border-bottom: 2px solid #e9ecef;
-    padding-bottom: 0.5rem;
-  }
-
-  pre {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    overflow-x: auto;
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-
-  .error {
-    padding: 2rem;
-    background: #f8d7da;
-    color: #721c24;
-    border-radius: 0.25rem;
-    margin: 1rem;
-  }
-
-  .loading {
-    padding: 2rem;
-    text-align: center;
-    color: #6c757d;
-  }
-
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: #6c757d;
-    border-top: 1px solid #e9ecef;
+  .content-body h1,
+  .content-body h2,
+  .content-body h3,
+  .content-body h4,
+  .content-body h5,
+  .content-body h6 {
     margin-top: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .content-body h1 { font-size: 2rem; }
+  .content-body h2 { font-size: 1.5rem; }
+  .content-body h3 { font-size: 1.25rem; }
+  .content-body h4 { font-size: 1.125rem; }
+
+  .content-body p {
+    margin: 1rem 0;
+  }
+
+  .content-body pre {
+    background: var(--wa-color-neutral-100);
+    padding: 1rem;
+    border-radius: var(--wa-border-radius-medium);
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+  }
+
+  .content-body code {
+    background: var(--wa-color-neutral-100);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--wa-border-radius-small);
+    font-size: 0.875rem;
+  }
+
+  .content-body blockquote {
+    border-left: 4px solid var(--wa-color-primary-200);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--wa-color-neutral-600);
+  }
+
+  .frontmatter-details {
+    margin-top: 2rem;
+    border: 1px solid var(--wa-color-neutral-200);
+    border-radius: var(--wa-border-radius-medium);
+    overflow: hidden;
+  }
+
+  .frontmatter-details summary {
+    padding: 1rem;
+    background: var(--wa-color-neutral-50);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .frontmatter-code {
+    padding: 1rem;
+    margin: 0;
+    background: var(--wa-color-neutral-100);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow-x: auto;
   }
 </style>

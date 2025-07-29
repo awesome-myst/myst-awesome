@@ -1,11 +1,20 @@
 ---
 import BasePage from './BasePage.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+interface TocItem {
+  level: number;
+  title: string;
+  href: string;
+  id?: string;
+}
 
 interface Props {
   title?: string;
   description?: string;
   theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
   colorScheme?: 'light' | 'dark' | 'auto';
+  tocItems?: TocItem[];
   showToc?: boolean;
   showBreadcrumbs?: boolean;
   showEditButton?: boolean;
@@ -17,11 +26,12 @@ interface Props {
   prevPage?: { title: string; href: string };
 }
 
-const { 
+const {
   title,
   description,
   theme = 'default',
   colorScheme = 'auto',
+  tocItems,
   showToc = true,
   showBreadcrumbs = true,
   showEditButton = false,
@@ -33,18 +43,10 @@ const {
   prevPage,
   ...rest
 } = Astro.props;
-
-// Generate table of contents from headings (this would be enhanced with actual heading extraction)
-const tocItems = [
-  { level: 2, title: "Getting Started", href: "#getting-started" },
-  { level: 2, title: "Installation", href: "#installation" },
-  { level: 3, title: "Prerequisites", href: "#prerequisites" },
-  { level: 2, title: "Configuration", href: "#configuration" },
-];
 ---
 
-<BasePage 
-  title={title} 
+<BasePage
+  title={title}
   description={description}
   theme={theme}
   colorScheme={colorScheme}
@@ -60,7 +62,7 @@ const tocItems = [
       </a>
       {section && <wa-badge variant="neutral" class="section-badge">{section}</wa-badge>}
     </div>
-    
+
     <div class="docs-controls">
       <!-- Theme selector -->
       <wa-select class="theme-selector" appearance="filled" size="small" value={theme}>
@@ -163,7 +165,7 @@ const tocItems = [
     <header class="article-header">
       <h1 class="article-title">{title}</h1>
       {description && <p class="article-description">{description}</p>}
-      
+
       <div class="article-meta">
         {author && <span class="article-author">By {author}</span>}
         {lastModified && (
@@ -197,7 +199,7 @@ const tocItems = [
             </div>
           </a>
         )}
-        
+
         {nextPage && (
           <a href={nextPage.href} class="nav-next">
             <div>
@@ -212,22 +214,15 @@ const tocItems = [
   </article>
 
   <!-- Table of contents sidebar -->
-  {showToc && (
-    <aside slot="aside" class="docs-toc">
-      <div class="toc-header">
-        <h3 class="toc-title">On this page</h3>
-      </div>
-      
-      <nav class="toc-nav">
-        <ul class="toc-list">
-          {tocItems.map(item => (
-            <li class={`toc-item toc-level-${item.level}`}>
-              <a href={item.href} class="toc-link">{item.title}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+  {showToc && tocItems && tocItems.length > 0 && (
+    <TableOfContents
+      slot="aside"
+      items={tocItems}
+      title="On this page"
+      sticky={true}
+      collapsible={false}
+      showNumbers={false}
+    />
   )}
 
   <!-- Footer -->
@@ -241,7 +236,7 @@ const tocItems = [
           <li><a href="/docs/theming">Theming</a></li>
         </ul>
       </div>
-      
+
       <div class="footer-section">
         <h4>Community</h4>
         <ul>
@@ -250,7 +245,7 @@ const tocItems = [
           <li><a href="/changelog">Changelog</a></li>
         </ul>
       </div>
-      
+
       <div class="footer-section">
         <h4>Resources</h4>
         <ul>
@@ -260,76 +255,16 @@ const tocItems = [
         </ul>
       </div>
     </div>
-    
+
     <div class="footer-bottom">
       <p>&copy; 2024 MyST Awesome Theme. Built with Web Awesome and Astro.</p>
     </div>
   </div>
 </BasePage>
 
-<script>
-  // Theme selector functionality
-  const themeSelector = document.querySelector('.theme-selector');
-  const colorSchemeSelector = document.querySelector('.color-scheme-selector');
-  
-  if (themeSelector) {
-    themeSelector.addEventListener('change', (e) => {
-      window.setTheme(e.target.value);
-    });
-  }
-  
-  if (colorSchemeSelector) {
-    colorSchemeSelector.addEventListener('change', (e) => {
-      window.setColorScheme(e.target.value);
-    });
-  }
-
-  // Table of contents active link tracking
-  const tocLinks = document.querySelectorAll('.toc-link');
-  const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-  
-  function updateActiveTocLink() {
-    let current = '';
-    
-    headings.forEach(heading => {
-      const rect = heading.getBoundingClientRect();
-      if (rect.top <= 100) {
-        current = heading.id;
-      }
-    });
-    
-    tocLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${current}`) {
-        link.classList.add('active');
-      }
-    });
-  }
-  
-  window.addEventListener('scroll', updateActiveTocLink);
-  updateActiveTocLink();
-
-  // Search functionality placeholder
-  const searchTrigger = document.querySelector('.search-trigger');
-  if (searchTrigger) {
-    searchTrigger.addEventListener('click', () => {
-      // Implement search modal/functionality
-      console.log('Search triggered');
-    });
-  }
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      searchTrigger?.click();
-    }
-  });
-</script>
-
 <style>
   /* Documentation-specific styles */
-  
+
   /* Header */
   .docs-header {
     display: flex;
@@ -591,62 +526,6 @@ const tocItems = [
     font-weight: var(--wa-font-weight-semibold);
   }
 
-  /* Table of contents */
-  .docs-toc {
-    width: 15rem;
-  }
-
-  .toc-header {
-    margin-bottom: var(--wa-space-m);
-  }
-
-  .toc-title {
-    font-size: var(--wa-font-size-s);
-    font-weight: var(--wa-font-weight-semibold);
-    color: var(--wa-color-text-quiet);
-    margin: 0;
-  }
-
-  .toc-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .toc-item {
-    margin-bottom: var(--wa-space-3xs);
-  }
-
-  .toc-level-3 {
-    padding-left: var(--wa-space-m);
-  }
-
-  .toc-level-4 {
-    padding-left: var(--wa-space-l);
-  }
-
-  .toc-link {
-    display: block;
-    padding: var(--wa-space-2xs) var(--wa-space-xs);
-    color: var(--wa-color-text-quiet);
-    text-decoration: none;
-    font-size: var(--wa-font-size-s);
-    border-radius: var(--wa-border-radius-s);
-    transition: all var(--wa-transition-fast);
-    border-left: 2px solid transparent;
-  }
-
-  .toc-link:hover {
-    color: var(--wa-color-text-normal);
-    background-color: var(--wa-color-neutral-fill-quiet);
-  }
-
-  .toc-link.active {
-    color: var(--wa-color-brand-fill-loud);
-    border-left-color: var(--wa-color-brand-fill-loud);
-    background-color: var(--wa-color-brand-fill-quiet);
-  }
-
   /* Footer */
   .docs-footer {
     width: 100%;
@@ -704,16 +583,16 @@ const tocItems = [
     .docs-controls {
       flex-wrap: wrap;
     }
-    
+
     .article-nav {
       flex-direction: column;
     }
-    
+
     .nav-prev,
     .nav-next {
       max-width: 100%;
     }
-    
+
     .footer-content {
       grid-template-columns: 1fr;
     }
@@ -725,17 +604,17 @@ const tocItems = [
       align-items: stretch;
       gap: var(--wa-space-s);
     }
-    
+
     .docs-controls {
       justify-content: center;
     }
-    
+
     .article-meta {
       flex-direction: column;
       align-items: flex-start;
       gap: var(--wa-space-s);
     }
-    
+
     .edit-link {
       margin-left: 0;
     }

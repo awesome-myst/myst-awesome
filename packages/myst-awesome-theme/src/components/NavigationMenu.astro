@@ -35,7 +35,7 @@ const {
       </wa-input>
     </div>
   )}
-  
+
   <div class="nav-content">
     {items.map(section => (
       <div class="nav-section">
@@ -66,7 +66,7 @@ const {
                 )}
               </h3>
             )}
-            
+
             {collapsible && section.children && section.children.length > 0 && (
               <wa-button class="nav-toggle" appearance="plain" size="small">
                 <wa-icon name="chevron-down" class="nav-expand-icon"></wa-icon>
@@ -75,13 +75,13 @@ const {
             )}
           </div>
         )}
-        
+
         {section.children && section.children.length > 0 && (
           <ul class="nav-list">
             {section.children.map(item => (
               <li class="nav-item">
-                <a 
-                  href={item.href} 
+                <a
+                  href={item.href}
                   class={`nav-link ${item.current ? 'current' : ''}`}
                   aria-current={item.current ? 'page' : undefined}
                 >
@@ -95,13 +95,13 @@ const {
                     </wa-badge>
                   )}
                 </a>
-                
+
                 {item.children && item.children.length > 0 && (
                   <ul class="nav-sublist">
                     {item.children.map(subItem => (
                       <li class="nav-subitem">
-                        <a 
-                          href={subItem.href} 
+                        <a
+                          href={subItem.href}
                           class={`nav-sublink ${subItem.current ? 'current' : ''}`}
                           aria-current={subItem.current ? 'page' : undefined}
                         >
@@ -134,20 +134,20 @@ const {
   const searchInput = navMenu?.querySelector('.search-input');
   const navToggles = navMenu?.querySelectorAll('.nav-toggle');
   const navLinks = navMenu?.querySelectorAll('.nav-link, .nav-sublink');
-  
+
   // Search functionality
   if (searchInput) {
     searchInput.addEventListener('wa-input', (e) => {
       const query = e.target.value.toLowerCase();
       const navItems = navMenu.querySelectorAll('.nav-item, .nav-subitem');
-      
+
       navItems.forEach(item => {
         const link = item.querySelector('.nav-link, .nav-sublink');
         const text = link?.textContent?.toLowerCase() || '';
         const shouldShow = text.includes(query);
-        
+
         item.style.display = shouldShow ? 'block' : 'none';
-        
+
         // Show parent sections if any child matches
         if (shouldShow) {
           let parent = item.closest('.nav-section');
@@ -157,7 +157,7 @@ const {
           }
         }
       });
-      
+
       // Hide sections with no visible items
       if (query) {
         const sections = navMenu.querySelectorAll('.nav-section');
@@ -174,18 +174,18 @@ const {
       }
     });
   }
-  
+
   // Collapsible sections
   navToggles.forEach(toggle => {
     const section = toggle.closest('.nav-section');
     const navList = section?.querySelector('.nav-list');
     const expandIcon = toggle.querySelector('.nav-expand-icon');
     const collapseIcon = toggle.querySelector('.nav-collapse-icon');
-    
+
     if (navList && expandIcon && collapseIcon) {
       toggle.addEventListener('click', () => {
         const isCollapsed = navList.style.display === 'none';
-        
+
         if (isCollapsed) {
           navList.style.display = 'block';
           expandIcon.style.display = 'none';
@@ -200,14 +200,14 @@ const {
       });
     }
   });
-  
+
   // Keyboard navigation
   navMenu?.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       const focusableElements = Array.from(navMenu.querySelectorAll('a, button, input'));
       const currentIndex = focusableElements.indexOf(document.activeElement);
-      
+
       let nextIndex;
       if (e.key === 'ArrowDown') {
         nextIndex = currentIndex + 1;
@@ -216,7 +216,7 @@ const {
         nextIndex = currentIndex - 1;
         if (nextIndex < 0) nextIndex = focusableElements.length - 1;
       }
-      
+
       focusableElements[nextIndex]?.focus();
     }
   });
@@ -392,7 +392,7 @@ const {
     .nav-search {
       padding: var(--wa-space-s);
     }
-    
+
     .nav-content {
       padding: 0 var(--wa-space-s) var(--wa-space-s);
     }
