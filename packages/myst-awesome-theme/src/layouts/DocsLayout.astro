@@ -230,6 +230,15 @@ const {
   <Footer slot="footer" />
 </BasePage>
 
+<script>
+  // Import Web Awesome components used in this page
+  import '@awesome.me/webawesome/dist/components/select/select.js';
+  import '@awesome.me/webawesome/dist/components/option/option.js';
+  import '@awesome.me/webawesome/dist/components/divider/divider.js';
+  import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js';
+  import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js';
+</script>
+
 <style>
   /* Documentation-specific styles */
 
@@ -499,11 +508,11 @@ const {
     .docs-controls {
       flex-wrap: wrap;
     }
-    
+
     .article-nav {
       flex-direction: column;
     }
-    
+
     .nav-prev,
     .nav-next {
       max-width: 100%;

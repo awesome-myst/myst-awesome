@@ -27,6 +27,9 @@ export default defineConfig({
     ssr: {
       noExternal: ["@awesome.me/webawesome"],
     },
+    optimizeDeps: {
+      exclude: ["@awesome.me/webawesome"],
+    },
     // Pass theme config to client and server
     define: {
       __THEME_CONFIG__: JSON.stringify(themeConfig),

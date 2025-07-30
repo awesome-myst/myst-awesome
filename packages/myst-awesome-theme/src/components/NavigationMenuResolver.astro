@@ -2,11 +2,11 @@
 /**
  * Configurable NavigationMenu component that supports overrides
  * This demonstrates how to create overridable components in Astro
- * 
+ *
  * Usage:
  * 1. Direct usage (default component):
  *    <NavigationMenuResolver items={navItems} />
- * 
+ *
  * 2. With custom component:
  *    import CustomNav from './custom/MyNavigationMenu.astro';
  *    <NavigationMenuResolver component={CustomNav} items={navItems} />
@@ -33,8 +33,4 @@ const { component: CustomComponent, ...navigationProps } = Astro.props;
 
 <script>
   // Import Web Awesome components for NavigationMenu
-  import '@awesome.me/webawesome/dist/components/input/input.js';
-  import '@awesome.me/webawesome/dist/components/icon/icon.js';
-  import '@awesome.me/webawesome/dist/components/button/button.js';
-  import '@awesome.me/webawesome/dist/components/badge/badge.js';
 </script>
