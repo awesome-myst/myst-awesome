@@ -184,7 +184,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
     </div>
   ) : pageContent ? (
     <article class="myst-content">
-      <!-- Page header with metadata -->
+      {/* <!-- Page header with metadata -->
       <header class="page-header">
         <h1>{title}</h1>
         {description && description !== title && (
@@ -203,7 +203,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
             </div>
           )}
         </div>
-      </header>
+      </header> */}
 
       <!-- Render MyST content -->
       <div class="content-body" set:html={renderMystContent(pageContent)} />
