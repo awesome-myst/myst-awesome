@@ -5,6 +5,11 @@ import {
   createPagesLoader,
   createProjectFrontmatterLoader,
 } from "./loaders.js";
+import {
+  xrefSchema,
+  pageSchema,
+  projectFrontmatterSchema,
+} from "@awesome-myst/myst-zod";
 
 /**
  * Configuration for all MyST collections
@@ -22,21 +27,7 @@ export interface MystCollectionsConfig {
 export const createMystXrefCollection = (config: MystServerConfig = {}) => {
   return defineCollection({
     loader: createMystXrefLoader(config),
-    schema: z.object({
-      id: z.string(),
-      version: z.string(),
-      myst: z.string().optional(),
-      references: z.array(
-        z.object({
-          identifier: z.string().optional(),
-          html_id: z.string().optional(),
-          kind: z.string(),
-          data: z.string(),
-          url: z.string(),
-          implicit: z.boolean().optional(),
-        })
-      ),
-    }),
+    schema: xrefSchema,
   });
 };
 
@@ -46,15 +37,7 @@ export const createMystXrefCollection = (config: MystServerConfig = {}) => {
 export const createPagesCollection = (config: MystServerConfig = {}) => {
   return defineCollection({
     loader: createPagesLoader(config),
-    schema: z.object({
-      id: z.string(),
-      identifier: z.string().optional(),
-      html_id: z.string().optional(),
-      kind: z.literal("page"),
-      data: z.string(),
-      url: z.string(),
-      implicit: z.boolean().optional(),
-    }),
+    schema: pageSchema,
   });
 };
 
@@ -66,26 +49,7 @@ export const createProjectFrontmatterCollection = (
 ) => {
   return defineCollection({
     loader: createProjectFrontmatterLoader(config),
-    schema: z.object({
-      id: z.string(),
-      version: z.number(),
-      project: z
-        .object({
-          id: z.string(),
-          title: z.string(),
-          description: z.string().optional(),
-          keywords: z.array(z.string()).optional(),
-          authors: z.array(z.string()).optional(),
-          github: z.string().optional(),
-        })
-        .optional(),
-      site: z
-        .object({
-          title: z.string().optional(),
-          options: z.record(z.any()).optional(),
-        })
-        .optional(),
-    }),
+    schema: projectFrontmatterSchema,
   });
 };
 

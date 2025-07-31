@@ -2,6 +2,13 @@
 import BasePage from './BasePage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Footer from '../components/Footer.astro';
+import { getEntry } from 'astro:content';
+
+const projectConfig = await getEntry('projectFrontmatter', 'project');
+
+const projectTitle = projectConfig?.data?.site?.title ||
+                     projectConfig?.data?.project?.title ||
+                     'My Project';
 
 interface TocItem {
   level: number;
@@ -59,7 +66,7 @@ const {
     <div class="docs-branding">
       <a href="/" class="brand-link">
         <wa-icon name="book" variant="solid"></wa-icon>
-        <span class="brand-text">Documentation</span>
+        <span class="brand-text">{projectTitle}</span>
       </a>
       {section && <wa-badge variant="neutral" class="section-badge">{section}</wa-badge>}
     </div>

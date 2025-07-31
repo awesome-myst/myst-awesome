@@ -84,12 +84,38 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
       const pageReferences = xrefData.references.filter(
         (ref) => ref.kind === "page"
       );
+      console.log("Loaded page references:", pageReferences);
 
-      // Transform each page reference into a collection entry
-      return pageReferences.map((ref) => ({
-        id: ref.url, // Use URL as the ID
-        ...ref,
-      }));
+      // Fetch the actual page data for each reference
+      const pageDataPromises = pageReferences.map(async (ref) => {
+        try {
+          const pageResponse = await fetch(`${baseUrl}${ref.data}`, {
+            signal: controller.signal,
+          });
+
+          if (!pageResponse.ok) {
+            console.warn(
+              `Failed to fetch page data for ${ref.url}: ${pageResponse.status}`
+            );
+            return null;
+          }
+
+          const pageData = await pageResponse.json();
+          return {
+            id: ref.url, // Use URL as the ID
+            ...pageData,
+          };
+        } catch (error) {
+          console.warn(`Failed to load page data for ${ref.url}:`, error);
+          return null;
+        }
+      });
+
+      // Wait for all page data to be fetched
+      const pageDataResults = await Promise.all(pageDataPromises);
+
+      // Filter out any null results and return
+      return pageDataResults.filter((data) => data !== null);
     } catch (error) {
       console.warn("Failed to load pages data:", error);
       return [];
