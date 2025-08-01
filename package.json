@@ -13,5 +13,5 @@
     "dev-docs": "pnpm --filter=myst-awesome-docs dev",
     "install-all": "pnpm install"
   },
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.14.0"
 }
