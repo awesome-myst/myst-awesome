@@ -16,6 +16,9 @@ importers:
       '@awesome-myst/myst-awesome-theme':
         specifier: workspace:*
         version: link:../packages/myst-awesome-theme
+      '@awesome.me/webawesome':
+        specifier: ^3.0.0-beta.3
+        version: 3.0.0-beta.3(@floating-ui/utils@0.2.10)
       astro:
         specifier: 5.12.3
         version: 5.12.3(@types/node@24.1.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.0)
