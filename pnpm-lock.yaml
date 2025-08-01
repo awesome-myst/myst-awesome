@@ -66,8 +66,8 @@ importers:
   packages/myst-astro-collections:
     dependencies:
       '@awesome-myst/myst-zod':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
       astro:
         specifier: ^5.12.3
         version: 5.12.3(@types/node@24.1.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.0)
@@ -141,8 +141,8 @@ packages:
   '@awesome-myst/myst-zod@0.4.0':
     resolution: {integrity: sha512-55aBcfC4MEVIwZsHF4AB8+sVdVbkug5yWquwZoiwVE0CMfbXdbQZoVGgUTBhI5zISpwQIQozjfb/LhO4uZJb7A==}
 
-  '@awesome-myst/myst-zod@0.5.0':
-    resolution: {integrity: sha512-xHb4t7OewTw+aVHP7dYWNxyHnsikyraqSvYAdQoqnuNVo1sKloaKWFFxSr/BK+yesNH0860J+O+NYpoVRQLXIw==}
+  '@awesome-myst/myst-zod@0.6.0':
+    resolution: {integrity: sha512-mwpXyxlTqNtZduCeOE09sIJPdfl4/nQYTKLy0McjOnU0r0SP2Gd8ofNarI3hQhw5chwkBxpiFQI0I7F9OjeBWg==}
 
   '@awesome.me/webawesome@3.0.0-beta.3':
     resolution: {integrity: sha512-AGUMzjGfbkZkKGMU30FJ00uFw4c/fkjtUP/ZCr4LtmqVgY/23WE6/lePOE6hapkVT2a/Nrvy35KjhGA+X4eEQQ==}
@@ -2478,7 +2478,7 @@ snapshots:
       spdx-correct: 3.2.0
       zod: 3.25.76
 
-  '@awesome-myst/myst-zod@0.5.0':
+  '@awesome-myst/myst-zod@0.6.0':
     dependencies:
       credit-roles: 2.1.0
       doi-utils: 2.0.6
