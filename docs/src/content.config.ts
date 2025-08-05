@@ -7,33 +7,7 @@ export const collections = createMystCollections({
     timeout: 10000,
   },
   project: {
-    // Use static config since we're in a build environment
-    staticConfig: {
-      version: 1,
-      project: {
-        id: "1a8d1012-58dc-4f74-afcd-7878dbccaa06",
-        title: "MyST Awesome Theme",
-        description: "MyST-MD site theme built with Web Awesome.",
-        keywords: [
-          "myst",
-          "myst-md",
-          "theme",
-          "web-awesome",
-          "shoelace",
-          "astro",
-          "book",
-          "furo",
-        ],
-        authors: ["Matt McCormick"],
-        github: "https://github.com/awesome-myst/myst-awesome",
-      },
-      site: {
-        title: "MyST Awesome Theme Guide",
-        options: {
-          favicon: "favicon.ico",
-          logo: "logo.png",
-        },
-      },
-    },
+    // Load configuration from myst.yml file (relative to docs directory)
+    configPath: "myst.yml",
   },
 });

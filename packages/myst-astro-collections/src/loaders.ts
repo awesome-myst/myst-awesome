@@ -1,4 +1,7 @@
 import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { parse as parseYaml } from "yaml";
 
 /**
  * Configuration for MyST content server
@@ -137,6 +140,12 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
 
 /**
  * Custom loader for project frontmatter from myst.yml or static config
+ * 
+ * This loader reads MyST project configuration from a myst.yml file using the YAML parser.
+ * It supports both file-based loading and static configuration as a fallback.
+ * 
+ * @param config Configuration object with optional configPath and staticConfig
+ * @returns Astro loader function that returns project frontmatter data
  */
 export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
   return async () => {
@@ -151,9 +160,34 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
         ];
       }
 
-      // For now, return a default config since file loading requires Node.js APIs
-      // In a real implementation, this would read from myst.yml using fs
-      const frontmatter = {
+      // Load from myst.yml file using Node.js fs module
+      // Use synchronous imports since we're in a loader context
+      
+      // Default path to myst.yml relative to the current working directory
+      const configPath = config.configPath || 'myst.yml';
+      const fullPath = resolve(process.cwd(), configPath);
+      
+      // Check if file exists
+      if (!existsSync(fullPath)) {
+        console.warn(`MyST config file not found at ${fullPath}, using defaults`);
+        throw new Error(`MyST config file not found: ${fullPath}`);
+      }
+
+      // Read and parse the YAML file
+      const fileContent = readFileSync(fullPath, 'utf-8');
+      const frontmatter = parseYaml(fileContent);
+
+      return [
+        {
+          id: "project",
+          ...frontmatter,
+        },
+      ];
+    } catch (error) {
+      console.warn("Failed to load project frontmatter:", error);
+      
+      // Fallback to default config
+      const defaultFrontmatter = {
         version: 1,
         project: {
           id: "1a8d1012-58dc-4f74-afcd-7878dbccaa06",
@@ -184,12 +218,9 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
       return [
         {
           id: "project",
-          ...frontmatter,
+          ...defaultFrontmatter,
         },
       ];
-    } catch (error) {
-      console.warn("Failed to load project frontmatter:", error);
-      return [];
     }
   };
 };

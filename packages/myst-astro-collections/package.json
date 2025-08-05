@@ -24,7 +24,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "node tests/test-yaml-loader.mjs"
   },
   "keywords": [
     "astro",
@@ -36,7 +37,9 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@awesome-myst/myst-zod": "^0.6.0",
-    "astro": "^5.12.3"
+    "@types/node": "^24.2.0",
+    "astro": "^5.12.3",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "typescript": "^5.8.3"
