@@ -58,6 +58,11 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       </a>
     </div>
 
+    <!-- Mobile navigation toggle button (positioned at top-left of page) -->
+    <wa-button class="mobile-nav-toggle" appearance="plain">
+      <wa-icon name="bars" label="Toggle navigation"></wa-icon>
+    </wa-button>
+
     <!-- Main page layout container -->
     <div class="page-layout" data-mobile-breakpoint={mobileBreakpoint} data-nav-open={navOpen}>
 
@@ -84,11 +89,6 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
       <!-- Main body container -->
       <div class="page-body">
-
-        <!-- Mobile navigation toggle button (positioned under subheader on mobile) -->
-        <wa-button class="mobile-nav-toggle" appearance="plain">
-          <wa-icon name="bars" label="Toggle navigation"></wa-icon>
-        </wa-button>
 
         <!-- Navigation menu -->
         {(Astro.slots.has('navigation') || Astro.slots.has('navigation-header') || Astro.slots.has('navigation-footer')) && (
@@ -412,14 +412,20 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     max-width: 100%;
   }
 
-  /* Mobile navigation toggle is hidden by default and positioned within the page-body */
+  /* Mobile navigation toggle is positioned at top-left of page */
   .mobile-nav-toggle {
-    justify-self: start;
-    align-self: center;
+    position: fixed;
+    top: var(--wa-space-s);
+    left: var(--wa-space-s);
     z-index: 1000;
     display: none;
-    margin: var(--wa-space-s) var(--wa-space-m);
-    width: fit-content;
+  }
+
+  /* Hide hamburger on desktop - only show on mobile */
+  @media (min-width: 769px) {
+    .mobile-nav-toggle {
+      display: none !important;
+    }
   }
 
   /* Dynamic grid layout based on content presence */
@@ -601,44 +607,44 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
   /* Responsive behavior */
   @media (max-width: 768px) {
-    .page-body {
-      display: flex;
-      flex-direction: column;
+    .page-body,
+    .page-body.has-menu,
+    .page-body.has-aside,
+    .page-body.has-menu.has-aside {
+      grid-template-columns: 1fr !important;
+      grid-template-areas: "main" !important;
+    }
+
+    .page-menu[data-view="desktop"] {
+      display: none !important;
     }
 
     .page-main {
       padding: var(--wa-space-m);
-      flex: 1;
     }
     
     .mobile-nav-toggle {
-      display: block;
-      order: -1; /* Ensure it appears before other content */
-    }
-    
-    .page-menu {
-      display: none;
+      display: block !important;
     }
   }
 
   /* Additional responsive behavior for layouts that need to collapse at 920px */
   @media (max-width: 920px) {
     .page-body.collapse-aside-920 {
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: 1fr !important;
+      grid-template-areas: "main" !important;
     }
     
-    .page-body.collapse-aside-920 .page-main {
-      flex: 1;
+    .page-body.collapse-aside-920.has-menu {
+      grid-template-columns: 1fr !important;
+      grid-template-areas: "main" !important;
     }
-    
-    .page-body.collapse-aside-920 .mobile-nav-toggle {
-      display: block;
-      order: -1;
-    }
-    
-    .page-body.collapse-aside-920.has-menu .page-menu {
-      display: none;
+  }
+
+  /* Additional rule for mobile-only hamburger at 768px */
+  @media (max-width: 768px) {
+    .mobile-nav-toggle {
+      display: block !important;
     }
   }
 
