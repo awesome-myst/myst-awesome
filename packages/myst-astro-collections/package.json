@@ -38,7 +38,7 @@
   "dependencies": {
     "@awesome-myst/myst-zod": "^0.6.0",
     "@types/node": "^24.2.0",
-    "astro": "^5.12.3",
+    "astro": "^5.12.8",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
