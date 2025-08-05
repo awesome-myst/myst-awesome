@@ -4,30 +4,43 @@
 
 This is an **Astro + Web Awesome + MyST integration** that provides a modern documentation theme. Key architectural decisions:
 
-- **Dual Build System**: Astro for the theme components (`packages/myst-awesome-theme/src/`) + MyST for content compilation (`docs/`)
-- **pnpm Workspace**: Monorepo structure with `myst-awesome-theme` as a workspace package dependency for `myst-awesome-docs`
-- **Slot-Based Layouts**: Uses Web Awesome's page component pattern with named slots (`header`, `navigation`, `aside`, `main`)
-- **Theme System**: Web Awesome provides 10 built-in themes via CSS classes (`wa-theme-{name}`) and CSS custom properties
-- **Component Hydration**: Web Awesome components are imported in `<script>` blocks for client-side hydration
+- **Monorepo Structure**: Three packages in `pnpm` workspace - `myst-awesome-theme` (components), `myst-astro-collections` (data integration), and `myst-awesome-docs` (content)
+- **Dual Build System**: Astro for theme components + MyST content server for documentation compilation
+- **Content Collections**: Custom Astro collections (`mystXref`, `pages`, `projectFrontmatter`) fetch data from MyST server at build time
+- **Type Safety**: Full TypeScript integration with `@awesome-myst/myst-zod` schemas for MyST data validation
+- **Slot-Based Layouts**: Web Awesome's page component pattern with named slots (`header`, `navigation`, `aside`, `main`)
+- **Theme System**: 10 built-in Web Awesome themes via CSS classes (`wa-theme-{name}`) and CSS custom properties
 
 ## Critical Development Workflows
 
 ### Development Commands
 ```bash
-# Theme development (Astro)
-pnpm dev                  # Main dev server at :4321
-pnpm build               # Production build to dist/
+# Root workspace commands (from project root)
+pnpm dev                 # Theme development server at :4321
+pnpm dev-docs           # MyST docs server at :3100 + Astro dev
+pnpm build              # Build collections + theme packages
+pnpm build-collections  # Build myst-astro-collections only
+pnpm start-myst         # MyST headless server only
 
-# Documentation development (MyST)
-pnpm dev-docs            # MyST content server at :3100
-pnpm start-myst          # Headless MyST server only
+# Individual package commands
+cd packages/myst-awesome-theme && pnpm dev     # Theme only
+cd packages/myst-astro-collections && pnpm build  # Collections package
+cd docs && pnpm myst-content-server           # MyST server only
+```
 
-# Testing
-pnpm test                # Playwright tests (requires both servers)
+### Content Collections Integration
+MyST data is loaded via custom Astro content collections in `docs/src/content.config.ts`:
+```typescript
+import { createMystCollections } from "@awesome-myst/myst-astro-collections";
+
+export const collections = createMystCollections({
+  server: { baseUrl: "http://localhost:3100", timeout: 10000 },
+  project: { staticConfig: { /* myst.yml data */ } }
+});
 ```
 
 ### Dual Server Setup
-Tests require **both** Astro (:4321) and MyST (:3100) servers. Playwright config automatically starts both servers for testing.
+Development requires **both** MyST content server (:3100) and Astro dev server (:4321). Use `pnpm dev-docs` for automatic dual-server startup.
 
 ## Project-Specific Patterns
 
@@ -66,6 +79,13 @@ Components use named slots extensively following Web Awesome patterns:
 ```
 
 ## Key Integration Points
+
+### MyST Content Collections
+- **`@awesome-myst/myst-astro-collections`**: Custom loaders fetch MyST data at build time
+- **Collection Types**: `mystXref` (cross-references), `pages` (page data), `projectFrontmatter` (config)
+- **Data Flow**: MyST server (:3100) → Custom loaders → Astro collections → Static build
+- **Schema Validation**: Uses `@awesome-myst/myst-zod` schemas (`xrefSchema`, `pageSchema`, `projectFrontmatterSchema`)
+- **Usage Pattern**: `await getCollection('pages')` or `await getEntry('projectFrontmatter', 'project')`
 
 ### Astro + Web Awesome
 - **Vite Config**: Special aliases handle Web Awesome's non-exported CSS paths (`astro.config.mjs`)
@@ -109,6 +129,7 @@ interface Props {
 - `packages/myst-awesome-theme/src/components/` - Astro components wrapping Web Awesome functionality  
 - `packages/myst-awesome-theme/src/pages/` - Route definitions with example implementations
 - `packages/myst-awesome-theme/tests/` - Playwright tests for cross-browser layout verification
+- `packages/myst-astro-collections/` - Custom Astro collections for MyST data integration
 - `docs/` - MyST content and configuration (separate build system, workspace package)
 - `context/` - Reference implementation (Furo theme) for comparison
 - `pnpm-workspace.yaml` - Workspace configuration
