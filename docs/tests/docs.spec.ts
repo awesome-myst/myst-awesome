@@ -152,8 +152,12 @@ test.describe("MyST Awesome Docs", () => {
       { timeout: 10000 }
     );
 
-    // Check that icons are present
-    const icons = page.locator("wa-icon");
-    await expect(icons.first()).toBeVisible({ timeout: 5000 });
+    // Check that a specific visible icon is present (book icon in navigation)
+    const bookIcon = page.locator('wa-icon[name="book"]');
+    await expect(bookIcon).toBeVisible({ timeout: 5000 });
+
+    // Verify we have multiple icons present (at least 10)
+    const allIcons = page.locator("wa-icon");
+    expect(await allIcons.count()).toBeGreaterThan(10);
   });
 });
