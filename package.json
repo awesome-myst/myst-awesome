@@ -13,5 +13,11 @@
     "dev-docs": "pnpm --filter=myst-awesome-docs dev",
     "install-all": "pnpm install"
   },
-  "packageManager": "pnpm@10.14.0"
+  "packageManager": "pnpm@10.14.0",
+  "pnpm": {
+    "overrides": {
+      "astro": "5.12.8",
+      "@awesome.me/webawesome": "^3.0.0-beta.3"
+    }
+  }
 }
