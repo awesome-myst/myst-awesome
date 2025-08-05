@@ -6,6 +6,7 @@ import { getEntry } from 'astro:content';
 
 const projectConfig = await getEntry('projectFrontmatter', 'project');
 
+console.log('Project config:', projectConfig);
 const projectTitle = projectConfig?.data?.site?.title ||
                      projectConfig?.data?.project?.title ||
                      'My Project';
@@ -223,14 +224,15 @@ const {
 
   <!-- Table of contents sidebar -->
   {showToc && tocItems && tocItems.length > 0 && (
-    <TableOfContents
-      slot="aside"
-      items={tocItems}
-      title="On this page"
-      sticky={true}
-      collapsible={false}
-      showNumbers={false}
-    />
+    <div slot="aside" class="responsive-toc-wrapper">
+      <TableOfContents
+        items={tocItems}
+        title="On this page"
+        sticky={true}
+        collapsible={false}
+        showNumbers={false}
+      />
+    </div>
   )}
 
   <!-- Footer -->
@@ -245,8 +247,14 @@ const {
   import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js';
   import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js';
 
-  // Theme switching functionality
+  // Add responsive class for 920px breakpoint aside collapsing
   document.addEventListener('DOMContentLoaded', () => {
+    const pageBody = document.querySelector('.page-body');
+    if (pageBody) {
+      pageBody.classList.add('collapse-aside-920');
+    }
+    
+    // Theme switching functionality
     const themeSelector = document.querySelector('.theme-selector') as any;
     const colorSchemeSelector = document.querySelector('.color-scheme-selector') as any;
     
@@ -580,6 +588,13 @@ const {
 
     .edit-link {
       margin-left: 0;
+    }
+  }
+
+  /* Responsive TOC - hide on mobile to prevent empty space */
+  @media (max-width: 920px) {
+    .responsive-toc-wrapper {
+      display: none !important;
     }
   }
 </style>

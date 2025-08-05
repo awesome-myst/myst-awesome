@@ -113,8 +113,9 @@ test.describe("MyST Awesome Docs", () => {
       expect(hasMainContent && hasToggleButton).toBe(true);
     } else {
       // On desktop, check if there's actual content
+      // Use a more specific selector to avoid strict mode violations
       await expect(
-        page.locator("article, .content, .myst-content")
+        page.locator(".docs-article, .myst-content").first()
       ).toBeVisible({
         timeout: 10000,
       });

@@ -600,6 +600,19 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     }
   }
 
+  /* Additional responsive behavior for layouts that need to collapse at 920px */
+  @media (max-width: 920px) {
+    .page-body.collapse-aside-920 {
+      grid-template-columns: 1fr !important;
+      grid-template-areas: "main" !important;
+    }
+    
+    .page-body.collapse-aside-920.has-menu {
+      grid-template-columns: 15rem 1fr !important;
+      grid-template-areas: "menu main" !important;
+    }
+  }
+
   /* Custom properties for layout customization */
   :root {
     --menu-width: 0;
