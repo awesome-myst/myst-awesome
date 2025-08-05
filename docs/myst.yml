@@ -2,16 +2,16 @@
 version: 1
 project:
   id: 1a8d1012-58dc-4f74-afcd-7878dbccaa06
-  title: MyST Awesome Theme
+  title: MyST Awesome
   description: MyST-MD site theme built with Web Awesome.
-  keywords: ["myst", "myst-md", "theme", "web-awesome", "shoelace", "astro", "book", "furo"]
+  keywords: ["myst", "myst-md", "theme", "webawesome", "shoelace", "astro", "book", "furo"]
   authors: ["Matt McCormick"]
   github: "https://github.com/awesome-myst/myst-awesome"
   references:
     python: https://docs.python.org/3.13/
     jupyterbook: https://jupyterbook.org/en/stable/
     jtex: https://mystmd.org/jtex/
-    # spec: https://mystmd.org/spec/
+    spec: https://mystmd.org/spec/
   plugins:
     - src/directives.mjs
   toc:
@@ -19,6 +19,7 @@ project:
     - title: Authoring
       children:
         - file: authoring/typography.md
+
 site:
   title: MyST Awesome Theme Guide
   options:

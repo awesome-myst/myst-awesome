@@ -15,9 +15,9 @@ For example, a level 3 header looks like:
 Try changing the number of `#`s to change the `depth`.
 ```
 
-An alternative syntax, {ref}`setex-headings`, is also supported for level 1 and 2 headers.
+An alternative syntax for setex-headings is also supported for level 1 and 2 headers.
 
-To reference a heading in your text, you can use the `(target)=` syntax, see [{name}](#targeting-headers) for more.
+To reference a heading in your text, you can use the `(target)=` syntax.
 
 ## Inline Text Formatting
 
@@ -81,13 +81,13 @@ You can use GitHub Flavoured Markdown to create task lists, these may be read on
 
 For inline typography for subscript and superscript formatting, it is best practice to use a text-based representation over resorting to math exponents, i.e. `4$^{th}$`.
 This is required in some journal submissions, and using these roles ensure that the output in HTML and $\LaTeX$ is correct.
-The two roles for subscript and superscript are {myst:role}`sub` and {myst:role}`sup`[^long-names], respectively.
+The two roles for subscript and superscript are `sub` and `sup`[^long-names], respectively.
 
 ```{myst}
 H{sub}`2`O, and 4{sup}`th` of July
 ```
 
-[^long-names]: These two roles are also accessible through {myst:role}`subscript` and {myst:role}`superscript`.
+[^long-names]: These two roles are also accessible through the longer forms `subscript` and `superscript`.
 
 % For chemicals you can use the {chem}`H2O`
 
@@ -95,9 +95,9 @@ H{sub}`2`O, and 4{sup}`th` of July
 
 ## Keyboard Input
 
-To denote textual _user_ input from a keyboard, such as {kbd}`Ctrl` + {kbd}`Space`, you can use the {myst:role}`kbd` role[^long-names-kbd].
+To denote textual _user_ input from a keyboard, such as {kbd}`Ctrl` + {kbd}`Space`, you can use the `kbd` role[^long-names-kbd].
 
-[^long-names-kbd]: This role is also accessible through {myst:role}`keyboard`.
+[^long-names-kbd]: This role is also accessible through the longer form `keyboard`.
 
 ```{myst}
 {kbd}`Ctrl` + {kbd}`Space`
@@ -107,7 +107,7 @@ To denote textual _user_ input from a keyboard, such as {kbd}`Ctrl` + {kbd}`Spac
 
 ## Abbreviations
 
-To create an abbreviation, you can use the {myst:role}`abbr` role, in HTML this will ensure that the title of the acronym or abbreviation appears in the title when you hover over the element. In the role, follow the syntax `HR (Heart Rate)` with the abbreviation first followed by the expanded title in parentheses.
+To create an abbreviation, you can use the `abbr` role, in HTML this will ensure that the title of the acronym or abbreviation appears in the title when you hover over the element. In the role, follow the syntax `HR (Heart Rate)` with the abbreviation first followed by the expanded title in parentheses.
 
 ```{myst}
 Well {abbr}`MyST (Markedly Structured Text)` is cool!
@@ -118,7 +118,7 @@ Well {abbr}`MyST (Markedly Structured Text)` is cool!
 
 You can also set abbreviations in your page or project frontmatter to replace all instances of your abbreviation without writing the role every time!
 
-See [](#abbreviations) for more information.
+See the MyST documentation for more information about frontmatter abbreviations.
 ```
 
 ## Quotations
@@ -131,7 +131,7 @@ Quotations are controlled with standard Markdown syntax, by inserting a caret (`
 > -- Hamlet act 4, Scene 5
 ```
 
-The quotes can also be created using a directive (either {myst:directive}`blockquote` or {myst:directive}`epigraph`), which allows you to add classes or labels to the quote. MyST also supports {myst:directive}`pull-quote` directive, which act as attention-grabbing visual elements.
+The quotes can also be created using a directive (either `blockquote` or `epigraph`), which allows you to add classes or labels to the quote. MyST also supports `pull-quote` directive, which act as attention-grabbing visual elements.
 
 ```{myst}
 :::{pull-quote}
