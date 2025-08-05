@@ -4,7 +4,7 @@ test.describe("Hamburger Menu Positioning", () => {
   test("hamburger should be positioned in page-body on mobile", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/");
+    await page.goto("http://localhost:4321/docs-example");
 
     // Test desktop view first (wide screen)
     await page.setViewportSize({ width: 1200, height: 800 });
@@ -44,7 +44,7 @@ test.describe("Hamburger Menu Positioning", () => {
   });
 
   test("hamburger functionality should work", async ({ page }) => {
-    await page.goto("http://localhost:4321/");
+    await page.goto("http://localhost:4321/docs-example");
     await page.setViewportSize({ width: 600, height: 800 });
     await page.waitForLoadState("networkidle");
 

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("CSS Override Hunt", () => {
   test("find what is setting display flex", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example.html");
+    await page.goto("http://localhost:4321/blog-example");
 
     // Search for any CSS that might be setting display: flex on page-layout
     const allFlexRules = await page.evaluate(() => {

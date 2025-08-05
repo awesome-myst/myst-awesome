@@ -14,7 +14,7 @@ test.describe("Theme Switching", () => {
     );
 
     // Navigate to the docs-example page which has theme controls
-    await page.goto("/docs-example");
+    await page.goto("http://localhost:4321/docs-example");
     await page.waitForLoadState("networkidle");
 
     // Wait for components to be fully loaded

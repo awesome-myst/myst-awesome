@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("CSS Debug", () => {
   test("check CSS specificity and overrides", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example.html");
+    await page.goto("http://localhost:4321/blog-example");
 
     // Get all CSS rules that apply to page-layout
     const cssRules = await page.evaluate(() => {

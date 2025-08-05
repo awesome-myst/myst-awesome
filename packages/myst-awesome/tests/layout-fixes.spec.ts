@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Layout Rendering Issues", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example.html");
+    await page.goto("http://localhost:4321/blog-example");
   });
 
   test("should not have horizontally squished content", async ({ page }) => {

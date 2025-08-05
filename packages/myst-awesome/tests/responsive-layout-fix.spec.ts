@@ -5,7 +5,7 @@ test.describe("Responsive Layout Fix", () => {
     page,
   }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4321/");
+    await page.goto("http://localhost:4321/docs-example");
 
     // Set viewport to narrow width (850px - between 768px and 920px where the issue occurred)
     await page.setViewportSize({ width: 850, height: 800 });
@@ -81,7 +81,7 @@ test.describe("Responsive Layout Fix", () => {
 
   test("should preserve aside column on wide screens", async ({ page }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4321/");
+    await page.goto("http://localhost:4321/docs-example");
 
     // Set viewport to wide width
     await page.setViewportSize({ width: 1200, height: 800 });
@@ -137,7 +137,7 @@ test.describe("Responsive Layout Fix", () => {
 
     console.log("Grid areas at 1200px width:", gridAreas);
 
-    // Should still include "aside" in the grid areas at wide width
-    expect(gridAreas).toBe('"main aside"');
+    // Should still include "aside" in the grid areas at wide width (with navigation menu)
+    expect(gridAreas).toBe('"menu main aside"');
   });
 });
