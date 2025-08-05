@@ -6,7 +6,7 @@ project:
   description: MyST-MD site theme built with Web Awesome.
   keywords: ["myst", "myst-md", "theme", "web-awesome", "shoelace", "astro", "book", "furo"]
   authors: ["Matt McCormick"]
-  github: "https://github.com/awesome-myst/myst-awesome-theme"
+  github: "https://github.com/awesome-myst/myst-awesome"
   references:
     python: https://docs.python.org/3.13/
     jupyterbook: https://jupyterbook.org/en/stable/

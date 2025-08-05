@@ -4,11 +4,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter=myst-awesome-theme dev",
-    "build": "pnpm --filter=myst-astro-collections build && pnpm --filter=myst-awesome-theme build",
+    "dev": "pnpm --filter=myst-awesome dev",
+    "build": "pnpm --filter=myst-astro-collections build && pnpm --filter=myst-awesome build",
     "build-collections": "pnpm --filter=myst-astro-collections build",
-    "preview": "pnpm --filter=myst-awesome-theme preview",
-    "test": "pnpm --filter=myst-awesome-theme test",
+    "preview": "pnpm --filter=myst-awesome preview",
+    "test": "pnpm --filter=myst-awesome test",
     "start-myst": "pnpm --filter=myst-awesome-docs run myst-content-server",
     "dev-docs": "pnpm --filter=myst-awesome-docs dev",
     "install-all": "pnpm install"

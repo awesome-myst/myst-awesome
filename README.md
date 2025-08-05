@@ -2,8 +2,8 @@
 
 A modern, responsive documentation theme built with [Astro](https://astro.build) and [Web Awesome](https://webawesome.com) components. Designed for technical documentation with excellent typography, accessibility, and user experience.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/awesome-myst/myst-awesome-theme)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/awesome-myst/myst-awesome-theme)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/awesome-myst/myst-awesome)
+[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/awesome-myst/myst-awesome)
 
 ## ✨ Features
 
@@ -24,8 +24,8 @@ This project uses **pnpm workspaces** for monorepo management.
 
 ```sh
 # Clone the repository
-git clone https://github.com/awesome-myst/myst-awesome-theme.git
-cd myst-awesome-theme
+git clone https://github.com/awesome-myst/myst-awesome.git
+cd myst-awesome
 
 # Install dependencies (using pnpm)
 pnpm install
@@ -41,7 +41,7 @@ pnpm dev-docs
 
 ```
 ├── packages/
-│   └── myst-awesome-theme/     # Main theme package
+│   └── myst-awesome/     # Main theme package
 │       ├── src/                # Astro components and layouts
 │       ├── tests/              # Playwright tests
 │       └── package.json
@@ -58,7 +58,7 @@ pnpm dev-docs
 ```astro
 ---
 // src/pages/my-docs.astro
-import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
+import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
 ---
 
 <DocsLayout 
@@ -107,8 +107,8 @@ One of the most powerful features of MyST Awesome Theme is the ability to overri
 ```astro
 ---
 // Create a custom navigation component
-import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
-import NavigationMenuResolver from 'myst-awesome-theme/components/NavigationMenuResolver.astro';
+import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
+import NavigationMenuResolver from 'myst-awesome/components/NavigationMenuResolver.astro';
 import MyCustomNav from './custom/MyCustomNav.astro';
 ---
 
@@ -208,7 +208,7 @@ Or use the built-in theme controls:
 
 ```astro
 ---
-import ThemeControls from 'myst-awesome-theme/components/ThemeControls.astro';
+import ThemeControls from 'myst-awesome/components/ThemeControls.astro';
 ---
 
 <ThemeControls 
@@ -272,7 +272,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Live Demo](https://myst-awesome-theme.netlify.app)
+- [Live Demo](https://myst-awesome.netlify.app)
 - [Documentation](./docs/)
 - [Component Override Guide](./docs/COMPONENT_OVERRIDES.md)
 - [Web Awesome Docs](https://webawesome.com/docs/)

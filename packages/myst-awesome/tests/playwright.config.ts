@@ -30,7 +30,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "pnpm --filter=myst-awesome-theme dev",
+      command: "pnpm --filter=myst-awesome dev",
       url: "http://localhost:4321",
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,

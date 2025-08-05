@@ -1,7 +1,7 @@
 {
   "name": "@awesome-myst/myst-awesome-docs",
   "version": "1.0.0",
-  "description": "Documentation for the myst-awesome-theme",
+  "description": "Documentation for the myst-awesome",
   "scripts": {
     "dev": "start-server-and-test myst-content-server http://localhost:3100/myst.xref.json \"astro dev\"",
     "build": "start-server-and-test myst-content-server http://localhost:3100/myst.xref.json \"astro build\"",
@@ -15,7 +15,7 @@
     "@awesome.me/webawesome": "^3.0.0-beta.3",
     "@awesome-myst/myst-astro-collections": "workspace:*",
     "astro": "5.12.3",
-    "@awesome-myst/myst-awesome-theme": "workspace:*",
+    "@awesome-myst/myst-awesome": "workspace:*",
     "myst-common": "^1.5.2",
     "myst-directives": "^1.5.2",
     "myst-ext-button": "^0.0.1",

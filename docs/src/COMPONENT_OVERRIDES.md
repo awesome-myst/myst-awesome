@@ -144,8 +144,8 @@ Import your custom component and use it with the appropriate resolver:
 ```astro
 ---
 // src/pages/my-page.astro
-import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
-import NavigationMenuResolver from 'myst-awesome-theme/components/NavigationMenuResolver.astro';
+import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
+import NavigationMenuResolver from 'myst-awesome/components/NavigationMenuResolver.astro';
 import MyNavigationMenu from '../custom/MyNavigationMenu.astro';
 
 const navItems = [

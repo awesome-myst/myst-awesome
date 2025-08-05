@@ -1,4 +1,4 @@
-# Agent Guidelines for myst-awesome-theme
+# Agent Guidelines for myst-awesome
 
 ## Build/Development Commands
 - `deno task dev` - Start Astro dev server

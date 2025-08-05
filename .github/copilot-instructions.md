@@ -4,7 +4,7 @@
 
 This is an **Astro + Web Awesome + MyST integration** that provides a modern documentation theme. Key architectural decisions:
 
-- **Monorepo Structure**: Three packages in `pnpm` workspace - `myst-awesome-theme` (components), `myst-astro-collections` (data integration), and `myst-awesome-docs` (content)
+- **Monorepo Structure**: Three packages in `pnpm` workspace - `myst-awesome` (components), `myst-astro-collections` (data integration), and `myst-awesome-docs` (content)
 - **Dual Build System**: Astro for theme components + MyST content server for documentation compilation
 - **Content Collections**: Custom Astro collections (`mystXref`, `pages`, `projectFrontmatter`) fetch data from MyST server at build time
 - **Type Safety**: Full TypeScript integration with `@awesome-myst/myst-zod` schemas for MyST data validation
@@ -23,7 +23,7 @@ pnpm build-collections  # Build myst-astro-collections only
 pnpm start-myst         # MyST headless server only
 
 # Individual package commands
-cd packages/myst-awesome-theme && pnpm dev     # Theme only
+cd packages/myst-awesome && pnpm dev     # Theme only
 cd packages/myst-astro-collections && pnpm build  # Collections package
 cd docs && pnpm myst-content-server           # MyST server only
 ```
@@ -125,10 +125,10 @@ interface Props {
 
 ## File Structure Significance
 
-- `packages/myst-awesome-theme/src/layouts/` - Reusable page layouts with slot-based architecture
-- `packages/myst-awesome-theme/src/components/` - Astro components wrapping Web Awesome functionality  
-- `packages/myst-awesome-theme/src/pages/` - Route definitions with example implementations
-- `packages/myst-awesome-theme/tests/` - Playwright tests for cross-browser layout verification
+- `packages/myst-awesome/src/layouts/` - Reusable page layouts with slot-based architecture
+- `packages/myst-awesome/src/components/` - Astro components wrapping Web Awesome functionality  
+- `packages/myst-awesome/src/pages/` - Route definitions with example implementations
+- `packages/myst-awesome/tests/` - Playwright tests for cross-browser layout verification
 - `packages/myst-astro-collections/` - Custom Astro collections for MyST data integration
 - `docs/` - MyST content and configuration (separate build system, workspace package)
 - `context/` - Reference implementation (Furo theme) for comparison
@@ -141,4 +141,4 @@ interface Props {
 - **Astro 5.x** with TypeScript strict mode
 - **Web Awesome 3.x** beta for latest component features
 - **MyST 1.3.x** for content compilation
-- **Workspace Dependencies**: `myst-awesome-docs` depends on `myst-awesome-theme` via `workspace:*`
+- **Workspace Dependencies**: `myst-awesome-docs` depends on `myst-awesome` via `workspace:*`

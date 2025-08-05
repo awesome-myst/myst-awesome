@@ -25,7 +25,7 @@ export const collections = createMystCollections({
           "furo",
         ],
         authors: ["Matt McCormick"],
-        github: "https://github.com/awesome-myst/myst-awesome-theme",
+        github: "https://github.com/awesome-myst/myst-awesome",
       },
       site: {
         title: "MyST Awesome Theme Guide",

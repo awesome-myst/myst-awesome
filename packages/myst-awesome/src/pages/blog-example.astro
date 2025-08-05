@@ -91,11 +91,11 @@ const tags = ['Web Development', 'Astro', 'Web Awesome', 'Documentation', 'Desig
     <h3>Step 1: Installation</h3>
     <p>First, install the theme and its dependencies:</p>
 
-    <pre><code>npm install myst-awesome-theme @awesome.me/webawesome
-# or
-yarn add myst-awesome-theme @awesome.me/webawesome
-# or
-pnpm add myst-awesome-theme @awesome.me/webawesome</code></pre>
+    <pre><code>npm install myst-awesome @awesome.me/webawesome
+
+yarn add myst-awesome @awesome.me/webawesome
+
+pnpm add myst-awesome @awesome.me/webawesome</code></pre>
 
     <h3>Step 2: Configuration</h3>
     <p>Configure your Astro project to use the theme components:</p>
@@ -115,7 +115,7 @@ export default defineConfig(&#123;
 
     <pre><code>---
 // src/pages/docs/index.astro
-import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
+import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
 ---
 
 &lt;DocsLayout title="My Documentation"&gt;
@@ -209,7 +209,7 @@ import DocsLayout from 'myst-awesome-theme/layouts/DocsLayout.astro';
       <h4>Data Display</h4>
       <wa-details summary="View Code Example">
         <pre><code>// Example component usage
-import &#123; DocsLayout &#125; from 'myst-awesome-theme';
+import &#123; DocsLayout &#125; from 'myst-awesome';
 
 export default function MyPage() &#123;
   return (

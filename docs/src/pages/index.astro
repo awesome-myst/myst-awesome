@@ -1,7 +1,7 @@
 ---
-import BasePage from '@awesome-myst/myst-awesome-theme/layouts/BasePage.astro';
-import NavigationMenu from '@awesome-myst/myst-awesome-theme/components/NavigationMenu.astro';
-import ThemeControls from '@awesome-myst/myst-awesome-theme/components/ThemeControls.astro';
+import BasePage from '@awesome-myst/myst-awesome/layouts/BasePage.astro';
+import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
+import ThemeControls from '@awesome-myst/myst-awesome/components/ThemeControls.astro';
 import { getCollection, getEntry } from 'astro:content';
 
 // Get project configuration and pages data
@@ -151,8 +151,8 @@ const navItems = pagesData.map(page => ({
         <div class="quick-start-code">
           <wa-card>
             <div slot="header">Installation</div>
-            <pre><code>git clone https://github.com/awesome-myst/myst-awesome-theme.git
-cd myst-awesome-theme
+            <pre><code>git clone https://github.com/awesome-myst/myst-awesome.git
+cd myst-awesome
 pnpm install
 pnpm dev</code></pre>
           </wa-card>
@@ -181,8 +181,8 @@ pnpm dev</code></pre>
           <h4>Community</h4>
           <ul>
             <li><a href={githubUrl}>GitHub</a></li>
-            <li><a href="https://github.com/awesome-myst/myst-awesome-theme/issues">Issues</a></li>
-            <li><a href="https://github.com/awesome-myst/myst-awesome-theme/discussions">Discussions</a></li>
+            <li><a href="https://github.com/awesome-myst/myst-awesome/issues">Issues</a></li>
+            <li><a href="https://github.com/awesome-myst/myst-awesome/discussions">Discussions</a></li>
           </ul>
         </div>
       </div>

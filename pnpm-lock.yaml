@@ -13,9 +13,9 @@ importers:
       '@awesome-myst/myst-astro-collections':
         specifier: workspace:*
         version: link:../packages/myst-astro-collections
-      '@awesome-myst/myst-awesome-theme':
+      '@awesome-myst/myst-awesome':
         specifier: workspace:*
-        version: link:../packages/myst-awesome-theme
+        version: link:../packages/myst-awesome
       '@awesome.me/webawesome':
         specifier: ^3.0.0-beta.3
         version: 3.0.0-beta.3(@floating-ui/utils@0.2.10)
@@ -79,7 +79,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/myst-awesome-theme:
+  packages/myst-awesome:
     dependencies:
       '@astrojs/check':
         specifier: ^0.9.4
