@@ -75,6 +75,9 @@ test.describe("Theme Switching", () => {
   });
 
   test("should switch themes correctly", async ({ page }) => {
+    // Listen for console logs
+    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+
     const themeSelector = page.locator(".theme-selector");
     const htmlElement = page.locator("html");
 

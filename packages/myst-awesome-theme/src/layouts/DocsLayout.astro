@@ -244,6 +244,43 @@ const {
   import '@awesome.me/webawesome/dist/components/divider/divider.js';
   import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js';
   import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js';
+
+  // Theme switching functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeSelector = document.querySelector('.theme-selector') as any;
+    const colorSchemeSelector = document.querySelector('.color-scheme-selector') as any;
+    
+    if (themeSelector) {
+      // Set initial value from localStorage
+      const savedTheme = localStorage.getItem('theme') || 'default';
+      themeSelector.value = savedTheme;
+      
+      themeSelector.addEventListener('change', (e: any) => {
+        if ((window as any).setTheme) {
+          (window as any).setTheme(e.target.value);
+        }
+      });
+    } else {
+      console.log('Theme selector not found');
+    }
+
+    if (colorSchemeSelector) {
+      // Set initial value from localStorage
+      const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
+      colorSchemeSelector.value = savedColorScheme;
+      
+      colorSchemeSelector.addEventListener('change', (e: any) => {
+        console.log('Color scheme selector changed:', e.target.value);
+        if ((window as any).setColorScheme) {
+          (window as any).setColorScheme(e.target.value);
+        } else {
+          console.error('setColorScheme function not available on window');
+        }
+      });
+    } else {
+      console.log('Color scheme selector not found');
+    }
+  });
 </script>
 
 <style>

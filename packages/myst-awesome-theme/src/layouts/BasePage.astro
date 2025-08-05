@@ -231,14 +231,17 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
       // Color scheme switching
       function setColorScheme(scheme: 'light' | 'dark' | 'auto') {
+        console.log('setColorScheme called with:', scheme);
         localStorage.setItem('color-scheme', scheme);
         const isDark = scheme === 'dark' || (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.toggle('wa-dark', isDark);
         document.body.setAttribute('data-theme', scheme);
+        console.log('HTML classes after color scheme change:', document.documentElement.className);
       }
 
       // Theme switching
       function setTheme(theme: string) {
+        console.log('setTheme called with:', theme);
         localStorage.setItem('theme', theme);
 
         // Remove existing theme classes
@@ -251,11 +254,21 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
         if (theme !== 'default') {
           document.documentElement.classList.add(`wa-theme-${theme}`);
         }
+        console.log('HTML classes after theme change:', document.documentElement.className);
       }
 
       // Expose functions globally for theme controls
       (window as any).setColorScheme = setColorScheme;
       (window as any).setTheme = setTheme;
+
+      // Remove wa-cloak class once Web Awesome is loaded
+      // This ensures proper theme rendering
+      document.addEventListener('DOMContentLoaded', () => {
+        // Wait for next frame to ensure Web Awesome has had time to initialize
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove('wa-cloak');
+        });
+      });
     </script>
   </body>
 </html>
@@ -652,5 +665,6 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/card/card.js';
   import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
   import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
 </script>
