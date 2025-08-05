@@ -89,6 +89,12 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
       // Fetch the actual page data for each reference
       const pageDataPromises = pageReferences.map(async (ref) => {
         try {
+          // Validate that ref has required properties
+          if (!ref.url || !ref.data) {
+            console.warn(`Invalid page reference - missing url or data:`, ref);
+            return null;
+          }
+
           const pageResponse = await fetch(`${baseUrl}${ref.data}`, {
             signal: controller.signal,
           });
@@ -103,7 +109,8 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
           const pageData = await pageResponse.json();
           return {
             id: ref.url, // Use URL as the ID
-            ...pageData,
+            ...ref, // Include original reference data
+            ...pageData, // Include page content
           };
         } catch (error) {
           console.warn(`Failed to load page data for ${ref.url}:`, error);
@@ -115,7 +122,12 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
       const pageDataResults = await Promise.all(pageDataPromises);
 
       // Filter out any null results and return
-      return pageDataResults.filter((data) => data !== null);
+      const validPages = pageDataResults.filter((data) => data !== null);
+      console.log(
+        `Loaded ${validPages.length} valid pages out of ${pageReferences.length} references`
+      );
+
+      return validPages;
     } catch (error) {
       console.warn("Failed to load pages data:", error);
       return [];

@@ -8,10 +8,12 @@ export async function getStaticPaths() {
   // Get all page entries from the pages collection
   const pages = await getCollection('pages');
 
-  return pages.filter((page) => page.id !== '/').map((page) => ({
-    params: { id: page.id.slice(1) }, // Remove leading slash for URL params
-    props: { page },
-  }));
+  return pages
+    .filter((page) => page.id && page.id !== '/' && page.id.startsWith('/'))
+    .map((page) => ({
+      params: { id: page.id.slice(1) }, // Remove leading slash for URL params
+      props: { page },
+    }));
 }
 
 interface Props {
@@ -51,13 +53,15 @@ const description = pageContent?.frontmatter?.description ||
                    'A MyST Markdown page';
 
 // Create navigation items from all pages
-const navItems = allPages.map(p => ({
-  title: p.id === '/' ? 'Home' :
-         (p.id.slice(1).charAt(0).toUpperCase() + p.id.slice(2)) || 'Page',
-  href: p.id === '/' ? '/' : `/book/${p.id.slice(1)}`,
-  current: p.id === page.id,
-  icon: p.id === '/' ? 'home' : 'file-text'
-}));
+const navItems = allPages
+  .filter(p => p.id)
+  .map(p => ({
+    title: p.id === '/' ? 'Home' :
+           (p.id.slice(1).charAt(0).toUpperCase() + p.id.slice(2)) || 'Page',
+    href: p.id === '/' ? '/' : `/book/${p.id.slice(1)}`,
+    current: p.id === page.id,
+    icon: p.id === '/' ? 'home' : 'file-text'
+  }));
 
 // Extract table of contents from MyST content
 const tocItems: Array<{level: number, title: string, href: string, id: string}> = [];
@@ -145,14 +149,14 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
   tocItems={tocItems}
   showBreadcrumbs={true}
   showEditButton={true}
-  editUrl={`${projectConfig?.data.project?.github || ''}/edit/main/docs/${page.data.url === '/' ? 'index' : page.data.url.slice(1)}.md`}
+  editUrl={`${projectConfig?.data.project?.github || ''}/edit/main/docs/${page.data?.url === '/' ? 'index' : (page.data?.url || '').slice(1)}.md`}
   author={projectConfig?.data.project?.authors?.[0] || 'MyST Team'}
   lastModified={new Date()}
-  nextPage={nextPage ? {
+  nextPage={nextPage && nextPage.id ? {
     title: nextPage.id === '/' ? 'Home' : nextPage.id.slice(1),
     href: nextPage.id === '/' ? '/' : `/book/${nextPage.id.slice(1)}`
   } : undefined}
-  prevPage={prevPage ? {
+  prevPage={prevPage && prevPage.id ? {
     title: prevPage.id === '/' ? 'Home' : prevPage.id.slice(1),
     href: prevPage.id === '/' ? '/' : `/book/${prevPage.id.slice(1)}`
   } : undefined}

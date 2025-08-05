@@ -6,10 +6,12 @@ export async function getStaticPaths() {
   // Get all page entries from the pages collection
   const pages = await getCollection('pages');
 
-  return pages.filter((page) => page.id !== '/').map((page) => ({
-    params: { id: page.id.slice(1) }, // Remove leading slash
-    props: { page },
-  }));
+  return pages
+    .filter((page) => page.id && page.id !== '/' && page.id.startsWith('/'))
+    .map((page) => ({
+      params: { id: page.id.slice(1) }, // Remove leading slash
+      props: { page },
+    }));
 }
 
 interface Props {
