@@ -85,6 +85,11 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       <!-- Main body container -->
       <div class="page-body">
 
+        <!-- Mobile navigation toggle button (positioned under subheader on mobile) -->
+        <wa-button class="mobile-nav-toggle" appearance="plain">
+          <wa-icon name="bars" label="Toggle navigation"></wa-icon>
+        </wa-button>
+
         <!-- Navigation menu -->
         {(Astro.slots.has('navigation') || Astro.slots.has('navigation-header') || Astro.slots.has('navigation-footer')) && (
           <>
@@ -162,11 +167,6 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
         </footer>
       )}
     </div>
-
-    <!-- Mobile navigation toggle button -->
-    <wa-button class="mobile-nav-toggle" appearance="plain" data-mobile-only>
-      <wa-icon name="bars" label="Toggle navigation"></wa-icon>
-    </wa-button>
 
     <!-- Theme and navigation scripts -->
     <script>
@@ -412,6 +412,16 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     max-width: 100%;
   }
 
+  /* Mobile navigation toggle is hidden by default and positioned within the page-body */
+  .mobile-nav-toggle {
+    justify-self: start;
+    align-self: center;
+    z-index: 1000;
+    display: none;
+    margin: var(--wa-space-s) var(--wa-space-m);
+    width: fit-content;
+  }
+
   /* Dynamic grid layout based on content presence */
   .page-body:not(:has(.page-menu)):not(:has(.page-aside)) {
     grid-template-columns: 1fr;
@@ -514,11 +524,12 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
   }
 
   .mobile-nav-toggle {
-    position: fixed;
-    top: var(--wa-space-m);
-    left: var(--wa-space-m);
+    justify-self: start;
+    align-self: center;
     z-index: 1000;
     display: none;
+    margin: var(--wa-space-s) var(--wa-space-m);
+    width: fit-content;
   }
 
   /* Main content */
@@ -591,25 +602,43 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
   /* Responsive behavior */
   @media (max-width: 768px) {
     .page-body {
-      grid-template-columns: 1fr;
-      grid-template-areas: "main";
+      display: flex;
+      flex-direction: column;
     }
 
     .page-main {
       padding: var(--wa-space-m);
+      flex: 1;
+    }
+    
+    .mobile-nav-toggle {
+      display: block;
+      order: -1; /* Ensure it appears before other content */
+    }
+    
+    .page-menu {
+      display: none;
     }
   }
 
   /* Additional responsive behavior for layouts that need to collapse at 920px */
   @media (max-width: 920px) {
     .page-body.collapse-aside-920 {
-      grid-template-columns: 1fr !important;
-      grid-template-areas: "main" !important;
+      display: flex;
+      flex-direction: column;
     }
     
-    .page-body.collapse-aside-920.has-menu {
-      grid-template-columns: 15rem 1fr !important;
-      grid-template-areas: "menu main" !important;
+    .page-body.collapse-aside-920 .page-main {
+      flex: 1;
+    }
+    
+    .page-body.collapse-aside-920 .mobile-nav-toggle {
+      display: block;
+      order: -1;
+    }
+    
+    .page-body.collapse-aside-920.has-menu .page-menu {
+      display: none;
     }
   }
 
