@@ -23,5 +23,5 @@ project:
 site:
   title: MyST Awesome Theme Guide
   options:
-    favicon: favicon.ico
-    logo: logo.png
+    favicon: assets/favicon.ico
+    logo: assets/logo.png
