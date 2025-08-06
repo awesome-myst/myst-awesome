@@ -417,7 +417,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     position: fixed;
     top: var(--wa-space-s);
     left: var(--wa-space-s);
-    z-index: 1000;
+    z-index: 1001; /* Higher than header sticky z-index */
     display: none;
   }
 
@@ -625,6 +625,15 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     
     .mobile-nav-toggle {
       display: block !important;
+    }
+
+    /* Add padding to header content to avoid overlap with hamburger */
+    .page-header {
+      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m)); /* hamburger width + spacing */
+    }
+
+    .page-banner {
+      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m)); /* hamburger width + spacing */
     }
   }
 
