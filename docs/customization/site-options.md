@@ -67,9 +67,9 @@ site:
 
 #### `logo`
 - **Type**: `string` (file path or URL)
-- **Description**: Path to your site's logo image. This appears in the site header/navigation.
+- **Description**: Path to your site's logo image. This appears in the site navigation.
 - **Example**: `logo: assets/logo.svg`
-- **Themes**: `book-theme`, `article-theme`
+- **Templates**: `awesome-book`
 
 #### `favicon`
 - **Type**: `string` (file path or URL)

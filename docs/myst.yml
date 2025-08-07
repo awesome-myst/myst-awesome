@@ -16,6 +16,9 @@ project:
     - src/directives.mjs
   toc:
     - file: index.md
+    - title: Customization
+      children:
+        - file: customization/site-options.md
     - title: Authoring
       children:
         - file: authoring/typography.md
