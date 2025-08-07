@@ -3,6 +3,8 @@ import { createProjectFrontmatterCollection } from "@awesome-myst/myst-astro-col
 // Create MyST collections with default configuration
 export const collections = {
   projectFrontmatter: createProjectFrontmatterCollection({
-    staticConfig: {},
+    staticConfig: {
+      id: "myst-awesome",
+    },
   }),
 };
