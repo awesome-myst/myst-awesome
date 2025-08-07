@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
 
-console.log('Project config:', projectConfig);
+// console.log('Project config:', projectConfig);
 const projectTitle = projectConfig?.data?.site?.title ||
                      projectConfig?.data?.project?.title ||
                      'My Project';

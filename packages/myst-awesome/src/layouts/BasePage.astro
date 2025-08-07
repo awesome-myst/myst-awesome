@@ -20,8 +20,36 @@ const {
 } = Astro.props;
 
 import { getCollection } from 'astro:content';
-const projectConfig = (await getCollection('projectFrontmatter'))[0];
-console.log('Project config:', projectConfig);
+
+// Simple try-catch to avoid warnings if projectFrontmatter collection doesn't exist
+let projectConfig: any = null;
+try {
+  const collection = await getCollection('projectFrontmatter' as any);
+  projectConfig = collection?.[0] || null;
+} catch {
+  // Collection not available - silently continue with defaults
+}
+
+// Determine favicon path and type
+let faviconPath = "/favicon.png"; // default fallback
+let faviconType = "image/png";
+
+if (projectConfig?.data?.options?.favicon) {
+  const projectFaviconPath = projectConfig.data.options.favicon;
+  const faviconExtension = projectFaviconPath.split('.').pop()?.toLowerCase();
+
+  // Get the basename for the public URL
+  const basename = projectFaviconPath.split('/').pop();
+  faviconPath = `/${basename}`;
+
+  // Set the appropriate MIME type
+  faviconType = faviconExtension === 'ico' ? 'image/x-icon' :
+               faviconExtension === 'png' ? 'image/png' :
+               faviconExtension === 'jpg' || faviconExtension === 'jpeg' ? 'image/jpeg' :
+               faviconExtension === 'gif' ? 'image/gif' :
+               faviconExtension === 'svg' ? 'image/svg+xml' :
+               'image/png'; // fallback
+}
 
 // Import Web Awesome CSS for proper bundling and tree shaking
 import "@awesome.me/webawesome/dist/styles/webawesome.css";
@@ -36,7 +64,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
 
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type={faviconType} href={faviconPath} />
     <title>{title}</title>
 
     <!-- Theme and color scheme initialization -->
@@ -626,7 +654,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     .page-main {
       padding: var(--wa-space-m);
     }
-    
+
     .mobile-nav-toggle {
       display: block !important;
     }
@@ -647,7 +675,7 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       grid-template-columns: 1fr !important;
       grid-template-areas: "main" !important;
     }
-    
+
     .page-body.collapse-aside-920.has-menu {
       grid-template-columns: 1fr !important;
       grid-template-areas: "main" !important;

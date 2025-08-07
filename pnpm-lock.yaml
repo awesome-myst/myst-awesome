@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@awesome-myst/myst-zod': ^0.6.0
   astro: 5.12.8
   '@awesome.me/webawesome': ^3.0.0-beta.4
 
@@ -97,9 +98,12 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.4
         version: 0.9.4(typescript@5.8.3)
+      '@awesome-myst/myst-astro-collections':
+        specifier: workspace:*
+        version: link:../myst-astro-collections
       '@awesome-myst/myst-zod':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.6.0
+        version: 0.6.0
       '@awesome.me/webawesome':
         specifier: ^3.0.0-beta.4
         version: 3.0.0-beta.4(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
@@ -153,9 +157,6 @@ packages:
 
   '@astrojs/yaml2ts@0.2.2':
     resolution: {integrity: sha512-GOfvSr5Nqy2z5XiwqTouBBpy5FyI6DEe+/g/Mk5am9SjILN1S5fOEvYK0GuWHg98yS/dobP4m8qyqw/URW35fQ==}
-
-  '@awesome-myst/myst-zod@0.4.0':
-    resolution: {integrity: sha512-55aBcfC4MEVIwZsHF4AB8+sVdVbkug5yWquwZoiwVE0CMfbXdbQZoVGgUTBhI5zISpwQIQozjfb/LhO4uZJb7A==}
 
   '@awesome-myst/myst-zod@0.6.0':
     resolution: {integrity: sha512-mwpXyxlTqNtZduCeOE09sIJPdfl4/nQYTKLy0McjOnU0r0SP2Gd8ofNarI3hQhw5chwkBxpiFQI0I7F9OjeBWg==}
@@ -2500,15 +2501,6 @@ snapshots:
   '@astrojs/yaml2ts@0.2.2':
     dependencies:
       yaml: 2.8.0
-
-  '@awesome-myst/myst-zod@0.4.0':
-    dependencies:
-      credit-roles: 2.1.0
-      doi-utils: 2.0.6
-      orcid: 1.0.0
-      simple-validators: 1.1.1
-      spdx-correct: 3.2.0
-      zod: 3.25.76
 
   '@awesome-myst/myst-zod@0.6.0':
     dependencies:

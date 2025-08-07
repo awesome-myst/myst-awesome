@@ -27,3 +27,6 @@ public/wa-dist/
 
 test-results/
 playwright-report/
+
+packages/myst-awesome/public/favicon.ico
+docs/public/favicon.ico

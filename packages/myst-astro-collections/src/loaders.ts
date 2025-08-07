@@ -1,6 +1,6 @@
 import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
-import { readFileSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
+import { resolve, dirname, join, basename } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { randomUUID } from "node:crypto";
 
@@ -200,6 +200,35 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
         );
       }
 
+      // Handle favicon copying if site.options.favicon is specified
+      if (frontmatter.site?.options?.favicon) {
+        try {
+          const faviconRelativePath = frontmatter.site.options.favicon;
+          const mystConfigDir = dirname(fullPath);
+          const faviconSourcePath = resolve(mystConfigDir, faviconRelativePath);
+
+          if (existsSync(faviconSourcePath)) {
+            // Create public directory in the same directory as myst.yml
+            const publicDir = join(mystConfigDir, "public");
+            if (!existsSync(publicDir)) {
+              mkdirSync(publicDir, { recursive: true });
+            }
+
+            // Copy favicon to public directory with basename
+            const faviconBasename = basename(faviconRelativePath);
+            const faviconTargetPath = join(publicDir, faviconBasename);
+            copyFileSync(faviconSourcePath, faviconTargetPath);
+            console.log(
+              `✓ Copied favicon: ${faviconRelativePath} → public/${faviconBasename}`
+            );
+          } else {
+            console.warn(`⚠ Favicon file not found: ${faviconSourcePath}`);
+          }
+        } catch (error) {
+          console.warn("Failed to copy favicon:", error);
+        }
+      }
+
       const result = {
         ...frontmatter.project,
         ...frontmatter.site, // Include site options if available
@@ -222,10 +251,6 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
         },
         site: {
           title: "MyST Awesome",
-          options: {
-            favicon: "assets/favicon.ico",
-            logo: "assets/logo.png",
-          },
         },
       };
 
