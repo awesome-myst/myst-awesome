@@ -229,23 +229,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
         const isMobile = e.matches;
         pageLayout.setAttribute('data-view', isMobile ? 'mobile' : 'desktop');
 
-        const desktopNav = document.querySelector<HTMLElement>('[data-view="desktop"]');
-        const aside = document.querySelector<HTMLElement>('.page-aside');
-
-        if (desktopNav) {
-          const hasCustomNav = desktopNav.querySelector('.custom-navigation-menu');
-          desktopNav.style.display = isMobile && !hasCustomNav ? 'none' : 'flex';
-        }
-
-        if (toggleButton) {
-            const hasCustomNav = document.querySelector('.custom-navigation-menu');
-            toggleButton.style.display = isMobile && !hasCustomNav ? 'block' : 'none';
-        }
-
-        if (aside) {
-            const hasCustomToc = aside.querySelector('.custom-table-of-contents');
-            aside.style.display = isMobile && !hasCustomToc ? 'none' : 'flex';
-        }
+        // CSS now handles the display logic based on data-view attribute
+        // No need to set inline styles that fight with CSS specificity
       }
 
       mediaQuery.addEventListener('change', handleViewportChange);
@@ -647,7 +632,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       grid-template-areas: "main" !important;
     }
 
-    .page-menu[data-view="desktop"] {
+    /* Use data-view attribute for responsive navigation control */
+    .page-layout[data-view="mobile"] .page-menu[data-view="desktop"] {
       display: none !important;
     }
 
@@ -655,7 +641,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       padding: var(--wa-space-m);
     }
 
-    .mobile-nav-toggle {
+    /* Use data-view attribute for responsive hamburger control */
+    .page-layout[data-view="mobile"] .mobile-nav-toggle {
       display: block !important;
     }
 
@@ -667,6 +654,16 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     .page-banner {
       padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m)); /* hamburger width + spacing */
     }
+  }
+
+  /* Desktop view - ensure navigation is visible */
+  .page-layout[data-view="desktop"] .page-menu[data-view="desktop"] {
+    display: flex;
+  }
+
+  /* Desktop view - ensure hamburger is hidden */
+  .page-layout[data-view="desktop"] .mobile-nav-toggle {
+    display: none !important;
   }
 
   /* Additional responsive behavior for layouts that need to collapse at 920px */
