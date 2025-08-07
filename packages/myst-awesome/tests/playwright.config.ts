@@ -8,11 +8,12 @@ export default defineConfig({
   },
   workers: process.env.CI ? 1 : undefined,
   fullyParallel: true,
-  reporter: [["html", { open: "never" }]],
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://localhost:4321",
+    baseURL: "http://localhost:4322",
     actionTimeout: 0,
     trace: "on-first-retry",
+    screenshot: "only-on-failure",
   },
   projects: [
     {
@@ -31,15 +32,9 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm --filter=myst-awesome dev",
-      url: "http://localhost:4321",
+      url: "http://localhost:4322",
       reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
-    },
-    {
-      command: "pnpm --filter=myst-awesome-docs run myst-content-server",
-      url: "http://localhost:3100",
-      reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
+      timeout: 30 * 1000,
     },
   ],
 });

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Layout Final Verification", () => {
   test("verify layout works on blog example", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     const measurements = await page.evaluate(() => {
       return {
@@ -37,7 +37,7 @@ test.describe("Layout Final Verification", () => {
   });
 
   test("verify responsive behavior", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     // Test different viewport sizes
     const sizes = [

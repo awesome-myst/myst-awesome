@@ -5,7 +5,7 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
     page,
   }) => {
     // Navigate to the docs-example page (which uses DocsLayout)
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Wait for content to load
     await page.waitForLoadState("networkidle");
@@ -61,7 +61,7 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
   });
 
   test("visual verification - narrow width layout", async ({ page }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Set narrow viewport
     await page.setViewportSize({ width: 850, height: 800 });
@@ -75,7 +75,7 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
   });
 
   test("visual verification - wide width layout", async ({ page }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Set wide viewport
     await page.setViewportSize({ width: 1200, height: 800 });

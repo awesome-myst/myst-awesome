@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Layout Debugging", () => {
   test("debug layout structure", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     // Log the actual HTML structure
     const pageBodyHTML = await page.locator(".page-body").innerHTML();

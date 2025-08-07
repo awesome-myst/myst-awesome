@@ -4,7 +4,7 @@ test.describe("Navigation Responsive Fix", () => {
   test("navigation should reappear when transitioning back from mobile to desktop", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
@@ -72,7 +72,7 @@ test.describe("Navigation Responsive Fix", () => {
   test("aside should also reappear when transitioning back from mobile to desktop", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
@@ -116,7 +116,7 @@ test.describe("Navigation Responsive Fix", () => {
   test("custom navigation should always be visible regardless of viewport", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Inject custom navigation to test the custom navigation behavior
     await page.addStyleTag({

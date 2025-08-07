@@ -4,7 +4,7 @@ test.describe("Hamburger Menu Top-Left Positioning", () => {
   test("hamburger should be positioned at top-left of page on mobile", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Test desktop view first (wide screen)
     await page.setViewportSize({ width: 1200, height: 800 });
@@ -48,7 +48,7 @@ test.describe("Hamburger Menu Top-Left Positioning", () => {
   test("page layout should maintain collapsed horizontal space", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
     await page.setViewportSize({ width: 600, height: 800 });
     await page.waitForLoadState("networkidle");
 

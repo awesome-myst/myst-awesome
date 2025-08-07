@@ -75,6 +75,12 @@ function faviconCopyPlugin() {
 
 // https://astro.build/config
 export default defineConfig({
+  server: {
+    // Use a different port to avoid conflicts with other services
+    // This is useful for local development when running multiple projects
+    port: 4322,
+  },
+
   vite: {
     // Configure module resolution to handle Web Awesome's non-exported paths
     ssr: {

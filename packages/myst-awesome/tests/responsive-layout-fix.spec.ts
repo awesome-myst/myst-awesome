@@ -5,7 +5,7 @@ test.describe("Responsive Layout Fix", () => {
     page,
   }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Set viewport to narrow width (850px - between 768px and 920px where the issue occurred)
     await page.setViewportSize({ width: 850, height: 800 });
@@ -81,7 +81,7 @@ test.describe("Responsive Layout Fix", () => {
 
   test("should preserve aside column on wide screens", async ({ page }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4321/docs-example");
+    await page.goto("http://localhost:4322/docs-example");
 
     // Set viewport to wide width
     await page.setViewportSize({ width: 1200, height: 800 });

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Layout Width Analysis", () => {
   test("analyze width distribution", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     // Get all width measurements
     const widths = await page.evaluate(() => {

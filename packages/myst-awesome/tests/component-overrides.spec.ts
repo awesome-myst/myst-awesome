@@ -8,7 +8,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Component Override System", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the working demo page
-    await page.goto("http://localhost:4321/working-demo");
+    await page.goto("http://localhost:4322/working-demo");
     await page.waitForLoadState("networkidle");
   });
 

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Direct CSS Test", () => {
   test("manually set proper grid and check result", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     // First, check current state
     const beforeState = await page.evaluate(() => {

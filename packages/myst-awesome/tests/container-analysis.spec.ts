@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("DOM Hierarchy Analysis", () => {
   test("analyze parent containers", async ({ page }) => {
-    await page.goto("http://localhost:4321/blog-example");
+    await page.goto("http://localhost:4322/blog-example");
 
     // Get width of all parent containers
     const containerWidths = await page.evaluate(() => {
