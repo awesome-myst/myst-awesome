@@ -21,7 +21,7 @@ project:
         - file: authoring/typography.md
 
 site:
-  title: MyST Awesome Theme Guide
+  title: MyST Awesome Guide
   options:
     favicon: assets/favicon.ico
     logo: assets/logo.png
