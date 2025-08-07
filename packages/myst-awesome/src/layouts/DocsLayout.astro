@@ -5,11 +5,11 @@ import Footer from '../components/Footer.astro';
 import { getCollection } from 'astro:content';
 
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
+console.log('Project pages template config:', projectConfig);
 
-// console.log('Project config:', projectConfig);
-const projectTitle = projectConfig?.data?.site?.title ||
-                     projectConfig?.data?.project?.title ||
-                     'My Project';
+const projectTitle = projectConfig?.data?.title ||
+                     'Awesome Docs';
+
 
 interface TocItem {
   level: number;
