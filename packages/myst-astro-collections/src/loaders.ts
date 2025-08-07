@@ -233,7 +233,6 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
         ...frontmatter.project,
         ...frontmatter.site, // Include site options if available
       };
-      console.log("Loaded project frontmatter from myst.yml:", result);
       return [result];
     } catch (error) {
       console.warn("Failed to load project frontmatter:", error);
