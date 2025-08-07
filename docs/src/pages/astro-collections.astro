@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 // Get all collections
 const mystXrefData = await getCollection('mystXref');
@@ -33,7 +33,7 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
     <main>
       <section class="collections-overview">
         <h2>Content Collections Overview</h2>
-        
+
         <div class="collection-grid">
           <div class="collection-card">
             <h3>MyST XRef Collection</h3>
@@ -113,12 +113,12 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
                 </div>
               ))}
             </div>
-            
+
             <h3>Recent References</h3>
             <div class="references-list">
               {xrefEntry.data.references.slice(0, 10).map((ref) => (
                 <div class="reference-item">
-                  <strong>{ref.kind}:</strong> 
+                  <strong>{ref.kind}:</strong>
                   <a href={ref.url}>{ref.url}</a>
                   {ref.identifier && <span class="identifier">#{ref.identifier}</span>}
                   <br />
@@ -373,19 +373,19 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
     header h1 {
       font-size: 2rem;
     }
-    
+
     header p {
       font-size: 1rem;
     }
-    
+
     main {
       padding: 0 1rem;
     }
-    
+
     .collection-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .reference-types {
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }

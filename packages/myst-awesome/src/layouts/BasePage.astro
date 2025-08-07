@@ -19,6 +19,10 @@ const {
   navOpen = false
 } = Astro.props;
 
+import { getCollection } from 'astro:content';
+const projectConfig = (await getCollection('projectFrontmatter'))[0];
+console.log('Project config:', projectConfig);
+
 // Import Web Awesome CSS for proper bundling and tree shaking
 import "@awesome.me/webawesome/dist/styles/webawesome.css";
 import "@awesome.me/webawesome/dist/styles/themes/default.css";

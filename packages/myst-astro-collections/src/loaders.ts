@@ -2,6 +2,7 @@ import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { parse as parseYaml } from "yaml";
+import { randomUUID } from "node:crypto";
 
 /**
  * Configuration for MyST content server
@@ -87,7 +88,6 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
       const pageReferences = xrefData.references.filter(
         (ref) => ref.kind === "page"
       );
-      console.log("Loaded page references:", pageReferences);
 
       // Fetch the actual page data for each reference
       const pageDataPromises = pageReferences.map(async (ref) => {
@@ -140,10 +140,10 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
 
 /**
  * Custom loader for project frontmatter from myst.yml or static config
- * 
+ *
  * This loader reads MyST project configuration from a myst.yml file using the YAML parser.
  * It supports both file-based loading and static configuration as a fallback.
- * 
+ *
  * @param config Configuration object with optional configPath and staticConfig
  * @returns Astro loader function that returns project frontmatter data
  */
@@ -152,75 +152,88 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
     try {
       // If static config is provided, use it
       if (config.staticConfig) {
+        if (!config.staticConfig.id) {
+          console.warn(
+            "Static project config provided but missing 'id' property, generating a new UUID"
+          );
+          config.staticConfig.id = randomUUID(); // Generate a new UUID if not provided
+        }
         return [
-          {
-            id: "project",
-            ...config.staticConfig,
-          },
+          config.staticConfig, // Return the static config directly
         ];
       }
 
       // Load from myst.yml file using Node.js fs module
       // Use synchronous imports since we're in a loader context
-      
+
       // Default path to myst.yml relative to the current working directory
-      const configPath = config.configPath || 'myst.yml';
+      const configPath = config.configPath || "myst.yml";
       const fullPath = resolve(process.cwd(), configPath);
-      
+
       // Check if file exists
       if (!existsSync(fullPath)) {
-        console.warn(`MyST config file not found at ${fullPath}, using defaults`);
+        console.warn(
+          `MyST config file not found at ${fullPath}, using defaults`
+        );
         throw new Error(`MyST config file not found: ${fullPath}`);
       }
 
       // Read and parse the YAML file
-      const fileContent = readFileSync(fullPath, 'utf-8');
+      const fileContent = readFileSync(fullPath, "utf-8");
       const frontmatter = parseYaml(fileContent);
+      if (!frontmatter.project) {
+        console.warn(
+          `MyST config file at ${fullPath} does not contain 'project' frontmatter, using defaults`
+        );
+        throw new Error(`Missing 'project' frontmatter in myst.yml`);
+      }
+      if (!frontmatter.project.id) {
+        console.warn(
+          `Project frontmatter missing 'id' property, generating a new UUID`
+        );
+        frontmatter.project.id = randomUUID(); // Generate a new UUID if not provided
+      }
 
-      return [
-        {
-          id: "project",
-          ...frontmatter,
-        },
-      ];
+      if (!frontmatter.version || frontmatter.version < 1) {
+        console.warn(
+          `MyST config file at ${fullPath} is missing version or has an unsupported version`
+        );
+      }
+
+      const result = {
+        ...frontmatter.project,
+        ...frontmatter.site, // Include site options if available
+      };
+      console.log("Loaded project frontmatter from myst.yml:", result);
+      return [result];
     } catch (error) {
       console.warn("Failed to load project frontmatter:", error);
-      
+
       // Fallback to default config
       const defaultFrontmatter = {
         version: 1,
         project: {
-          id: "1a8d1012-58dc-4f74-afcd-7878dbccaa06",
-          title: "MyST Awesome Theme",
-          description: "MyST-MD site theme built with Web Awesome.",
-          keywords: [
-            "myst",
-            "myst-md",
-            "theme",
-            "web-awesome",
-            "shoelace",
-            "astro",
-            "book",
-            "furo",
-          ],
-          authors: ["Matt McCormick"],
+          id: randomUUID(), // Generate a new UUID for the project
+          title: "MyST Awesome",
+          description: "MyST-MD site built with Web Awesome.",
+          keywords: ["myst", "myst-md", "webawesome", "astro"],
+          authors: [],
           github: "https://github.com/awesome-myst/myst-awesome",
         },
         site: {
-          title: "MyST Awesome Theme Guide",
+          title: "MyST Awesome",
           options: {
-            favicon: "favicon.ico",
-            logo: "logo.png",
+            favicon: "assets/favicon.ico",
+            logo: "assets/logo.png",
           },
         },
       };
 
-      return [
-        {
-          id: "project",
-          ...defaultFrontmatter,
-        },
-      ];
+      const result = {
+        ...defaultFrontmatter.project,
+        ...defaultFrontmatter.site, // Include site options if available
+      };
+      return [result];
     }
   };
 };

@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -36,7 +36,7 @@ try {
 }
 
 // Get project frontmatter for site-wide configuration
-const projectConfig = await getEntry('projectFrontmatter', 'project');
+const projectConfig = (await getCollection('projectFrontmatter'))[0];
 
 const title = pageContent?.frontmatter?.title || 
               pageContent?.title || 

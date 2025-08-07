@@ -5,7 +5,7 @@ Astro content collections for MyST projects. This package provides pre-configure
 ## Features
 
 - **MyST XRef Collection**: Cross-reference data from MyST content server
-- **Pages Collection**: Individual page references extracted from XRef data  
+- **Pages Collection**: Individual page references extracted from XRef data
 - **Project Frontmatter Collection**: Project configuration from myst.yml
 - **Configurable**: Customizable server URLs, timeouts, and project settings
 - **TypeScript**: Full TypeScript support with proper types from `@awesome-myst/myst-zod`
@@ -55,15 +55,15 @@ export const collections = createMystCollections({
 You can also use collections individually:
 
 ```typescript
-import { 
+import {
   createMystXrefCollection,
   createPagesCollection,
-  createProjectFrontmatterCollection 
+  createProjectFrontmatterCollection
 } from "@awesome-myst/myst-astro-collections";
 
 export const collections = {
-  mystXref: createMystXrefCollection({ 
-    baseUrl: "http://localhost:3100" 
+  mystXref: createMystXrefCollection({
+    baseUrl: "http://localhost:3100"
   }),
   pages: createPagesCollection(),
   // Only include the collections you need
@@ -79,7 +79,7 @@ import { getCollection, getEntry } from 'astro:content';
 const pages = await getCollection('pages');
 
 // Get project config
-const project = await getEntry('projectFrontmatter', 'project');
+const project = (await getCollection('projectFrontmatter'))[0];
 
 // Get cross-reference data
 const xref = await getEntry('mystXref', 'myst-xref');

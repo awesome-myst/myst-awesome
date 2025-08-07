@@ -1,7 +1,7 @@
 ---
 import DocsLayout from '@awesome-myst/myst-awesome/layouts/DocsLayout.astro';
 import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -24,9 +24,10 @@ const { page } = Astro.props;
 
 // Fetch all collections
 const allPages = await getCollection('pages');
-const projectConfig = await getEntry('projectFrontmatter', 'project');
+const projectConfig = (await getCollection('projectFrontmatter'))[0];
+console.log('Project pages template config:', projectConfig);
 
-console.log('Page data:', page.data);
+// console.log('Page data:', page.data);
 
 // Extract metadata
 const title = page.data.frontmatter?.title ||

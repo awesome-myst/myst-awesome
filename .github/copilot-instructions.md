@@ -85,7 +85,7 @@ Components use named slots extensively following Web Awesome patterns:
 - **Collection Types**: `mystXref` (cross-references), `pages` (page data), `projectFrontmatter` (config)
 - **Data Flow**: MyST server (:3100) → Custom loaders → Astro collections → Static build
 - **Schema Validation**: Uses `@awesome-myst/myst-zod` schemas (`xrefSchema`, `pageSchema`, `projectFrontmatterSchema`)
-- **Usage Pattern**: `await getCollection('pages')` or `await getEntry('projectFrontmatter', 'project')`
+- **Usage Pattern**: `await getCollection('pages')` or `(await getCollection('projectFrontmatter'))[0]`
 
 ### Astro + Web Awesome
 - **Vite Config**: Special aliases handle Web Awesome's non-exported CSS paths (`astro.config.mjs`)

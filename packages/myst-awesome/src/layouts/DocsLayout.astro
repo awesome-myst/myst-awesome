@@ -2,9 +2,9 @@
 import BasePage from './BasePage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Footer from '../components/Footer.astro';
-import { getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
-const projectConfig = await getEntry('projectFrontmatter', 'project');
+const projectConfig = (await getCollection('projectFrontmatter'))[0];
 
 console.log('Project config:', projectConfig);
 const projectTitle = projectConfig?.data?.site?.title ||

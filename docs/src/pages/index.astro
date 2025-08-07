@@ -2,7 +2,7 @@
 import BasePage from '@awesome-myst/myst-awesome/layouts/BasePage.astro';
 import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
 import ThemeControls from '@awesome-myst/myst-awesome/components/ThemeControls.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 // Get project configuration and pages data
 const projectData = await getCollection('projectFrontmatter');
@@ -21,8 +21,8 @@ const navItems = pagesData.map(page => ({
 }));
 ---
 
-<BasePage 
-  title={title} 
+<BasePage
+  title={title}
   description={description}
   theme="awesome"
   colorScheme="auto"
@@ -34,7 +34,7 @@ const navItems = pagesData.map(page => ({
         <h1 class="site-title">{title}</h1>
         <p class="site-tagline">Modern MyST Documentation Theme</p>
       </div>
-      
+
       <div class="header-actions">
         <ThemeControls />
         <wa-button variant="text" href={githubUrl} target="_blank">
@@ -54,7 +54,7 @@ const navItems = pagesData.map(page => ({
       <div class="hero-text">
         <h1 class="hero-title">MyST Awesome Theme</h1>
         <p class="hero-description">
-          A beautiful, modern documentation theme that combines the power of MyST Markdown 
+          A beautiful, modern documentation theme that combines the power of MyST Markdown
           with the elegance of Web Awesome components and the performance of Astro.
         </p>
         <div class="hero-actions">
@@ -100,31 +100,31 @@ const navItems = pagesData.map(page => ({
           <h3>MyST Markdown</h3>
           <p>Write beautiful documentation with MyST's powerful markup language featuring directives, roles, and cross-references.</p>
         </div>
-        
+
         <div class="feature">
           <wa-icon name="components" class="feature-icon"></wa-icon>
           <h3>Web Awesome Components</h3>
           <p>Built on top of Web Awesome's comprehensive component library with 10 stunning themes to choose from.</p>
         </div>
-        
+
         <div class="feature">
           <wa-icon name="rocket" class="feature-icon"></wa-icon>
           <h3>Astro Performance</h3>
           <p>Zero JavaScript by default, with selective hydration for interactive components when you need them.</p>
         </div>
-        
+
         <div class="feature">
           <wa-icon name="accessibility" class="feature-icon"></wa-icon>
           <h3>Accessibility First</h3>
           <p>WCAG 2.1 AA compliant with screen reader support, keyboard navigation, and semantic HTML.</p>
         </div>
-        
+
         <div class="feature">
           <wa-icon name="dark-mode" class="feature-icon"></wa-icon>
           <h3>Dark Mode Ready</h3>
           <p>Automatic dark mode support with smooth transitions and consistent design across all themes.</p>
         </div>
-        
+
         <div class="feature">
           <wa-icon name="search" class="feature-icon"></wa-icon>
           <h3>Powerful Search</h3>
