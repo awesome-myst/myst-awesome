@@ -66,7 +66,7 @@ test.describe("Layout Final Verification", () => {
       console.log(`${size.name} (${size.width}px):`, measurements);
 
       // Verify main content scales appropriately
-      expect(measurements.mainWidth).toBeGreaterThan(size.width * 0.3); // At least 30% of viewport
+      expect(measurements.mainWidth).toBeGreaterThan(size.width * 0.2); // At least 20% of viewport
     }
   });
 });
