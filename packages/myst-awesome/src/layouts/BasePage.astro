@@ -632,6 +632,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       grid-template-areas: "main" !important;
     }
 
+    /* Removed global aside hide to allow mobile TOC in component override pages */
+
     /* Use data-view attribute for responsive navigation control */
     .page-layout[data-view="mobile"] .page-menu[data-view="desktop"] {
       display: none !important;
@@ -648,11 +650,11 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
     /* Add padding to header content to avoid overlap with hamburger */
     .page-header {
-      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m)); /* hamburger width + spacing */
+      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m));
     }
 
     .page-banner {
-      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m)); /* hamburger width + spacing */
+      padding-left: calc(var(--wa-space-s) + 43px + var(--wa-space-s) + var(--wa-space-m));
     }
   }
 
@@ -677,6 +679,8 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
       grid-template-columns: 1fr !important;
       grid-template-areas: "main" !important;
     }
+
+    /* Removed aside display:none here; handled by DocsLayout when needed */
   }
 
   /* Additional rule for mobile-only hamburger at 768px */

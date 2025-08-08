@@ -634,7 +634,9 @@ const {
     .nav-next {
       max-width: 100%;
     }
-  }  @media (max-width: 640px) {
+  }
+
+  @media (max-width: 640px) {
     .docs-header {
       flex-direction: column;
       align-items: stretch;
@@ -656,10 +658,5 @@ const {
     }
   }
 
-  /* Responsive TOC - hide on mobile to prevent empty space */
-  @media (max-width: 920px) {
-    .responsive-toc-wrapper {
-      display: none !important;
-    }
-  }
+  /* Note: Mobile TOC/aside hiding is handled in the docs app (not in shared layout) */
 </style>

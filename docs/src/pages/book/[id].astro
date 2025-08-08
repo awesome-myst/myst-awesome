@@ -320,4 +320,14 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
     line-height: 1.5;
     overflow-x: auto;
   }
+
+  /* Docs-only mobile behavior: hide TOC and aside at <=920px to prevent empty space */
+  @media (max-width: 920px) {
+    :global(.responsive-toc-wrapper) {
+      display: none !important;
+    }
+    :global(.page-body.collapse-aside-920 .page-aside) {
+      display: none !important;
+    }
+  }
 </style>
