@@ -438,6 +438,14 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
     display: none;
   }
 
+  /* Make the hamburger (bars) icon larger inside the mobile toggle */
+  .mobile-nav-toggle wa-icon {
+    font-size: 2.0rem; /* increase icon size */
+    width: 2.0rem;
+    height: 2.0rem;
+    line-height: 1; /* avoid extra vertical space */
+  }
+
   /* Hide hamburger on desktop - only show on mobile */
   @media (min-width: 769px) {
     .mobile-nav-toggle {
