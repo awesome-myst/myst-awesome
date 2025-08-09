@@ -77,6 +77,7 @@ interface Props {
   nextPage?: { title: string; href: string };
   prevPage?: { title: string; href: string };
   showThemeSelector?: boolean; // new prop to enable theme selector
+  showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
 }
 
 const {
@@ -95,6 +96,7 @@ const {
   nextPage,
   prevPage,
   showThemeSelector = false,
+  showColorSchemeSelector = true,
   ...rest
 } = Astro.props;
 ---
@@ -128,25 +130,22 @@ const {
         </wa-select>
       )}
 
-      <!-- Color scheme selector -->
-      <wa-select class="color-scheme-selector" appearance="filled" size="small" value={colorScheme}>
-        <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
-        <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
-        <wa-option value="light">
-          <wa-icon slot="start" name="sun" variant="regular"></wa-icon>
-          Light
-        </wa-option>
-        <wa-option value="dark">
-          <wa-icon slot="start" name="moon" variant="regular"></wa-icon>
-          Dark
-        </wa-option>
-        <wa-divider></wa-divider>
-        <wa-option value="auto">
-          <wa-icon class="only-light" slot="start" name="sun" variant="regular"></wa-icon>
-          <wa-icon class="only-dark" slot="start" name="moon" variant="regular"></wa-icon>
-          System
-        </wa-option>
-      </wa-select>
+      {showColorSchemeSelector && (
+        <div class="color-scheme-toggle" role="group" aria-label="Color scheme">
+          <wa-button class="color-btn" appearance="outlined" size="small" data-value="light" title="Light mode" aria-label="Light mode">
+            <wa-icon name="sun" variant="regular"></wa-icon>
+          </wa-button>
+          <wa-button class="color-btn" appearance="outlined" size="small" data-value="dark" title="Dark mode" aria-label="Dark mode">
+            <wa-icon name="moon" variant="regular"></wa-icon>
+          </wa-button>
+          <wa-button class="color-btn" appearance="outlined" size="small" data-value="auto" title="System" aria-label="System">
+            <span class="system-icon">
+              <wa-icon class="only-light" name="sun" variant="regular"></wa-icon>
+              <wa-icon class="only-dark" name="moon" variant="regular"></wa-icon>
+            </span>
+          </wa-button>
+        </div>
+      )}
 
       <!-- Search button -->
       <wa-button appearance="outlined" size="small" class="search-trigger">
@@ -298,6 +297,7 @@ const {
   import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js';
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
 
   // Add responsive class for 920px breakpoint aside collapsing
   document.addEventListener('DOMContentLoaded', () => {
@@ -308,7 +308,7 @@ const {
 
     // Theme switching functionality
     const themeSelector = document.querySelector('.theme-selector') as any;
-    const colorSchemeSelector = document.querySelector('.color-scheme-selector') as any;
+  const colorSchemeToggle = document.querySelector('.color-scheme-toggle') as HTMLElement | null;
 
     if (themeSelector) {
       // Set initial value from localStorage
@@ -324,17 +324,29 @@ const {
       });
     }
 
-    if (colorSchemeSelector) {
-      // Set initial value from localStorage
-      const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
-      try { colorSchemeSelector.value = savedColorScheme; } catch {}
+    if (colorSchemeToggle) {
+      const buttons = Array.from(colorSchemeToggle.querySelectorAll<HTMLButtonElement>('.color-btn'));
+      const setActive = (value: string) => {
+        buttons.forEach((btn) => {
+          const isActive = btn.dataset.value === value;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', String(isActive));
+        });
+      };
 
-      // Use 'change' for Web Awesome select
-      colorSchemeSelector.addEventListener('change', (e: any) => {
-        const value = (e.target as any)?.value ?? 'auto';
-        if ((window as any).setColorScheme) {
-          (window as any).setColorScheme(value);
-        }
+      // Initialize from props or localStorage
+      const initial = localStorage.getItem('color-scheme') || 'auto';
+      setActive(initial);
+
+      // Click handlers
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const value = btn.dataset.value || 'auto';
+          setActive(value);
+          if ((window as any).setColorScheme) {
+            (window as any).setColorScheme(value);
+          }
+        });
       });
     }
   });
@@ -385,6 +397,38 @@ const {
     align-items: center;
     gap: var(--wa-space-s);
   }
+
+  /* Color scheme toggle */
+  .color-scheme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: var(--wa-color-surface-lowered);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-l);
+  }
+  .color-scheme-toggle .color-btn {
+    --_btn-padding-inline: 6px;
+    --_btn-padding-block: 4px;
+    border: none;
+    background: transparent;
+    color: var(--wa-color-text-quiet);
+    border-radius: var(--wa-border-radius-m);
+  }
+  .color-scheme-toggle .color-btn wa-icon {
+    font-size: 1rem;
+  }
+  .color-scheme-toggle .color-btn.active {
+    background: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+  }
+  .system-icon {
+    display: grid;
+  }
+  .system-icon .only-dark { display: none; }
+  html.wa-dark .system-icon .only-light { display: none; }
+  html.wa-dark .system-icon .only-dark { display: inline; }
 
   .search-shortcut {
     font-family: var(--wa-font-family-code);

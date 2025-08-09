@@ -24,54 +24,56 @@ test.describe("Theme Switching", () => {
   test("should display theme controls in header", async ({ page }) => {
     // Verify theme controls are present and visible
     const themeSelector = page.locator(".theme-selector");
-    const colorSchemeSelector = page.locator(".color-scheme-selector");
+    const colorSchemeToggle = page.locator(".color-scheme-toggle");
 
     await expect(themeSelector).toBeVisible();
-    await expect(colorSchemeSelector).toBeVisible();
+    await expect(colorSchemeToggle).toBeVisible();
 
     // Verify they have correct initial values
     const themeValue = await themeSelector.evaluate((el: any) => el.value);
-    const colorSchemeValue = await colorSchemeSelector.evaluate(
-      (el: any) => el.value
-    );
-
+    // Active button reflects initial state
+    const activeBtn = page.locator(".color-scheme-toggle .color-btn.active");
+    await expect(activeBtn).toHaveCount(1);
+    await expect(activeBtn).toHaveAttribute("data-value", "auto");
     expect(themeValue).toBe("default");
-    expect(colorSchemeValue).toBe("auto");
   });
 
   test("should switch color schemes correctly", async ({ page }) => {
-    const colorSchemeSelector = page.locator(".color-scheme-selector");
+    const colorSchemeToggle = page.locator(".color-scheme-toggle");
     const htmlElement = page.locator("html");
 
     // Test switching to dark mode
-    await colorSchemeSelector.click();
-    await page.locator('wa-option[value="dark"]').click();
+    await page
+      .locator('.color-scheme-toggle .color-btn[data-value="dark"]')
+      .click();
     await page.waitForTimeout(500);
 
     // Verify dark mode is applied
     await expect(htmlElement).toHaveClass(/.*wa-dark.*/);
-    const darkValue = await colorSchemeSelector.evaluate((el: any) => el.value);
-    expect(darkValue).toBe("dark");
+    await expect(
+      page.locator(".color-scheme-toggle .color-btn.active")
+    ).toHaveAttribute("data-value", "dark");
 
     // Test switching to light mode
-    await colorSchemeSelector.click();
-    await page.locator('wa-option[value="light"]').click();
+    await page
+      .locator('.color-scheme-toggle .color-btn[data-value="light"]')
+      .click();
     await page.waitForTimeout(500);
 
     // Verify dark mode is removed
     await expect(htmlElement).not.toHaveClass(/.*wa-dark.*/);
-    const lightValue = await colorSchemeSelector.evaluate(
-      (el: any) => el.value
-    );
-    expect(lightValue).toBe("light");
+    await expect(
+      page.locator(".color-scheme-toggle .color-btn.active")
+    ).toHaveAttribute("data-value", "light");
 
     // Test switching back to auto
-    await colorSchemeSelector.click();
-    await page.locator('wa-option[value="auto"]').click();
+    await page
+      .locator('.color-scheme-toggle .color-btn[data-value="auto"]')
+      .click();
     await page.waitForTimeout(500);
-
-    const autoValue = await colorSchemeSelector.evaluate((el: any) => el.value);
-    expect(autoValue).toBe("auto");
+    await expect(
+      page.locator(".color-scheme-toggle .color-btn.active")
+    ).toHaveAttribute("data-value", "auto");
   });
 
   test("should switch themes correctly", async ({ page }) => {
@@ -126,21 +128,27 @@ test.describe("Theme Switching", () => {
     });
 
     const themeSelector = page.locator(".theme-selector");
-    const colorSchemeSelector = page.locator(".color-scheme-selector");
+    const colorSchemeToggle = page.locator(".color-scheme-toggle");
 
     // Perform multiple theme switches
-    const operations = [
-      { selector: colorSchemeSelector, value: "dark" },
-      { selector: themeSelector, value: "awesome" },
-      { selector: colorSchemeSelector, value: "light" },
-      { selector: themeSelector, value: "shoelace" },
-      { selector: colorSchemeSelector, value: "auto" },
-      { selector: themeSelector, value: "default" },
+    const operations: Array<{ type: "color" | "theme"; value: string }> = [
+      { type: "color", value: "dark" },
+      { type: "theme", value: "awesome" },
+      { type: "color", value: "light" },
+      { type: "theme", value: "shoelace" },
+      { type: "color", value: "auto" },
+      { type: "theme", value: "default" },
     ];
 
-    for (const operation of operations) {
-      await operation.selector.click();
-      await page.locator(`wa-option[value="${operation.value}"]`).click();
+    for (const op of operations) {
+      if (op.type === "color") {
+        await page
+          .locator(`.color-scheme-toggle .color-btn[data-value="${op.value}"]`)
+          .click();
+      } else {
+        await themeSelector.click();
+        await page.locator(`wa-option[value="${op.value}"]`).click();
+      }
       await page.waitForTimeout(200);
     }
 
