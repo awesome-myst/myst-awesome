@@ -75,6 +75,7 @@ interface Props {
   section?: string;
   nextPage?: { title: string; href: string };
   prevPage?: { title: string; href: string };
+  showThemeSelector?: boolean; // new prop to enable theme selector
 }
 
 const {
@@ -92,6 +93,7 @@ const {
   section,
   nextPage,
   prevPage,
+  showThemeSelector = false,
   ...rest
 } = Astro.props;
 ---
@@ -115,20 +117,22 @@ const {
     </div>
 
     <div class="docs-controls">
-      <!-- Theme selector -->
-      <wa-select class="theme-selector" appearance="filled" size="small" value={theme}>
-        <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
-        <wa-option value="default">Default</wa-option>
-        <wa-option value="awesome">Awesome</wa-option>
-        <wa-option value="shoelace">Shoelace</wa-option>
-        <wa-option value="brutalist">Brutalist</wa-option>
-        <wa-option value="glossy">Glossy</wa-option>
-        <wa-option value="matter">Matter</wa-option>
-        <wa-option value="mellow">Mellow</wa-option>
-        <wa-option value="playful">Playful</wa-option>
-        <wa-option value="premium">Premium</wa-option>
-        <wa-option value="tailspin">Tailspin</wa-option>
-      </wa-select>
+      <!-- Theme selector (optional) -->
+      {showThemeSelector && (
+        <wa-select class="theme-selector" appearance="filled" size="small" value={theme}>
+          <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
+          <wa-option value="default">Default</wa-option>
+          <wa-option value="awesome">Awesome</wa-option>
+          <wa-option value="shoelace">Shoelace</wa-option>
+          <wa-option value="brutalist">Brutalist</wa-option>
+          <wa-option value="glossy">Glossy</wa-option>
+          <wa-option value="matter">Matter</wa-option>
+          <wa-option value="mellow">Mellow</wa-option>
+          <wa-option value="playful">Playful</wa-option>
+          <wa-option value="premium">Premium</wa-option>
+          <wa-option value="tailspin">Tailspin</wa-option>
+        </wa-select>
+      )}
 
       <!-- Color scheme selector -->
       <wa-select class="color-scheme-selector" appearance="filled" size="small" value={colorScheme}>
@@ -315,32 +319,29 @@ const {
     if (themeSelector) {
       // Set initial value from localStorage
       const savedTheme = localStorage.getItem('theme') || 'default';
-      themeSelector.value = savedTheme;
+      try { themeSelector.value = savedTheme; } catch {}
 
+      // Web Awesome select components emit 'change' events
       themeSelector.addEventListener('change', (e: any) => {
+        const value = (e.target as any)?.value ?? 'default';
         if ((window as any).setTheme) {
-          (window as any).setTheme(e.target.value);
+          (window as any).setTheme(value);
         }
       });
-    } else {
-      console.log('Theme selector not found');
     }
 
     if (colorSchemeSelector) {
       // Set initial value from localStorage
       const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
-      colorSchemeSelector.value = savedColorScheme;
+      try { colorSchemeSelector.value = savedColorScheme; } catch {}
 
+      // Use 'change' for Web Awesome select
       colorSchemeSelector.addEventListener('change', (e: any) => {
-        console.log('Color scheme selector changed:', e.target.value);
+        const value = (e.target as any)?.value ?? 'auto';
         if ((window as any).setColorScheme) {
-          (window as any).setColorScheme(e.target.value);
-        } else {
-          console.error('setColorScheme function not available on window');
+          (window as any).setColorScheme(value);
         }
       });
-    } else {
-      console.log('Color scheme selector not found');
     }
   });
 </script>

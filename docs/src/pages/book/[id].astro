@@ -147,6 +147,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
     title: prevPage.id === '/' ? 'Home' : prevPage.id.slice(1),
     href: prevPage.id === '/' ? '/' : `/book/${prevPage.id.slice(1)}`
   } : undefined}
+  showThemeSelector={true}
 >
   <!-- Navigation Menu -->
   <NavigationMenu
