@@ -54,6 +54,8 @@ if (projectConfig?.data?.options?.favicon) {
 // Import Web Awesome CSS for proper bundling and tree shaking
 import "@awesome.me/webawesome/dist/styles/webawesome.css";
 import "@awesome.me/webawesome/dist/styles/themes/default.css";
+import "@awesome.me/webawesome/dist/styles/themes/awesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/shoelace.css";
 ---
 
 <!doctype html>
@@ -258,20 +260,16 @@ import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
       // Theme switching
       function setTheme(theme: string) {
-        console.log('setTheme called with:', theme);
         localStorage.setItem('theme', theme);
 
         // Remove existing theme classes
         document.documentElement.classList.remove(
-          'wa-theme-awesome', 'wa-theme-shoelace', 'wa-theme-brutalist',
-          'wa-theme-glossy', 'wa-theme-matter', 'wa-theme-mellow',
-          'wa-theme-playful', 'wa-theme-premium', 'wa-theme-tailspin'
+          'wa-theme-awesome', 'wa-theme-shoelace'
         );
 
         if (theme !== 'default') {
           document.documentElement.classList.add(`wa-theme-${theme}`);
         }
-        console.log('HTML classes after theme change:', document.documentElement.className);
       }
 
       // Expose functions globally for theme controls

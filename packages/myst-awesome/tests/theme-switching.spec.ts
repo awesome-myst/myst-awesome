@@ -133,7 +133,7 @@ test.describe("Theme Switching", () => {
       { selector: colorSchemeSelector, value: "dark" },
       { selector: themeSelector, value: "awesome" },
       { selector: colorSchemeSelector, value: "light" },
-      { selector: themeSelector, value: "premium" },
+      { selector: themeSelector, value: "shoelace" },
       { selector: colorSchemeSelector, value: "auto" },
       { selector: themeSelector, value: "default" },
     ];

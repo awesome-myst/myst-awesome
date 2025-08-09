@@ -63,7 +63,8 @@ interface TocItem {
 interface Props {
   title?: string;
   description?: string;
-  theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  // theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
+  theme?: 'default' | 'awesome' | 'shoelace'
   colorScheme?: 'light' | 'dark' | 'auto';
   tocItems?: TocItem[];
   showToc?: boolean;
@@ -124,13 +125,6 @@ const {
           <wa-option value="default">Default</wa-option>
           <wa-option value="awesome">Awesome</wa-option>
           <wa-option value="shoelace">Shoelace</wa-option>
-          <wa-option value="brutalist">Brutalist</wa-option>
-          <wa-option value="glossy">Glossy</wa-option>
-          <wa-option value="matter">Matter</wa-option>
-          <wa-option value="mellow">Mellow</wa-option>
-          <wa-option value="playful">Playful</wa-option>
-          <wa-option value="premium">Premium</wa-option>
-          <wa-option value="tailspin">Tailspin</wa-option>
         </wa-select>
       )}
 
