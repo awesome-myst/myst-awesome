@@ -1,144 +1,100 @@
 # Copilot Instructions for MyST Awesome Theme
 
-## Architecture Overview
+## Big Picture
+- Monorepo (pnpm workspaces):
+  - `packages/myst-awesome` – Astro theme (components, layouts, pages, tests)
+  - `packages/myst-astro-collections` – Astro content collections pulling from MyST
+  - `docs` – MyST content app (separate build/runtime) that consumes the theme
+- Dual runtime in dev: Astro UI at :4321, MyST content server at :3100
+- Slot-based layouts (Web Awesome pattern): `header`, `navigation`, `aside`, `main`, etc.
+- Theme system via CSS classes: `wa-theme-{name}` + CSS custom properties
+- Type safety: Astro + TypeScript strict; MyST data validated with `@awesome-myst/myst-zod`
 
-This is an **Astro + Web Awesome + MyST integration** that provides a modern documentation theme. Key architectural decisions:
+## Critical Workflows
+- From repo root:
+  - `pnpm dev` – Theme dev server (:4321)
+  - `pnpm dev-docs` – Starts MyST (:3100) and Astro for docs
+  - `pnpm start-myst` – MyST headless server only
+  - `pnpm build` – Build collections + theme
+  - `pnpm build-collections` – Build `myst-astro-collections` only
+  - `pnpm test` – Playwright tests (requires :4321 and :3100)
+- Ignore older Deno task docs; this repo uses pnpm.
 
-- **Monorepo Structure**: Three packages in `pnpm` workspace - `myst-awesome` (components), `myst-astro-collections` (data integration), and `myst-awesome-docs` (content)
-- **Dual Build System**: Astro for theme components + MyST content server for documentation compilation
-- **Content Collections**: Custom Astro collections (`mystXref`, `pages`, `projectFrontmatter`) fetch data from MyST server at build time
-- **Type Safety**: Full TypeScript integration with `@awesome-myst/myst-zod` schemas for MyST data validation
-- **Slot-Based Layouts**: Web Awesome's page component pattern with named slots (`header`, `navigation`, `aside`, `main`)
-- **Theme System**: 10 built-in Web Awesome themes via CSS classes (`wa-theme-{name}`) and CSS custom properties
+## Content Collections (MyST → Astro)
+- Configure in `docs/src/content.config.ts`:
+  ```ts
+  import { createMystCollections } from "@awesome-myst/myst-astro-collections";
+  export const collections = createMystCollections({
+    server: { baseUrl: "http://localhost:3100", timeout: 10000 },
+    project: { staticConfig: { /* mirrors myst.yml */ } }
+  });
+  ```
+- Usage in Astro: `await getCollection('pages')`, `(await getCollection('projectFrontmatter'))[0]`.
 
-## Critical Development Workflows
+## Astro + Web Awesome Conventions
+- Import Web Awesome CSS once in `BasePage.astro` for bundling:
+  - `@awesome.me/webawesome/dist/styles/webawesome.css`
+  - `@awesome.me/webawesome/dist/styles/themes/default.css`
+- Import Web Awesome components inside a `<script>` block (not frontmatter), e.g.:
+  ```astro
+  <script>
+    import '@awesome.me/webawesome/dist/components/button/button.js';
+    import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  </script>
+  ```
+- SSR config: set `noExternal: ["@awesome.me/webawesome"]` in `astro.config.mjs` where needed.
 
-### Development Commands
-```bash
-# Root workspace commands (from project root)
-pnpm dev                 # Theme development server at :4321
-pnpm dev-docs           # MyST docs server at :3100 + Astro dev
-pnpm build              # Build collections + theme packages
-pnpm build-collections  # Build myst-astro-collections only
-pnpm start-myst         # MyST headless server only
+## Layout & Responsive Rules (important for tests)
+- Source of truth: `packages/myst-awesome/src/layouts/BasePage.astro`.
+  - Grid defined with `:has()` and class fallbacks (`has-menu`, `has-aside`).
+  - JS sets `data-view` on `.page-layout` via `matchMedia` using `mobileBreakpoint` (default 768px).
+  - Do NOT globally hide the aside with `display: none` in shared layouts; collapse via grid instead.
+- Docs-only responsive hiding lives in the docs app (example):
+  - `docs/src/pages/book/[id].astro` adds `:global` CSS to hide TOC/aside ≤920px when needed.
+- Named slots drive composition: `navigation` → sidebar, `aside` → TOC, default slot → main content.
 
-# Individual package commands
-cd packages/myst-awesome && pnpm dev     # Theme only
-cd packages/myst-astro-collections && pnpm build  # Collections package
-cd docs && pnpm myst-content-server           # MyST server only
-```
+## Testing
+- Playwright tests live in `packages/myst-awesome/tests/` and `docs/tests/`.
+- Expectations differ by context:
+  - Theme package: aside should remain present on mobile (grid collapses; not `display:none`).
+  - Docs app: TOC/aside hidden on mobile (<≈920px) to prevent empty space.
+- Common failures: responsive regressions. Fix by adjusting grid/template areas vs. visibility, not by globally hiding elements in `BasePage.astro`.
 
-### Content Collections Integration
-MyST data is loaded via custom Astro content collections in `docs/src/content.config.ts`:
-```typescript
-import { createMystCollections } from "@awesome-myst/myst-astro-collections";
+## Key Files
+- Theme:
+  - `packages/myst-awesome/src/layouts/BasePage.astro` – root layout + theming, responsive behavior
+  - `packages/myst-awesome/src/layouts/DocsLayout.astro` – docs layout built on BasePage
+  - `packages/myst-awesome/src/components/*Resolver.astro` – component override system
+- Docs app:
+  - `docs/src/content.config.ts` – MyST → Astro collections
+  - `docs/src/pages/book/[id].astro` – docs page + docs-only responsive CSS
+  - `docs/myst.yml` – MyST project config; `docs/directives.mjs` – custom directives
+- Collections pkg: `packages/myst-astro-collections/src/` – loader/validation glue
 
-export const collections = createMystCollections({
-  server: { baseUrl: "http://localhost:3100", timeout: 10000 },
-  project: { staticConfig: { /* myst.yml data */ } }
-});
-```
+## Troubleshooting (dual servers)
+- Ports:
+  - Theme dev/tests: Astro on 4322 (see `packages/myst-awesome/astro.config.mjs` and tests’ baseURL).
+  - Docs dev/tests: Astro on 4321; MyST on 3100 (see `docs/tests/playwright.config.ts` and `docs/package.json`).
+- Timeouts/startup:
+  - Theme tests start their own server via Playwright webServer (timeout 30s).
+  - Docs scripts use `start-server-and-test` to boot MyST then Astro; increase timeout in `docs/tests/playwright.config.ts` if MyST is slow.
+- Symptoms:
+  - 404 for `/myst.xref.json` → MyST not running; use `pnpm dev-docs` or `pnpm --filter=myst-awesome-docs myst-content-server`.
+  - Port in use → kill stray Astro/MyST or change port in config.
+  - Flaky waits → confirm `reuseExistingServer` and bump `webServer.timeout`.
 
-### Dual Server Setup
-Development requires **both** MyST content server (:3100) and Astro dev server (:4321). Use `pnpm dev-docs` for automatic dual-server startup.
+## Test-running tips
+- Run all tests (root): `pnpm test`.
+- Theme-only tests: `pnpm --filter=myst-awesome test`.
+  - Target a spec: `pnpm --filter=myst-awesome exec playwright test packages/myst-awesome/tests/navigation-responsive-fix.spec.ts`.
+  - UI baseURL: `http://localhost:4322` (set in `packages/myst-awesome/tests/playwright.config.ts`).
+- Docs-only tests: `pnpm --filter=myst-awesome-docs test`.
+  - Target a spec: `pnpm --filter=myst-awesome-docs exec playwright test docs/tests/toc-responsive.spec.ts`.
+  - Dual startup handled by docs `dev` script (MyST 3100 → Astro 4321).
+- Debugging:
+  - Traces: open `.zip` via `npx playwright show-trace <path>` (trace is `on-first-retry`).
+  - Increase `webServer.timeout` or `use.baseURL` as needed per config.
 
-## Project-Specific Patterns
-
-## Project-Specific Patterns
-
-### Web Awesome Component Integration
-**Critical**: Import Web Awesome components in `<script>` blocks, not frontmatter:
-```astro
-<script>
-  import '@awesome.me/webawesome/dist/components/button/button.js';
-  import '@awesome.me/webawesome/dist/components/icon/icon.js';
-</script>
-```
-
-### Layout Hierarchy
-- `BasePage.astro` - Root layout with theme system, Web Awesome CSS imports
-- `DocsLayout.astro` - Documentation-specific layout extending BasePage
-- `ContentLayout.astro` - General content layout
-
-### Theme System Usage
-```astro
-// Component props support all 10 Web Awesome themes
-theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin'
-
-// Theme application via CSS classes
-document.documentElement.classList.add(`wa-theme-${theme}`);
-```
-
-### Slot Pattern for Layouts
-Components use named slots extensively following Web Awesome patterns:
-```astro
-<slot name="header" />      <!-- Page header content -->
-<slot name="navigation" />  <!-- Sidebar navigation -->
-<slot name="aside" />       <!-- Table of contents -->
-<slot />                    <!-- Main content -->
-```
-
-## Key Integration Points
-
-### MyST Content Collections
-- **`@awesome-myst/myst-astro-collections`**: Custom loaders fetch MyST data at build time
-- **Collection Types**: `mystXref` (cross-references), `pages` (page data), `projectFrontmatter` (config)
-- **Data Flow**: MyST server (:3100) → Custom loaders → Astro collections → Static build
-- **Schema Validation**: Uses `@awesome-myst/myst-zod` schemas (`xrefSchema`, `pageSchema`, `projectFrontmatterSchema`)
-- **Usage Pattern**: `await getCollection('pages')` or `(await getCollection('projectFrontmatter'))[0]`
-
-### Astro + Web Awesome
-- **Vite Config**: Special aliases handle Web Awesome's non-exported CSS paths (`astro.config.mjs`)
-- **SSR Config**: `noExternal: ["@awesome.me/webawesome"]` for proper server rendering
-- **CSS Loading**: Import Web Awesome CSS in `BasePage.astro` for proper bundling
-
-### MyST Integration
-- MyST serves content at `:3100`, Astro theme at `:4321`
-- `docs/myst.yml` configures MyST project settings and plugins
-- Custom directive plugins in `docs/directives.mjs`
-
-### Testing Architecture
-- Playwright tests run against MyST server (`:3100`) using theme components
-- CSS/layout tests in `tests/` verify responsive behavior and component integration
-- Tests check both visual rendering and Web Awesome component functionality
-
-## Component Conventions
-
-### TypeScript Interfaces
-Define props with specific Web Awesome types:
-```typescript
-interface Props {
-  variant?: 'brand' | 'success' | 'warning' | 'danger' | 'neutral';
-  size?: 'small' | 'medium' | 'large';
-}
-```
-
-### Component Composition
-- Navigation components accept hierarchical `NavItem[]` structures
-- TableOfContents uses `TocItem[]` with level-based indentation
-- Badge/status components follow Web Awesome variant patterns
-
-### Styling Approach
-- Use Web Awesome CSS custom properties: `var(--wa-color-*, --wa-space-*, --wa-border-radius-*)`
-- Component-scoped CSS in `<style>` blocks
-- Responsive design via CSS Grid and `@media` queries
-
-## File Structure Significance
-
-- `packages/myst-awesome/src/layouts/` - Reusable page layouts with slot-based architecture
-- `packages/myst-awesome/src/components/` - Astro components wrapping Web Awesome functionality  
-- `packages/myst-awesome/src/pages/` - Route definitions with example implementations
-- `packages/myst-awesome/tests/` - Playwright tests for cross-browser layout verification
-- `packages/myst-astro-collections/` - Custom Astro collections for MyST data integration
-- `docs/` - MyST content and configuration (separate build system, workspace package)
-- `context/` - Reference implementation (Furo theme) for comparison
-- `pnpm-workspace.yaml` - Workspace configuration
-- Root `package.json` - Workspace root with aggregated commands
-
-## Dependencies & Versions
-
-- **pnpm 9.x** as package manager with workspace support
-- **Astro 5.x** with TypeScript strict mode
-- **Web Awesome 3.x** beta for latest component features
-- **MyST 1.3.x** for content compilation
-- **Workspace Dependencies**: `myst-awesome-docs` depends on `myst-awesome` via `workspace:*`
+## Versions
+- pnpm 9.x, Astro 5.x (TS strict), Web Awesome 3.x beta, MyST 1.3.x
+- Workspace deps: `docs` consumes `myst-awesome` via `workspace:*`
