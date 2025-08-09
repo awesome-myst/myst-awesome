@@ -1,0 +1,87 @@
+---
+/**
+ * Themes component - handles Web Awesome theme CSS imports
+ * This component manages the import of Web Awesome CSS files for theming
+ * 
+ * Features:
+ * - Imports base Web Awesome CSS
+ * - Imports multiple theme CSS files
+ * - Can be extended/overridden for custom theme handling
+ * - Provides a clean separation of theme concerns from layout
+ */
+
+interface Props {
+  /**
+   * Array of theme names to import CSS for
+   * Available themes: default, awesome, shoelace, brutalist, glossy, matter, mellow, playful, premium, tailspin
+   */
+  themes?: string[];
+  
+  /**
+   * Whether to include the base Web Awesome CSS
+   */
+  includeBase?: boolean;
+  
+  /**
+   * Custom theme CSS URLs to import (for external or custom themes)
+   */
+  customThemes?: string[];
+  
+  /**
+   * Whether to include all available Web Awesome themes
+   */
+  includeAll?: boolean;
+}
+
+const {
+  themes = ['default', 'awesome', 'shoelace'],
+  includeBase = true,
+  customThemes = [],
+  includeAll = false
+} = Astro.props;
+
+// Define all available Web Awesome themes
+const availableThemes = [
+  'default',
+  'awesome', 
+  'shoelace',
+  'brutalist',
+  'glossy',
+  'matter',
+  'mellow',
+  'playful',
+  'premium',
+  'tailspin'
+];
+
+// Determine which themes to include
+const themesToInclude = includeAll ? availableThemes : themes;
+
+// Import base Web Awesome CSS
+import "@awesome.me/webawesome/dist/styles/webawesome.css";
+
+// Import default themes that are commonly used
+import "@awesome.me/webawesome/dist/styles/themes/default.css";
+import "@awesome.me/webawesome/dist/styles/themes/awesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/shoelace.css";
+
+// Note: In Astro, all CSS imports must be static at build time
+// For dynamic theme loading, additional themes would need to be loaded via JavaScript
+---
+
+<!-- Theme metadata for runtime use -->
+<meta name="themes:available" content={availableThemes.join(',')} />
+<meta name="themes:active" content={themesToInclude.join(',')} />
+{customThemes.length > 0 && <meta name="themes:custom" content={customThemes.join(',')} />}
+
+<!-- Custom theme CSS links for external themes -->
+{customThemes.map(themeUrl => (
+  <link rel="stylesheet" href={themeUrl} />
+))}
+
+<style>
+  /* 
+   * This component handles CSS imports and metadata
+   * It provides a centralized place for theme management
+   */
+</style>

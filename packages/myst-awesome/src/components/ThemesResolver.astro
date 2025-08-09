@@ -1,0 +1,31 @@
+---
+/**
+ * ThemesResolver component - configurable Themes component that supports overrides
+ * This demonstrates how to create overridable components for theme management
+ *
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <ThemesResolver themes={['default', 'awesome']} />
+ *
+ * 2. With custom component:
+ *    import CustomThemes from './custom/MyThemes.astro';
+ *    <ThemesResolver component={CustomThemes} themes={['default', 'awesome']} />
+ */
+import DefaultThemes from './Themes.astro';
+
+interface Props {
+  component?: any;
+  themes?: string[];
+  includeBase?: boolean;
+  customThemes?: string[];
+  includeAll?: boolean;
+}
+
+const { component: CustomComponent, ...themeProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...themeProps} />
+) : (
+  <DefaultThemes {...themeProps} />
+)}

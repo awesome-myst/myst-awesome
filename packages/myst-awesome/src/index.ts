@@ -6,6 +6,8 @@ export { default as NavigationMenu } from "./components/NavigationMenu.astro";
 export { default as TableOfContents } from "./components/TableOfContents.astro";
 export { default as ThemeControls } from "./components/ThemeControls.astro";
 export { default as Footer } from "./components/Footer.astro";
+export { default as Themes } from "./components/Themes.astro";
+export { default as ThemesResolver } from "./components/ThemesResolver.astro";
 
 // Export utilities
 export * from "./lib/getComponent";

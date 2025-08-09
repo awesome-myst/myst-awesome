@@ -1,0 +1,170 @@
+---
+/**
+ * Custom Themes component for MyST Awesome Docs
+ * This demonstrates how to override the default Themes component
+ * to provide custom theme handling for a specific application
+ * 
+ * Features:
+ * - Imports all Web Awesome themes
+ * - Adds custom CSS for docs-specific theming
+ * - Includes additional theme metadata
+ * - Demonstrates extending the base theme system
+ */
+
+interface Props {
+  /**
+   * Array of theme names to import CSS for
+   */
+  themes?: string[];
+  
+  /**
+   * Whether to include the base Web Awesome CSS
+   */
+  includeBase?: boolean;
+  
+  /**
+   * Custom theme CSS URLs to import
+   */
+  customThemes?: string[];
+  
+  /**
+   * Whether to include all available Web Awesome themes
+   */
+  includeAll?: boolean;
+  
+  /**
+   * Enable docs-specific theme enhancements
+   */
+  enableDocsTheming?: boolean;
+}
+
+const {
+  themes = ['default', 'awesome', 'shoelace', 'brutalist', 'glossy'],
+  includeBase = true,
+  customThemes = [],
+  includeAll = true, // Docs want all themes available
+  enableDocsTheming = true
+} = Astro.props;
+
+// Import base Web Awesome CSS
+import "@awesome.me/webawesome/dist/styles/webawesome.css";
+
+// Import all Web Awesome themes for docs
+import "@awesome.me/webawesome/dist/styles/themes/default.css";
+import "@awesome.me/webawesome/dist/styles/themes/awesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/shoelace.css";
+import "@awesome.me/webawesome/dist/styles/themes/brutalist.css";
+import "@awesome.me/webawesome/dist/styles/themes/glossy.css";
+import "@awesome.me/webawesome/dist/styles/themes/matter.css";
+import "@awesome.me/webawesome/dist/styles/themes/mellow.css";
+import "@awesome.me/webawesome/dist/styles/themes/playful.css";
+import "@awesome.me/webawesome/dist/styles/themes/premium.css";
+import "@awesome.me/webawesome/dist/styles/themes/tailspin.css";
+
+// Define all available themes for docs
+const allThemes = [
+  'default', 'awesome', 'shoelace', 'brutalist', 'glossy', 
+  'matter', 'mellow', 'playful', 'premium', 'tailspin'
+];
+
+const activeThemes = includeAll ? allThemes : themes;
+---
+
+<!-- Theme metadata for docs -->
+<meta name="docs:themes:available" content={allThemes.join(',')} />
+<meta name="docs:themes:active" content={activeThemes.join(',')} />
+<meta name="docs:themes:enhanced" content={enableDocsTheming.toString()} />
+
+<!-- Custom theme CSS links for external themes -->
+{customThemes.map(themeUrl => (
+  <link rel="stylesheet" href={themeUrl} />
+))}
+
+<!-- Docs-specific theme enhancement CSS -->
+{enableDocsTheming && (
+  <style>
+    /* Docs-specific theme enhancements */
+    
+    /* Enhanced code syntax highlighting for docs */
+    .myst-content pre[class*="language-"] {
+      background: var(--wa-color-surface-raised);
+      border: 1px solid var(--wa-color-surface-border);
+      border-radius: var(--wa-border-radius-l);
+    }
+    
+    /* Enhanced documentation callouts */
+    .myst-content .wa-callout {
+      margin: var(--wa-space-l) 0;
+      border-radius: var(--wa-border-radius-l);
+    }
+    
+    /* Theme-aware documentation navigation */
+    .docs-nav {
+      background: var(--wa-color-surface-lowered);
+      border: 1px solid var(--wa-color-surface-border);
+    }
+    
+    /* Enhanced table of contents styling */
+    .docs-toc {
+      background: var(--wa-color-surface-default);
+      border-left: 3px solid var(--wa-color-brand-fill-loud);
+    }
+    
+    /* Documentation-specific typography enhancements */
+    .myst-content {
+      --docs-font-size-base: 1rem;
+      --docs-line-height-base: 1.7;
+      --docs-spacing-vertical: var(--wa-space-l);
+    }
+    
+    .myst-content h1,
+    .myst-content h2,
+    .myst-content h3,
+    .myst-content h4,
+    .myst-content h5,
+    .myst-content h6 {
+      color: var(--wa-color-text-loud);
+      border-bottom: 1px solid var(--wa-color-surface-border);
+      padding-bottom: var(--wa-space-s);
+      margin-bottom: var(--wa-space-l);
+    }
+    
+    /* Enhanced link styling for documentation */
+    .myst-content a:not(.wa-button) {
+      color: var(--wa-color-brand-fill-loud);
+      text-decoration: underline;
+      text-decoration-color: var(--wa-color-brand-fill-quiet);
+      text-underline-offset: 0.2em;
+      transition: all 0.2s ease;
+    }
+    
+    .myst-content a:not(.wa-button):hover {
+      color: var(--wa-color-brand-fill-louder);
+      text-decoration-color: var(--wa-color-brand-fill-loud);
+    }
+    
+    /* Documentation-specific dark mode enhancements */
+    .wa-dark .myst-content {
+      --docs-code-bg: var(--wa-color-surface-raised);
+      --docs-border-color: var(--wa-color-surface-border);
+    }
+    
+    /* Theme transition animations for docs */
+    .myst-content,
+    .docs-nav,
+    .docs-toc {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+  </style>
+)}
+
+<style>
+  /* Base styles for the custom themes component */
+  :root {
+    /* Docs-specific CSS custom properties */
+    --docs-theme-transition: all 0.3s ease;
+    --docs-content-max-width: 1200px;
+    --docs-sidebar-width: 280px;
+    --docs-toc-width: 240px;
+  }
+</style>

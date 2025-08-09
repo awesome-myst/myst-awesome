@@ -1,0 +1,307 @@
+---
+import DocsLayout from '@awesome-myst/myst-awesome/layouts/DocsLayout.astro';
+import ThemesResolver from '@awesome-myst/myst-awesome/components/ThemesResolver.astro';
+import CustomThemes from '../components/CustomThemes.astro';
+import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
+
+// Example navigation items
+const navItems = [
+  { title: 'Home', href: '/', current: false, icon: 'home' },
+  { title: 'Custom Themes Demo', href: '/custom-themes', current: true, icon: 'palette' },
+  { title: 'Documentation', href: '/book/overview', current: false, icon: 'book' },
+];
+---
+
+<DocsLayout
+  title="Custom Themes Demo"
+  description="Demonstration of custom theme component override"
+  section="Examples"
+  showToc={true}
+  showThemeSelector={true}
+>
+  <!-- Custom Themes Component Demo -->
+  <ThemesResolver 
+    component={CustomThemes}
+    includeAll={true}
+    enableDocsTheming={true}
+    customThemes={[
+      'https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@latest/dist/styles/themes/premium.css'
+    ]}
+  />
+
+  <!-- Navigation Menu -->
+  <NavigationMenu
+    slot="navigation"
+    items={navItems}
+    showSearch={true}
+    searchPlaceholder="Search themes..."
+    collapsible={true}
+    showIcons={true}
+  />
+
+  <!-- Main Content -->
+  <article class="custom-themes-demo">
+    <header class="demo-header">
+      <h1>Custom Themes Component Demo</h1>
+      <p class="demo-description">
+        This page demonstrates how to create and use a custom Themes component 
+        that overrides the default theme handling in MyST Awesome.
+      </p>
+    </header>
+
+    <section class="theme-features">
+      <h2>Custom Theme Features</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <wa-icon name="palette" variant="solid"></wa-icon>
+          <h3>All Themes Included</h3>
+          <p>This custom component imports all available Web Awesome themes instead of just the default set.</p>
+        </div>
+
+        <div class="feature-card">
+          <wa-icon name="code" variant="solid"></wa-icon>
+          <h3>Enhanced Documentation Styling</h3>
+          <p>Includes additional CSS for better documentation display, syntax highlighting, and readability.</p>
+        </div>
+
+        <div class="feature-card">
+          <wa-icon name="link-external" variant="solid"></wa-icon>
+          <h3>External Theme Support</h3>
+          <p>Supports loading custom themes from external CDNs or custom CSS files.</p>
+        </div>
+
+        <div class="feature-card">
+          <wa-icon name="moon" variant="solid"></wa-icon>
+          <h3>Dark Mode Enhancements</h3>
+          <p>Improved dark mode styling specifically tailored for documentation content.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="implementation-example">
+      <h2>Implementation Example</h2>
+      
+      <p>Here's how this page uses the custom themes component:</p>
+      
+      <pre><code class="language-astro">---
+import ThemesResolver from '@awesome-myst/myst-awesome/components/ThemesResolver.astro';
+import CustomThemes from '../components/CustomThemes.astro';
+---
+
+&lt;ThemesResolver 
+  component={CustomThemes}
+  includeAll={true}
+  enableDocsTheming={true}
+  customThemes={[
+    'https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@latest/dist/styles/themes/premium.css'
+  ]}
+/&gt;</code></pre>
+    </section>
+
+    <section class="theme-switching-demo">
+      <h2>Theme Switching Demo</h2>
+      
+      <p>Use the theme selector in the header to see how different themes affect the appearance:</p>
+      
+      <div class="theme-examples">
+        <div class="example-block">
+          <h3>Typography Example</h3>
+          <p>This is regular paragraph text that will change based on the selected theme.</p>
+          <p><strong>Bold text</strong> and <em>italic text</em> also adapt to the theme.</p>
+          <p><a href="#theme-switching-demo">This is a link</a> with theme-aware styling.</p>
+        </div>
+
+        <div class="example-block">
+          <h3>Interactive Elements</h3>
+          <wa-button appearance="primary">Primary Button</wa-button>
+          <wa-button appearance="secondary">Secondary Button</wa-button>
+          <wa-button appearance="plain">Plain Button</wa-button>
+        </div>
+
+        <div class="example-block">
+          <h3>Code Example</h3>
+          <pre><code class="language-javascript">// Code blocks are styled with theme-aware colors
+function greetUser(name) {
+  console.log(`Hello, ${name}!`);
+  return `Welcome to MyST Awesome, ${name}`;
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="customization-guide">
+      <h2>Creating Your Own Custom Themes Component</h2>
+      
+      <ol>
+        <li>
+          <strong>Create the Component:</strong> 
+          Make a new <code>.astro</code> file that imports the Web Awesome CSS and adds your customizations.
+        </li>
+        <li>
+          <strong>Use ThemesResolver:</strong> 
+          Import and use the <code>ThemesResolver</code> component, passing your custom component as a prop.
+        </li>
+        <li>
+          <strong>Add Custom Styling:</strong> 
+          Include additional CSS in your component to enhance the appearance for your specific use case.
+        </li>
+        <li>
+          <strong>Handle External Themes:</strong> 
+          Support loading external theme CSS via the <code>customThemes</code> prop.
+        </li>
+      </ol>
+    </section>
+  </article>
+</DocsLayout>
+
+<script>
+  // Import Web Awesome components for this demo
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  .custom-themes-demo {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .demo-header {
+    text-align: center;
+    margin-bottom: var(--wa-space-xl);
+    padding-bottom: var(--wa-space-l);
+    border-bottom: 2px solid var(--wa-color-surface-border);
+  }
+
+  .demo-description {
+    font-size: 1.125rem;
+    color: var(--wa-color-text-quiet);
+    max-width: 600px;
+    margin: var(--wa-space-l) auto 0;
+    line-height: 1.6;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--wa-space-l);
+    margin: var(--wa-space-l) 0;
+  }
+
+  .feature-card {
+    padding: var(--wa-space-l);
+    background: var(--wa-color-surface-raised);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-l);
+    text-align: center;
+    transition: var(--docs-theme-transition, all 0.3s ease);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--wa-shadow-l);
+  }
+
+  .feature-card wa-icon {
+    font-size: 2rem;
+    color: var(--wa-color-brand-fill-loud);
+    margin-bottom: var(--wa-space-m);
+    display: block;
+  }
+
+  .feature-card h3 {
+    margin: var(--wa-space-m) 0;
+    color: var(--wa-color-text-loud);
+  }
+
+  .feature-card p {
+    color: var(--wa-color-text-quiet);
+    line-height: 1.6;
+  }
+
+  .implementation-example,
+  .theme-switching-demo,
+  .customization-guide {
+    margin: var(--wa-space-xl) 0;
+    padding: var(--wa-space-l) 0;
+    border-top: 1px solid var(--wa-color-surface-border);
+  }
+
+  .theme-examples {
+    display: grid;
+    gap: var(--wa-space-l);
+    margin: var(--wa-space-l) 0;
+  }
+
+  .example-block {
+    padding: var(--wa-space-l);
+    background: var(--wa-color-surface-raised);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-m);
+  }
+
+  .example-block h3 {
+    margin-top: 0;
+    margin-bottom: var(--wa-space-m);
+    color: var(--wa-color-text-loud);
+  }
+
+  .example-block wa-button {
+    margin-right: var(--wa-space-m);
+    margin-bottom: var(--wa-space-s);
+  }
+
+  pre {
+    background: var(--wa-color-surface-lowered);
+    padding: var(--wa-space-l);
+    border-radius: var(--wa-border-radius-m);
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  code {
+    font-family: var(--wa-font-family-code);
+    background: var(--wa-color-surface-raised);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--wa-border-radius-s);
+    font-size: 0.875rem;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .customization-guide ol {
+    padding-left: var(--wa-space-l);
+  }
+
+  .customization-guide li {
+    margin-bottom: var(--wa-space-m);
+    line-height: 1.6;
+  }
+
+  .customization-guide li strong {
+    color: var(--wa-color-text-loud);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .demo-header {
+      text-align: left;
+    }
+    
+    .example-block wa-button {
+      display: block;
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: var(--wa-space-s);
+    }
+  }
+</style>

@@ -19,6 +19,7 @@ project:
     - title: Customization
       children:
         - file: customization/site-options.md
+        - file: customization/themes.md
     - title: Authoring
       children:
         - file: authoring/typography.md
