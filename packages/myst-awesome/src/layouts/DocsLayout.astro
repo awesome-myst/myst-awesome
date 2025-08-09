@@ -139,10 +139,7 @@ const {
             <wa-icon name="moon" variant="regular"></wa-icon>
           </wa-button>
           <wa-button class="color-btn" appearance="outlined" size="small" data-value="auto" title="System" aria-label="System">
-            <span class="system-icon">
-              <wa-icon class="only-light" name="sun" variant="regular"></wa-icon>
-              <wa-icon class="only-dark" name="moon" variant="regular"></wa-icon>
-            </span>
+            <wa-icon name="display"></wa-icon>
           </wa-button>
         </div>
       )}
@@ -298,6 +295,7 @@ const {
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/input/input.js';
   import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
 
   // Add responsive class for 920px breakpoint aside collapsing
   document.addEventListener('DOMContentLoaded', () => {
@@ -326,6 +324,7 @@ const {
 
     if (colorSchemeToggle) {
       const buttons = Array.from(colorSchemeToggle.querySelectorAll<HTMLButtonElement>('.color-btn'));
+      const order: Array<'light' | 'dark' | 'auto'> = ['light', 'dark', 'auto'];
       const setActive = (value: string) => {
         buttons.forEach((btn) => {
           const isActive = btn.dataset.value === value;
@@ -334,14 +333,30 @@ const {
         });
       };
 
-      // Initialize from props or localStorage
-      const initial = localStorage.getItem('color-scheme') || 'auto';
+      // Initialize from localStorage
+      const initial = (localStorage.getItem('color-scheme') as 'light' | 'dark' | 'auto') || 'auto';
       setActive(initial);
 
-      // Click handlers
+      // Click-to-cycle: clicking the visible (active) button cycles to next state
+      colorSchemeToggle.addEventListener('click', (evt) => {
+        const active = colorSchemeToggle.querySelector<HTMLButtonElement>('.color-btn.active');
+        if (!active) return;
+        // Only cycle if the active button (or its contents) were clicked
+        const target = evt.target as HTMLElement;
+        if (!active.contains(target)) return;
+
+        const current = (active.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
+        const next = order[(order.indexOf(current) + 1) % order.length];
+        setActive(next);
+        if ((window as any).setColorScheme) {
+          (window as any).setColorScheme(next);
+        }
+      });
+
+      // Also support direct selection if custom UI triggers events in the future
       buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const value = btn.dataset.value || 'auto';
+        btn.addEventListener('select', () => {
+          const value = (btn.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
           setActive(value);
           if ((window as any).setColorScheme) {
             (window as any).setColorScheme(value);
@@ -416,6 +431,10 @@ const {
     color: var(--wa-color-text-quiet);
     border-radius: var(--wa-border-radius-m);
   }
+  /* Show only the active icon/button */
+  .color-scheme-toggle .color-btn:not(.active) {
+    display: none;
+  }
   .color-scheme-toggle .color-btn wa-icon {
     font-size: 1rem;
   }
@@ -423,12 +442,7 @@ const {
     background: var(--wa-color-brand-fill-quiet);
     color: var(--wa-color-brand-on-quiet);
   }
-  .system-icon {
-    display: grid;
-  }
-  .system-icon .only-dark { display: none; }
-  html.wa-dark .system-icon .only-light { display: none; }
-  html.wa-dark .system-icon .only-dark { display: inline; }
+  /* A simple single icon is used for System (auto) */
 
   .search-shortcut {
     font-family: var(--wa-font-family-code);
