@@ -250,12 +250,10 @@ import Themes from '../components/Themes.astro';
 
       // Color scheme switching
       function setColorScheme(scheme: 'light' | 'dark' | 'auto') {
-        console.log('setColorScheme called with:', scheme);
         localStorage.setItem('color-scheme', scheme);
         const isDark = scheme === 'dark' || (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.toggle('wa-dark', isDark);
         document.body.setAttribute('data-theme', scheme);
-        console.log('HTML classes after color scheme change:', document.documentElement.className);
       }
 
       // Theme switching
