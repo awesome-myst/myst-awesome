@@ -438,9 +438,9 @@ import Themes from '../components/Themes.astro';
 
   /* Make the hamburger (bars) icon larger inside the mobile toggle */
   .mobile-nav-toggle wa-icon {
-    font-size: 2.0rem; /* increase icon size */
-    width: 2.0rem;
-    height: 2.0rem;
+    font-size: 1.7rem; /* increase icon size */
+    width: 1.7rem;
+    height: 1.7rem;
     line-height: 1; /* avoid extra vertical space */
   }
 
@@ -676,14 +676,18 @@ import Themes from '../components/Themes.astro';
 
   /* Additional responsive behavior for layouts that need to collapse at 920px */
   @media (max-width: 920px) {
+    /* Default: collapse to single column when there is no left menu */
     .page-body.collapse-aside-920 {
       grid-template-columns: 1fr !important;
       grid-template-areas: "main" !important;
     }
 
+    /* Keep the left navigation visible and in the left column when present,
+       while collapsing the aside at <=920px. This prevents the nav from
+       auto-placing to the bottom/right when the grid only defines "main". */
     .page-body.collapse-aside-920.has-menu {
-      grid-template-columns: 1fr !important;
-      grid-template-areas: "main" !important;
+      grid-template-columns: var(--menu-width, 15rem) 1fr !important;
+      grid-template-areas: "menu main" !important;
     }
 
     /* Removed aside display:none here; handled by DocsLayout when needed */
@@ -691,6 +695,23 @@ import Themes from '../components/Themes.astro';
 
   /* Additional rule for mobile-only hamburger at 768px */
   @media (max-width: 768px) {
+    /* Forcefully collapse all grid variants to a single column on small screens,
+       including the 920px collapse variant with a menu to avoid left whitespace */
+    .page-body.collapse-aside-920.has-menu,
+    .page-body.collapse-aside-920,
+    .page-body.has-menu.has-aside,
+    .page-body.has-aside,
+    .page-body.has-menu,
+    .page-body {
+      grid-template-columns: 1fr !important;
+      grid-template-areas: "main" !important;
+    }
+
+    /* Hide the desktop menu in mobile view to reclaim the space */
+    .page-layout[data-view="mobile"] .page-menu[data-view="desktop"] {
+      display: none !important;
+    }
+
     .mobile-nav-toggle {
       display: block !important;
     }
