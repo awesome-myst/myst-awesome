@@ -15,6 +15,8 @@ const projectTitle = projectConfig?.data?.title ||
 // Get logo path from site options
 const logoPath = projectConfig?.data?.options?.logo;
 
+const showTocDefault = !!!projectConfig.data?.options?.hide_outline;
+
 // Dynamic import for logo if it exists
 let logoImage: ImageMetadata | undefined;
 if (logoPath) {
@@ -86,7 +88,7 @@ const {
   theme = 'default',
   colorScheme = 'auto',
   tocItems,
-  showToc = true,
+  showToc = showTocDefault,
   showBreadcrumbs = true,
   showEditButton = false,
   editUrl,
@@ -143,14 +145,8 @@ const {
           </wa-button>
         </div>
       )}
-
-      <!-- Search button -->
-      <wa-button appearance="outlined" size="small" class="search-trigger">
-        <wa-icon slot="start" name="magnifying-glass"></wa-icon>
-        Search
-        <kbd slot="end" class="search-shortcut">/</kbd>
-      </wa-button>
-    </div>
+    </div  showToc?: boolean;
+>
   </div>
 
   <!-- Breadcrumbs in subheader -->
@@ -180,8 +176,9 @@ const {
         />
       </div>
     )}
-    <wa-input class="nav-search" placeholder="Search docs..." size="small">
+    <wa-input class="nav-search" placeholder="Search" size="medium">
       <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+      <kbd slot="end" class="search-shortcut">/</kbd>
     </wa-input>
   </div>
 
@@ -206,6 +203,7 @@ const {
 
     <div class="nav-section">
       <h3 class="nav-section-title">Theming</h3>
+>
       <ul class="nav-list">
         <li><a href="/docs/theming/colors" class="nav-link">Colors</a></li>
         <li><a href="/docs/theming/typography" class="nav-link">Typography</a></li>

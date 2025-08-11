@@ -6,18 +6,9 @@ interface Props {
   colorScheme?: 'light' | 'dark' | 'auto';
   mobileBreakpoint?: string;
   disableSticky?: string[];
+  showNav?: boolean;
   navOpen?: boolean;
 }
-
-const {
-  title = "MyST Awesome Theme",
-  description = "A modern documentation theme built with Web Awesome and Astro",
-  theme = 'default',
-  colorScheme = 'auto',
-  mobileBreakpoint = '768px',
-  disableSticky = [],
-  navOpen = false
-} = Astro.props;
 
 import { getCollection } from 'astro:content';
 
@@ -29,6 +20,19 @@ try {
 } catch {
   // Collection not available - silently continue with defaults
 }
+
+const showNavDefault = !!!projectConfig?.data?.options?.hide_toc;
+
+const {
+  title = "MyST Awesome Theme",
+  description = "A modern documentation theme built with Web Awesome and Astro",
+  theme = 'default',
+  colorScheme = 'auto',
+  mobileBreakpoint = '768px',
+  disableSticky = [],
+  navOpen = false,
+  showNav = showNavDefault
+} = Astro.props;
 
 // Determine favicon path and type
 let faviconPath = "/favicon.png"; // default fallback
@@ -93,9 +97,11 @@ import Themes from '../components/Themes.astro';
     </div>
 
     <!-- Mobile navigation toggle button (positioned at top-left of page) -->
+    {showNav && (
     <wa-button class="mobile-nav-toggle" appearance="plain">
       <wa-icon name="bars" label="Toggle navigation"></wa-icon>
     </wa-button>
+    )}
 
     <!-- Main page layout container -->
     <div class="page-layout" data-mobile-breakpoint={mobileBreakpoint} data-nav-open={navOpen}>
@@ -125,7 +131,7 @@ import Themes from '../components/Themes.astro';
       <div class="page-body">
 
         <!-- Navigation menu -->
-        {(Astro.slots.has('navigation') || Astro.slots.has('navigation-header') || Astro.slots.has('navigation-footer')) && (
+        {showNav && (Astro.slots.has('navigation') || Astro.slots.has('navigation-header') || Astro.slots.has('navigation-footer')) && (
           <>
             <!-- Desktop navigation -->
             <nav class={`page-menu ${disableSticky.includes('menu') ? '' : 'sticky'}`} data-view="desktop">

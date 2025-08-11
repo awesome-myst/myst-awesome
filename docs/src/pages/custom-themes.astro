@@ -20,7 +20,7 @@ const navItems = [
   showThemeSelector={true}
 >
   <!-- Custom Themes Component Demo -->
-  <ThemesResolver 
+  <ThemesResolver
     component={CustomThemes}
     includeAll={true}
     enableDocsTheming={true}
@@ -44,14 +44,14 @@ const navItems = [
     <header class="demo-header">
       <h1>Custom Themes Component Demo</h1>
       <p class="demo-description">
-        This page demonstrates how to create and use a custom Themes component 
+        This page demonstrates how to create and use a custom Themes component
         that overrides the default theme handling in MyST Awesome.
       </p>
     </header>
 
     <section class="theme-features">
       <h2>Custom Theme Features</h2>
-      
+
       <div class="feature-grid">
         <div class="feature-card">
           <wa-icon name="palette" variant="solid"></wa-icon>
@@ -81,15 +81,15 @@ const navItems = [
 
     <section class="implementation-example">
       <h2>Implementation Example</h2>
-      
+
       <p>Here's how this page uses the custom themes component:</p>
-      
+
       <pre><code class="language-astro">---
 import ThemesResolver from '@awesome-myst/myst-awesome/components/ThemesResolver.astro';
 import CustomThemes from '../components/CustomThemes.astro';
 ---
 
-&lt;ThemesResolver 
+&lt;ThemesResolver
   component={CustomThemes}
   includeAll={true}
   enableDocsTheming={true}
@@ -101,9 +101,9 @@ import CustomThemes from '../components/CustomThemes.astro';
 
     <section class="theme-switching-demo">
       <h2>Theme Switching Demo</h2>
-      
+
       <p>Use the theme selector in the header to see how different themes affect the appearance:</p>
-      
+
       <div class="theme-examples">
         <div class="example-block">
           <h3>Typography Example</h3>
@@ -132,22 +132,22 @@ function greetUser(name) {
 
     <section class="customization-guide">
       <h2>Creating Your Own Custom Themes Component</h2>
-      
+
       <ol>
         <li>
-          <strong>Create the Component:</strong> 
+          <strong>Create the Component:</strong>
           Make a new <code>.astro</code> file that imports the Web Awesome CSS and adds your customizations.
         </li>
         <li>
-          <strong>Use ThemesResolver:</strong> 
+          <strong>Use ThemesResolver:</strong>
           Import and use the <code>ThemesResolver</code> component, passing your custom component as a prop.
         </li>
         <li>
-          <strong>Add Custom Styling:</strong> 
+          <strong>Add Custom Styling:</strong>
           Include additional CSS in your component to enhance the appearance for your specific use case.
         </li>
         <li>
-          <strong>Handle External Themes:</strong> 
+          <strong>Handle External Themes:</strong>
           Support loading external theme CSS via the <code>customThemes</code> prop.
         </li>
       </ol>
@@ -292,11 +292,11 @@ function greetUser(name) {
     .feature-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .demo-header {
       text-align: left;
     }
-    
+
     .example-block wa-button {
       display: block;
       width: 100%;

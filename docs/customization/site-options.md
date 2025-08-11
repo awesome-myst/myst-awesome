@@ -84,7 +84,7 @@ site:
 - **Default**: `false`
 - **Description**: Hide the primary sidebar (table of contents) across the entire site.
 - **Example**: `hide_toc: true`
-- **Themes**: `book-theme`, `article-theme`
+- **Themes**: `awesome-book`
 - **Page-level**: Can be overridden in page frontmatter under `site.hide_toc`
 
 #### `hide_outline`
@@ -92,7 +92,7 @@ site:
 - **Default**: `false`
 - **Description**: Hide the secondary sidebar (in-page outline) across the entire site.
 - **Example**: `hide_outline: true`
-- **Themes**: `book-theme`, `article-theme`
+- **Themes**: `awesome-book`
 - **Page-level**: Can be overridden in page frontmatter under `site.hide_outline`
 
 #### `hide_title_block`
