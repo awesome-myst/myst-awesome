@@ -46,9 +46,10 @@ test.describe("Basic Functionality", () => {
   });
 
   test("should navigate between pages", async ({ page }) => {
-    await page.goto("http://localhost:4322/");
+    await page.goto("http://localhost:4322/", { waitUntil: "domcontentloaded" });
     await page.click('a[href="/working-demo"]');
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForSelector("h1, h2, .custom-navigation-menu, .custom-table-of-contents", { timeout: 15000 });
     await expect(page).toHaveTitle(/Working Demo/);
     await expect(page.locator("h1").first()).toContainText("Working Demo");
   });

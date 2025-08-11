@@ -4,11 +4,11 @@ test.describe("Hamburger Menu Top-Left Positioning", () => {
   test("hamburger should be positioned at top-left of page on mobile", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4322/docs-example");
+  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
 
     // Test desktop view first (wide screen)
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForLoadState("networkidle");
+  await page.waitForSelector(".page-body, body", { timeout: 15000 });
 
     const hamburger = page.locator(".mobile-nav-toggle");
 
@@ -48,9 +48,9 @@ test.describe("Hamburger Menu Top-Left Positioning", () => {
   test("page layout should maintain collapsed horizontal space", async ({
     page,
   }) => {
-    await page.goto("http://localhost:4322/docs-example");
+  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
     await page.setViewportSize({ width: 600, height: 800 });
-    await page.waitForLoadState("networkidle");
+  await page.waitForSelector(".page-body, body", { timeout: 15000 });
 
     // Wait a bit more for JavaScript to run
     await page.waitForTimeout(1000);

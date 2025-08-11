@@ -8,8 +8,13 @@ import { test, expect } from "@playwright/test";
 test.describe("Component Override System", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the working demo page
-    await page.goto("http://localhost:4322/working-demo");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/working-demo", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(
+      ".custom-navigation-menu, .custom-table-of-contents, h1,h2",
+      { timeout: 15000 }
+    );
   });
 
   test("should load the component override demo page", async ({ page }) => {

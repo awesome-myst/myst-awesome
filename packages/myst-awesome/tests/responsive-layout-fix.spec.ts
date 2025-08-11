@@ -5,13 +5,15 @@ test.describe("Responsive Layout Fix", () => {
     page,
   }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4322/docs-example");
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(".page-body, main, body", { timeout: 15000 });
 
     // Set viewport to narrow width (850px - between 768px and 920px where the issue occurred)
     await page.setViewportSize({ width: 850, height: 800 });
 
-    // Wait for content to load
-    await page.waitForLoadState("networkidle");
+  // Content readiness handled by DOMContentLoaded + selector above
 
     // Check that page body exists
     const pageBody = page.locator(".page-body");
@@ -57,13 +59,15 @@ test.describe("Responsive Layout Fix", () => {
 
   test("should preserve aside column on wide screens", async ({ page }) => {
     // Navigate to the main page
-    await page.goto("http://localhost:4322/docs-example");
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(".page-body, main, body", { timeout: 15000 });
 
     // Set viewport to wide width
     await page.setViewportSize({ width: 1200, height: 800 });
 
-    // Wait for content to load
-    await page.waitForLoadState("networkidle");
+  // Content readiness handled by DOMContentLoaded + selector above
 
     // Check that page body exists
     const pageBody = page.locator(".page-body");
