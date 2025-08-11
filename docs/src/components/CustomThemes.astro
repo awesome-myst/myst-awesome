@@ -3,7 +3,7 @@
  * Custom Themes component for MyST Awesome Docs
  * This demonstrates how to override the default Themes component
  * to provide custom theme handling for a specific application
- * 
+ *
  * Features:
  * - Imports all Web Awesome themes
  * - Adds custom CSS for docs-specific theming
@@ -16,22 +16,22 @@ interface Props {
    * Array of theme names to import CSS for
    */
   themes?: string[];
-  
+
   /**
    * Whether to include the base Web Awesome CSS
    */
   includeBase?: boolean;
-  
+
   /**
    * Custom theme CSS URLs to import
    */
   customThemes?: string[];
-  
+
   /**
    * Whether to include all available Web Awesome themes
    */
   includeAll?: boolean;
-  
+
   /**
    * Enable docs-specific theme enhancements
    */
@@ -63,7 +63,7 @@ import "@awesome.me/webawesome/dist/styles/themes/tailspin.css";
 
 // Define all available themes for docs
 const allThemes = [
-  'default', 'awesome', 'shoelace', 'brutalist', 'glossy', 
+  'default', 'awesome', 'shoelace', 'brutalist', 'glossy',
   'matter', 'mellow', 'playful', 'premium', 'tailspin'
 ];
 
@@ -84,39 +84,39 @@ const activeThemes = includeAll ? allThemes : themes;
 {enableDocsTheming && (
   <style>
     /* Docs-specific theme enhancements */
-    
+
     /* Enhanced code syntax highlighting for docs */
     .myst-content pre[class*="language-"] {
       background: var(--wa-color-surface-raised);
       border: 1px solid var(--wa-color-surface-border);
       border-radius: var(--wa-border-radius-l);
     }
-    
+
     /* Enhanced documentation callouts */
     .myst-content .wa-callout {
       margin: var(--wa-space-l) 0;
       border-radius: var(--wa-border-radius-l);
     }
-    
+
     /* Theme-aware documentation navigation */
     .docs-nav {
       background: var(--wa-color-surface-lowered);
       border: 1px solid var(--wa-color-surface-border);
     }
-    
+
     /* Enhanced table of contents styling */
     .docs-toc {
       background: var(--wa-color-surface-default);
       border-left: 3px solid var(--wa-color-brand-fill-loud);
     }
-    
+
     /* Documentation-specific typography enhancements */
     .myst-content {
       --docs-font-size-base: 1rem;
       --docs-line-height-base: 1.7;
       --docs-spacing-vertical: var(--wa-space-l);
     }
-    
+
     .myst-content h1,
     .myst-content h2,
     .myst-content h3,
@@ -128,7 +128,7 @@ const activeThemes = includeAll ? allThemes : themes;
       padding-bottom: var(--wa-space-s);
       margin-bottom: var(--wa-space-l);
     }
-    
+
     /* Enhanced link styling for documentation */
     .myst-content a:not(.wa-button) {
       color: var(--wa-color-brand-fill-loud);
@@ -137,18 +137,18 @@ const activeThemes = includeAll ? allThemes : themes;
       text-underline-offset: 0.2em;
       transition: all 0.2s ease;
     }
-    
+
     .myst-content a:not(.wa-button):hover {
       color: var(--wa-color-brand-fill-louder);
       text-decoration-color: var(--wa-color-brand-fill-loud);
     }
-    
+
     /* Documentation-specific dark mode enhancements */
     .wa-dark .myst-content {
       --docs-code-bg: var(--wa-color-surface-raised);
       --docs-border-color: var(--wa-color-surface-border);
     }
-    
+
     /* Theme transition animations for docs */
     .myst-content,
     .docs-nav,
