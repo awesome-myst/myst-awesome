@@ -196,13 +196,3 @@ site:
 ```
 
 This is particularly useful for landing pages or special pages that need different layout options than the rest of your site.
-
-## Theme Compatibility
-
-Different MyST themes support different sets of options:
-
-- **book-theme**: Supports all options listed above
-- **article-theme**: Supports basic branding, navigation, analytics, and styling options
-- **Custom themes**: May define their own specific options
-
-When using a custom theme, refer to the theme's documentation for available options. MyST will validate your options against the theme's specification and warn you about unsupported options.

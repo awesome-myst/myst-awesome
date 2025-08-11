@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Responsive Layout Fix", () => {
-  test("CSS media query should collapse aside column on narrow screens", async ({
+  test("CSS should collapse aside and keep menu+main on narrow screens (<=920px)", async ({
     page,
   }) => {
     // Navigate to the main page
@@ -17,7 +17,7 @@ test.describe("Responsive Layout Fix", () => {
     const pageBody = page.locator(".page-body");
     await expect(pageBody).toBeVisible();
 
-    // Inject CSS to simulate having aside content and test our responsive behavior
+    // Inject CSS to simulate having aside content (so we can verify it collapses)
     await page.addStyleTag({
       content: `
         /* Simulate having aside content */
@@ -43,40 +43,16 @@ test.describe("Responsive Layout Fix", () => {
       if (pageLayout) pageLayout.classList.add("page-layout");
     });
 
-    // Get the computed grid-template-areas before our responsive CSS kicks in
-    const gridAreasInitial = await pageBody.evaluate((el) => {
+    // Read the computed grid-template-areas at 850px
+    const gridAreas = await pageBody.evaluate((el) => {
       return window.getComputedStyle(el).gridTemplateAreas;
     });
 
-    console.log(
-      "Grid areas at 850px width (before responsive fix):",
-      gridAreasInitial
-    );
+    console.log("Grid areas at 850px width:", gridAreas);
 
-    // Now inject our responsive CSS fix with high specificity
-    await page.addStyleTag({
-      content: `
-        @media (max-width: 920px) {
-          .page-layout .page-body.has-aside {
-            grid-template-columns: 1fr !important;
-            grid-template-areas: "main" !important;
-          }
-        }
-      `,
-    });
-
-    // Get the computed grid-template-areas after our fix
-    const gridAreasAfter = await pageBody.evaluate((el) => {
-      return window.getComputedStyle(el).gridTemplateAreas;
-    });
-
-    console.log(
-      "Grid areas at 850px width (after responsive fix):",
-      gridAreasAfter
-    );
-
-    // Should not include "aside" in the grid areas at this width after our fix
-    expect(gridAreasAfter).toBe('"main"');
+    // At 850px we expect the aside to be collapsed but the menu to remain
+    // on the left, i.e. the grid should be "menu main" (no aside).
+    expect(gridAreas).toBe('"menu main"');
   });
 
   test("should preserve aside column on wide screens", async ({ page }) => {
