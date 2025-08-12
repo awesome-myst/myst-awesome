@@ -237,11 +237,30 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
             if (!existsSync(targetDir)) {
               mkdirSync(targetDir, { recursive: true });
             }
-            writeFileSync(
-              targetPath,
-              JSON.stringify(pageData, null, 2),
-              "utf-8"
-            );
+            writeFileSync(targetPath, JSON.stringify(pageData, null), "utf-8");
+            // Also write a flat copy to public/${slug}.json where slug is based on ref.url
+            {
+              const urlVal = String(ref.url || "");
+              let pathname = urlVal;
+              try {
+                // Ensure we parse only the path component
+                pathname = new URL(urlVal, baseUrl).pathname;
+              } catch {
+                // Fallback: use provided string
+              }
+              // Normalize and pick the last segment; default to 'index' for root
+              const trimmed = pathname.replace(/^\/+|\/+$/g, "");
+              const last = trimmed
+                ? trimmed.split("/").pop() || "index"
+                : "index";
+              const slug = last;
+              const flatPath = join(publicDir, `${slug}.json`);
+              writeFileSync(
+                flatPath,
+                JSON.stringify(pageData, null, 2),
+                "utf-8"
+              );
+            }
             console.log(`✓ Saved page JSON to public/${urlPath}`);
           } catch (writeErr) {
             console.warn(
