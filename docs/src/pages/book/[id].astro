@@ -16,11 +16,11 @@ export async function getStaticPaths() {
     }));
 }
 
-interface Props {
+interface PageProps {
   page: CollectionEntry<'pages'>;
 }
 
-const { page } = Astro.props;
+const { page } = Astro.props as PageProps;
 
 // Fetch all collections
 const allPages = await getCollection('pages');
@@ -132,6 +132,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
   title={title}
   description={description}
   section="Book"
+  baseDir="/book"
   tocItems={tocItems}
   showBreadcrumbs={true}
   showEditButton={true}

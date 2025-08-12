@@ -63,11 +63,11 @@ interface TocItem {
   id?: string;
 }
 
-interface Props {
+export interface Props {
   title?: string;
   description?: string;
   // theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
-  theme?: 'default' | 'awesome' | 'shoelace'
+  theme?: 'default' | 'awesome' | 'shoelace';
   colorScheme?: 'light' | 'dark' | 'auto';
   tocItems?: TocItem[];
   showToc?: boolean;
@@ -81,6 +81,7 @@ interface Props {
   prevPage?: { title: string; href: string };
   showThemeSelector?: boolean; // new prop to enable theme selector
   showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
+  baseDir?: string; // prefix for search dialog URLs (e.g., "/book")
 }
 
 const {
@@ -100,6 +101,7 @@ const {
   prevPage,
   showThemeSelector = false,
   showColorSchemeSelector = true,
+  baseDir,
   ...rest
 } = Astro.props;
 ---
@@ -146,8 +148,7 @@ const {
           </wa-button>
         </div>
       )}
-    </div  showToc?: boolean;
->
+    </div>
   </div>
 
   <!-- Breadcrumbs in subheader -->
@@ -177,7 +178,7 @@ const {
         />
       </div>
     )}
-  <SearchDialog />
+  <SearchDialog baseDir={baseDir} />
   </div>
 
   <nav slot="navigation" class="docs-navigation">
@@ -201,7 +202,6 @@ const {
 
     <div class="nav-section">
       <h3 class="nav-section-title">Theming</h3>
->
       <ul class="nav-list">
         <li><a href="/docs/theming/colors" class="nav-link">Colors</a></li>
         <li><a href="/docs/theming/typography" class="nav-link">Typography</a></li>
