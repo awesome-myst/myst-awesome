@@ -61,13 +61,10 @@ test.describe("TOC Responsive Behavior", () => {
 
       // Check that we don't have visible empty aside space
       const pageAside = page.locator(".page-aside");
-      const asideVisible = await pageAside.isVisible();
 
-      if (asideVisible) {
-        // If aside is visible, it should not be completely empty
-        const asideContent = await pageAside.textContent();
-        expect(asideContent?.trim()).toBe(""); // Should be empty if TOC is hidden
-      }
+      // On mobile (≤920px), the aside should be completely hidden
+      // This is controlled by CSS: .page-body.collapse-aside-920 .page-aside { display: none !important; }
+      await expect(pageAside).toBeHidden();
     }
   });
 });

@@ -116,11 +116,27 @@ const { baseDir = '' } = Astro.props as Props;
     return desktop || document.querySelector('.search-dialog');
   };
 
+  const getAllDialogs = () => Array.from(document.querySelectorAll('.search-dialog')) as HTMLElement[];
+
+  const closeDialogEl = (el: any) => {
+    try { el?.hide?.(); } catch {}
+    try { el.open = false; } catch {}
+    try { el.removeAttribute?.('open'); } catch {}
+  };
+
   const refreshScopedRefs = () => {
     if (!dialog) return;
     searchInput = dialog.querySelector('.search-input');
     resultsEl = dialog.querySelector('.results');
     previewIframe = dialog.querySelector('.preview-iframe');
+    // Bind close button to programmatic close to avoid overlay intercept issues
+    const closeBtn = dialog.querySelector('button, wa-button');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDialog();
+      }, { once: false });
+    }
   };
 
   const openDialog = () => {
@@ -128,8 +144,10 @@ const { baseDir = '' } = Astro.props as Props;
     // Determine the active dialog for the current viewport
     const target = pickPreferredDialog();
     if (!target) return;
-    dialog = target;
-    refreshScopedRefs();
+  // Ensure only the target dialog is open
+  getAllDialogs().forEach((d) => { if (d !== target) closeDialogEl(d as any); });
+  dialog = target as HTMLElement;
+  refreshScopedRefs();
     // Attach input listeners scoped to this dialog instance
     if (searchInput) {
       boundSearchInputHandler ||= () => {
@@ -144,28 +162,28 @@ const { baseDir = '' } = Astro.props as Props;
     }
     // On mobile, ensure the drawer is open so the dialog is visible
     const view = pageLayout?.getAttribute('data-view') || 'desktop';
-    if (view === 'mobile' && mobileDrawer && !(mobileDrawer).open) {
+    if (view === 'mobile' && mobileDrawer) {
+      try { (mobileDrawer as any).show?.(); } catch {}
       try { (mobileDrawer as any).open = true; } catch {}
     }
 
     // Use component API to open; lifecycle events will update state
-    try {
-      // @ts-ignore
-      dialog?.show?.();
-    } catch {
-      try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
-    }
+  try { (dialog as any).show?.(); } catch {}
+  try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
     ensureIndex();
   };
 
   const closeDialog = () => {
-    if (!dialog || !isOpen) return;
+    if (!isOpen && !dialog) return;
     closing = true;
-    try {
-      // @ts-ignore
-      dialog?.hide?.();
-    } catch {
-      try { (dialog as any).open = false; } catch { dialog.removeAttribute('open'); }
+    // Close all dialog instances (desktop and mobile) to avoid stray [open]
+    getAllDialogs().forEach((d) => closeDialogEl(d as any));
+    // Also close the mobile drawer so it doesn't intercept clicks
+    const view = pageLayout?.getAttribute('data-view') || 'desktop';
+    if (view === 'mobile' && mobileDrawer) {
+      try { (mobileDrawer as any).hide?.(); } catch {}
+      try { (mobileDrawer as any).open = false; } catch {}
+      try { (mobileDrawer as any).removeAttribute('open'); } catch {}
     }
     // Cleanup selection and results immediately; focus and flags handled on hide events
     selectedIndex = -1;
@@ -212,6 +230,10 @@ const { baseDir = '' } = Astro.props as Props;
       li.className = 'result-item' + (idx === selectedIndex ? ' selected' : '');
       li.role = 'option';
       li.dataset.index = String(idx);
+      // Ensure visibility for mobile browsers
+      li.style.display = 'block';
+      li.style.visibility = 'visible';
+      li.style.opacity = '1';
       li.innerHTML = `
   <div class="result-title">${escapeHtml(prefixUrl(entry.url || ''))}</div>
         <div class="result-subtitle">
@@ -222,6 +244,12 @@ const { baseDir = '' } = Astro.props as Props;
       li.addEventListener('click', () => navigateToIndex(idx));
       resultsEl.appendChild(li);
     });
+    // Force visibility on the container after adding items
+    if (resultsEl) {
+      resultsEl.style.display = 'block';
+      resultsEl.style.visibility = 'visible';
+      resultsEl.style.opacity = '1';
+    }
     updatePreview();
   };
 
@@ -365,14 +393,35 @@ const { baseDir = '' } = Astro.props as Props;
   // Zoom control removed; preview uses a fixed scale via CSS variable
 
     // Hook into dialog lifecycle events to set open/close flags reliably
-    const markOpened = () => {
+    const markOpened = (ev?: Event) => {
+      // Ignore events from non-active instances
+      if (ev?.currentTarget && dialog && ev.currentTarget !== dialog) return;
       isOpen = true;
       closing = false;
+      // Ensure results container visibility on mobile viewports
+      if (resultsEl) {
+        resultsEl.style.display = 'block';
+        resultsEl.style.visibility = 'visible';
+        resultsEl.style.opacity = '1';
+        resultsEl.style.zIndex = '10';
+        // Also ensure all result items are visible
+        const items = resultsEl.querySelectorAll('.result-item');
+        items.forEach(item => {
+          (item as HTMLElement).style.display = 'block';
+          (item as HTMLElement).style.visibility = 'visible';
+          (item as HTMLElement).style.opacity = '1';
+        });
+      }
       setTimeout(() => searchInput?.focus(), 0);
       // @ts-ignore
       (window as any).__searchOpened = true;
     };
-    const markClosed = () => {
+    const markClosed = (ev?: Event) => {
+      // Ignore events from non-active instances when another is active
+      if (ev?.currentTarget && dialog && ev.currentTarget !== dialog) {
+        // If a non-active instance closed, do not change global flags
+        return;
+      }
       isOpen = false;
       closing = false;
       // Detach input listeners to avoid duplicates on next open
@@ -388,6 +437,7 @@ const { baseDir = '' } = Astro.props as Props;
       launcherInput?.focus?.();
       // @ts-ignore
       (window as any).__searchOpened = false;
+      dialog = null;
     };
     // Attach to any dialog currently present (desktop and mobile); the active one will fire
     document.querySelectorAll('.search-dialog').forEach((d) => {
@@ -412,7 +462,21 @@ const { baseDir = '' } = Astro.props as Props;
   // @ts-ignore
   (window as any).__searchOpen = () => openDialog();
   // @ts-ignore
-  (window as any).__searchClose = () => closeDialog();
+  (window as any).__searchClose = async () => {
+    closeDialog();
+    // For Mobile Safari compatibility, ensure dialog is actually closed
+    await new Promise(resolve => {
+      const checkClosed = () => {
+        const openDialogs = document.querySelectorAll('wa-dialog.search-dialog[open]');
+        if (openDialogs.length === 0) {
+          resolve(true);
+        } else {
+          setTimeout(checkClosed, 50);
+        }
+      };
+      checkClosed();
+    });
+  };
   // @ts-ignore
   (window as any).__searchSetQuery = (q) => { try { if (searchInput) searchInput.value = String(q || ''); } catch {}; doSearch(String(q || '')); };
   // @ts-ignore
@@ -431,8 +495,8 @@ const { baseDir = '' } = Astro.props as Props;
   .nav-search { width: 100%; }
   .search-shortcut { font-family: var(--wa-font-family-code); font-size: var(--wa-font-size-xs); padding: var(--wa-space-3xs) var(--wa-space-2xs); background-color: var(--wa-color-neutral-fill-quiet); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); }
 
-  .search-container { display: grid; grid-template-columns: 1fr; grid-template-rows: 1.62fr 1fr; gap: var(--wa-space-m); width: min(100%, 1100px); min-height: 70vh; --preview-scale: 0.5; }
-  .search-left { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; }
+  .search-container { display: grid; grid-template-columns: 1fr; grid-template-rows: 1.62fr 1fr; gap: var(--wa-space-m); width: min(100%, 1100px); min-height: 70vh; --preview-scale: 0.5; position: relative; }
+  .search-left { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; overflow: visible; position: relative; z-index: 1; }
   .search-right { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; }
 
   .search-top { display: flex; flex-direction: column; gap: var(--wa-space-2xs); }
@@ -440,11 +504,11 @@ const { baseDir = '' } = Astro.props as Props;
   .keys-help kbd { font-family: var(--wa-font-family-code); padding: 2px 6px; border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet); }
 
 
-  .results { list-style: none; margin: 0; padding: 0; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); flex: 1; }
-  .result-item { padding: var(--wa-space-s); border-bottom: 1px solid var(--wa-color-surface-border); cursor: pointer; }
+  .results { list-style: none; margin: 0; padding: 0; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); flex: 1; min-height: 200px; display: block !important; visibility: visible !important; position: relative; z-index: 2; }
+  .result-item { padding: var(--wa-space-s); border-bottom: 1px solid var(--wa-color-surface-border); cursor: pointer; display: block !important; visibility: visible !important; position: relative; }
   .result-item:last-child { border-bottom: none; }
   .result-item.selected { background: var(--wa-color-brand-fill-quiet); color: var(--wa-color-brand-on-quiet); }
-  .result-title { font-weight: var(--wa-font-weight-semibold); }
+  .result-title { font-weight: var(--wa-font-weight-semibold); display: block; }
   .result-subtitle { color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-s); display: flex; gap: var(--wa-space-xs); flex-wrap: wrap; }
 
   .preview-header { display: flex; justify-content: space-between; align-items: center; }
