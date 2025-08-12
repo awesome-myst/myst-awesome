@@ -18,6 +18,8 @@ export interface MystServerConfig {
   baseUrl?: string;
   /** Timeout for requests in milliseconds */
   timeout?: number;
+  /** Generate a public/fuse.json search index from myst.xref.json (default: true) */
+  generateFuse?: boolean;
 }
 
 /**
@@ -34,7 +36,11 @@ export interface ProjectConfig {
  * Custom loader for MyST XRef data from the myst-content-server
  */
 export const createMystXrefLoader = (config: MystServerConfig = {}) => {
-  const { baseUrl = "http://localhost:3100", timeout = 5000 } = config;
+  const {
+    baseUrl = "http://localhost:3100",
+    timeout = 5000,
+    generateFuse = true,
+  } = config;
 
   return async () => {
     try {
@@ -64,6 +70,88 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
         console.log("✓ Saved myst.xref.json to public/ (", targetPath, ")");
       } catch (writeErr) {
         console.warn("Failed to write myst.xref.json to public/:", writeErr);
+      }
+
+      // Optionally generate a Fuse.js-friendly index at public/fuse.json
+      if (generateFuse) {
+        try {
+          // Build entries from references, fetching page data when kind === 'page'
+          const references = Array.isArray(xrefData?.references)
+            ? xrefData.references
+            : [];
+
+          // Helper to safely pick frontmatter fields
+          const pickFrontmatter = (fm: any) => {
+            if (!fm || typeof fm !== "object") return undefined;
+            const out: any = {};
+            if (typeof fm.title === "string") out.title = fm.title;
+            if (typeof fm.description === "string")
+              out.description = fm.description;
+            if (Array.isArray(fm.keywords))
+              out.keywords = fm.keywords.filter(
+                (k: any) => typeof k === "string"
+              );
+            return Object.keys(out).length ? out : undefined;
+          };
+
+          const pageFetches = references.map(async (ref) => {
+            try {
+              const base = {
+                url: (ref as any)?.url as string | undefined,
+                kind: (ref as any)?.kind as string | undefined,
+                identifier: (ref as any)?.identifier as string | undefined,
+              };
+              if (base.kind === "page" && (ref as any)?.data && base.url) {
+                // Fetch the page data JSON to extract frontmatter
+                const pageController = new AbortController();
+                const pageTimeout = setTimeout(
+                  () => pageController.abort(),
+                  timeout
+                );
+                const pageResp = await fetch(`${baseUrl}${(ref as any).data}`, {
+                  signal: pageController.signal,
+                });
+                clearTimeout(pageTimeout);
+                if (pageResp.ok) {
+                  const pageJson = await pageResp.json();
+                  const fm = pickFrontmatter(pageJson?.frontmatter);
+                  return fm ? { ...base, frontmatter: fm } : base;
+                }
+                // If fetch fails, return without frontmatter
+                return base;
+              }
+              // Non-page or missing data/url
+              return base;
+            } catch (e) {
+              // On any error, return minimal entry
+              return {
+                url: (ref as any)?.url,
+                kind: (ref as any)?.kind,
+                identifier: (ref as any)?.identifier,
+              };
+            }
+          });
+
+          const fuseEntries = await Promise.all(pageFetches);
+          // Filter out entries missing essential fields (url and kind)
+          const fuseFiltered = fuseEntries.filter(
+            (e) =>
+              typeof (e as any)?.url === "string" &&
+              typeof (e as any)?.kind === "string"
+          );
+
+          const publicDir = resolve(process.cwd(), "public");
+          if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
+          const fusePath = join(publicDir, "fuse.json");
+          writeFileSync(
+            fusePath,
+            JSON.stringify(fuseFiltered, null, 2),
+            "utf-8"
+          );
+          console.log("✓ Saved fuse.json to public/ (", fusePath, ")");
+        } catch (fuseErr) {
+          console.warn("Failed to generate fuse.json:", fuseErr);
+        }
       }
 
       // Return the full xref data as a single entry

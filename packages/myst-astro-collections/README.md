@@ -63,7 +63,8 @@ import {
 
 export const collections = {
   mystXref: createMystXrefCollection({
-    baseUrl: "http://localhost:3100"
+  baseUrl: "http://localhost:3100",
+  generateFuse: true // set to false to disable public/fuse.json
   }),
   pages: createPagesCollection(),
   // Only include the collections you need
@@ -95,9 +96,37 @@ const xref = await getEntry('mystXref', 'myst-xref');
 
 ### Configuration Types
 
-- `MystServerConfig`: Server configuration (baseUrl, timeout)
+- `MystServerConfig`: Server configuration
+  - `baseUrl` (string): Base URL of the MyST content server (default: `http://localhost:3100`).
+  - `timeout` (number): Request timeout in ms (default: `5000`).
+  - `generateFuse` (boolean): Generate `public/fuse.json` search index from `myst.xref.json` (default: `true`).
 - `ProjectConfig`: Project configuration (configPath, staticConfig)
 - `MystCollectionsConfig`: Combined configuration for all collections
+
+#### Fuse search index (fuse.json)
+
+When `generateFuse` is enabled, the XRef loader writes `public/fuse.json` containing a list of documents suitable for Fuse.js:
+
+```
+[
+  {
+    url: string,
+    kind: string,
+    identifier?: string,
+    frontmatter?: {
+      title?: string,
+      description?: string,
+      keywords?: string[]
+    }
+  }
+]
+```
+
+Notes:
+- For `kind: "page"`, the loader fetches the page `.json` (from the `data` field in `myst.xref.json`) to extract frontmatter.
+- Non-page references include `url`, `kind`, and (if present) `identifier`.
+- Entries missing a `url` or `kind` are skipped.
+- The file is saved under your working directory’s `public/` folder so Astro can serve it directly.
 
 ## Requirements
 
