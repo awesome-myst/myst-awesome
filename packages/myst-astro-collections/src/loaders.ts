@@ -154,11 +154,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
           const publicDir = resolve(process.cwd(), "public");
           if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
           const fusePath = join(publicDir, "fuse.json");
-          writeFileSync(
-            fusePath,
-            JSON.stringify(fuseFiltered, null, 2),
-            "utf-8"
-          );
+          writeFileSync(fusePath, JSON.stringify(fuseFiltered, null), "utf-8");
           console.log("✓ Saved fuse.json to public/ (", fusePath, ")");
         } catch (fuseErr) {
           console.warn("Failed to generate fuse.json:", fuseErr);
