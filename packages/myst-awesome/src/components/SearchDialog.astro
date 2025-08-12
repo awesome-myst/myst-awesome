@@ -202,9 +202,26 @@
     }
     await ensureIndex();
     if (!fuse) return;
-    const res = fuse.search(query, { limit: 50 });
-    selectedIndex = res.length ? 0 : -1;
-    renderResults(res);
+    const res = fuse.search(query, { limit: 100 });
+    // Deduplicate by URL (fallback to identifier) keeping the first/highest-ranked hit
+    const seen = new Set();
+    const deduped = [];
+    for (const r of res) {
+      const entry = r && (r.item || r);
+      const key = entry?.url || entry?.identifier;
+      if (!key) {
+        // If no stable key, include it once using object identity guard
+        const sym = Symbol.for('no-key');
+        if (!seen.has(sym)) { seen.add(sym); deduped.push(r); }
+        continue;
+      }
+      if (seen.has(key)) continue;
+      seen.add(key);
+      deduped.push(r);
+      if (deduped.length >= 10) break; // enforce display cap
+    }
+    selectedIndex = deduped.length ? 0 : -1;
+    renderResults(deduped);
     scrollSelectedIntoView();
   };
 
