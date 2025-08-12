@@ -1,5 +1,11 @@
 import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
-import { readFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
+import {
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve, dirname, join, basename } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { randomUUID } from "node:crypto";
@@ -46,6 +52,19 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
       }
 
       const xrefData: XRef = await response.json();
+
+      // Persist a copy to public/myst.xref.json so Astro can serve it directly
+      try {
+        const publicDir = resolve(process.cwd(), "public");
+        if (!existsSync(publicDir)) {
+          mkdirSync(publicDir, { recursive: true });
+        }
+        const targetPath = join(publicDir, "myst.xref.json");
+        writeFileSync(targetPath, JSON.stringify(xrefData, null, 2), "utf-8");
+        console.log("✓ Saved myst.xref.json to public/ (", targetPath, ")");
+      } catch (writeErr) {
+        console.warn("Failed to write myst.xref.json to public/:", writeErr);
+      }
 
       // Return the full xref data as a single entry
       return [
