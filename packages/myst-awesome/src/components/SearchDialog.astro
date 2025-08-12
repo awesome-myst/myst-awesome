@@ -67,6 +67,12 @@ const { baseDir = '' } = Astro.props as Props;
   let selectedIndex = -1;
   /** @type {any[]} */
   let lastResults = [];
+  /** @type {boolean} */
+  let closing = false;
+  /** @type {boolean} */
+  let isOpen = false;
+  /** @type {((this: HTMLInputElement, ev: Event) => any) | null} */
+  let boundSearchInputHandler = null;
 
   // Returns normalized base dir ("/book"), or empty string
   const getBaseDir = () => {
@@ -118,6 +124,7 @@ const { baseDir = '' } = Astro.props as Props;
   };
 
   const openDialog = () => {
+    if (closing || isOpen) return; // don't open during close sequence or if already open
     // Determine the active dialog for the current viewport
     const target = pickPreferredDialog();
     if (!target) return;
@@ -125,15 +132,15 @@ const { baseDir = '' } = Astro.props as Props;
     refreshScopedRefs();
     // Attach input listeners scoped to this dialog instance
     if (searchInput) {
-      const handleInputLocal = () => {
+      boundSearchInputHandler ||= () => {
         const q = searchInput?.value || '';
         doSearch(q);
       };
-      searchInput.addEventListener('input', handleInputLocal, { once: false });
+      searchInput.addEventListener('input', boundSearchInputHandler, { once: false });
       // @ts-ignore
-      searchInput.addEventListener('wa-input', handleInputLocal, { once: false });
+      searchInput.addEventListener('wa-input', boundSearchInputHandler, { once: false });
       // @ts-ignore
-      searchInput.addEventListener('sl-input', handleInputLocal, { once: false });
+      searchInput.addEventListener('sl-input', boundSearchInputHandler, { once: false });
     }
     // On mobile, ensure the drawer is open so the dialog is visible
     const view = pageLayout?.getAttribute('data-view') || 'desktop';
@@ -141,34 +148,28 @@ const { baseDir = '' } = Astro.props as Props;
       try { (mobileDrawer as any).open = true; } catch {}
     }
 
-    // Use component API to open; event handlers will mark readiness
-    try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
-    // Defer visibility enforcement to next frame
-    requestAnimationFrame(() => {
-      dialog?.removeAttribute('hidden');
+    // Use component API to open; lifecycle events will update state
+    try {
       // @ts-ignore
       dialog?.show?.();
-      ensureVisible();
-    });
+    } catch {
+      try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
+    }
     ensureIndex();
-  // Signal opened for tests
-  // @ts-ignore
-  (window as any).__searchOpened = true;
   };
 
   const closeDialog = () => {
-    if (!dialog) return;
-    try { (dialog as any).open = false; } catch {
-      dialog.removeAttribute('open');
+    if (!dialog || !isOpen) return;
+    closing = true;
+    try {
+      // @ts-ignore
+      dialog?.hide?.();
+    } catch {
+      try { (dialog as any).open = false; } catch { dialog.removeAttribute('open'); }
     }
-    // @ts-ignore
-    dialog.hide?.();
-    dialog.setAttribute('hidden', '');
+    // Cleanup selection and results immediately; focus and flags handled on hide events
     selectedIndex = -1;
     renderResults([]);
-    launcherInput?.focus();
-  // @ts-ignore
-  (window as any).__searchOpened = false;
   };
 
   const ensureIndex = async () => {
@@ -294,14 +295,25 @@ const { baseDir = '' } = Astro.props as Props;
     pageLayout = document.querySelector('.page-layout');
     mobileDrawer = document.querySelector('.mobile-nav-drawer');
 
-    // Open dialog when clicking the launcher input
-    launcherInput?.addEventListener('focus', openDialog);
-    launcherInput?.addEventListener('click', openDialog);
+  // Open dialog from launcher; guard against click-through just after a close
+  if (launcherInput) {
+    // Block pointerdown during the closing window to avoid click-through
+    launcherInput.addEventListener('pointerdown', (e) => {
+      if (closing) { e.preventDefault(); e.stopPropagation(); }
+    }, { capture: true });
+    launcherInput.addEventListener('click', (e) => {
+      if (closing) { e.preventDefault(); e.stopPropagation(); return; }
+      openDialog();
+    });
+  }
 
   // Global '/' shortcut to open search when not typing in an input/textarea
     /** @param {KeyboardEvent} e */
     const onGlobalKey = (e) => {
       if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        // Don't re-open if already open
+        // @ts-ignore
+        if ((window as any).__searchOpened === true || closing === true) return;
         const tag = (document.activeElement?.tagName || '').toLowerCase();
         const active = /** @type {HTMLElement | null} */ (document.activeElement as any);
         if (tag !== 'input' && tag !== 'textarea' && active?.isContentEditable !== true) {
@@ -354,12 +366,26 @@ const { baseDir = '' } = Astro.props as Props;
 
     // Hook into dialog lifecycle events to set open/close flags reliably
     const markOpened = () => {
-      ensureVisible();
+      isOpen = true;
+      closing = false;
       setTimeout(() => searchInput?.focus(), 0);
       // @ts-ignore
       (window as any).__searchOpened = true;
     };
     const markClosed = () => {
+      isOpen = false;
+      closing = false;
+      // Detach input listeners to avoid duplicates on next open
+      if (searchInput && boundSearchInputHandler) {
+        searchInput.removeEventListener('input', boundSearchInputHandler);
+        // @ts-ignore
+        searchInput.removeEventListener('wa-input', boundSearchInputHandler);
+        // @ts-ignore
+        searchInput.removeEventListener('sl-input', boundSearchInputHandler);
+        boundSearchInputHandler = null;
+      }
+      // Return focus to launcher for good keyboard UX
+      launcherInput?.focus?.();
       // @ts-ignore
       (window as any).__searchOpened = false;
     };
@@ -369,37 +395,18 @@ const { baseDir = '' } = Astro.props as Props;
       d.addEventListener('wa-after-show', markOpened);
       d.addEventListener('wa-hide', markClosed);
       d.addEventListener('wa-after-hide', markClosed);
+      // Also listen for request-close events to proactively set the closing guard
+      d.addEventListener('wa-request-close', () => { closing = true; });
+      // Shoelace compatibility events
+      // @ts-ignore
+      d.addEventListener('sl-request-close', () => { closing = true; });
     });
 
     // Signal readiness for E2E tests
     // @ts-ignore
     (window as any).__searchReady = true;
-
-    // In some environments the custom element may toggle [hidden]; ensure it's visible when open
-    const observer = new MutationObserver(() => {
-      // Ensure whichever dialog is currently open stays visible
-      const current = document.querySelector('.search-dialog[open]');
-      if (current) {
-        dialog = current as HTMLElement;
-        refreshScopedRefs();
-        ensureVisible();
-      }
-    });
-    document.querySelectorAll('.search-dialog').forEach((d) => {
-      observer.observe(d, { attributes: true, attributeFilter: ['hidden', 'open', 'style'] });
-    });
   });
 
-  const ensureVisible = () => {
-    if (!dialog) return;
-    dialog.removeAttribute('hidden');
-    const el = dialog;
-    try {
-      (el as any).style.display = 'block';
-      (el as any).style.visibility = 'visible';
-      (el as any).style.opacity = '1';
-    } catch {}
-  };
 
   // Expose minimal test hooks for E2E
   // @ts-ignore
@@ -418,12 +425,7 @@ const { baseDir = '' } = Astro.props as Props;
 </script>
 
 <style>
-  /* Ensure dialog host is visible when open for testing and predictable UX */
-  .search-dialog[open] {
-  display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
+  /* Avoid force-showing the dialog; rely on the component's lifecycle */
 
   .search-launcher { width: 100%; }
   .nav-search { width: 100%; }
