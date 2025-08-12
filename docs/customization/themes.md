@@ -172,6 +172,7 @@ For advanced theme customization, you can create custom theme components that ex
 Create a new component that handles theme loading and adds custom enhancements:
 
 ```astro
+```{code-block} astro
 ---
 // src/components/CustomThemes.astro
 interface Props {
@@ -205,9 +206,10 @@ import "@awesome.me/webawesome/dist/styles/themes/shoelace.css";
 <meta name="theme:brand-colors" content={enableBrandColors.toString()} />
 
 <!-- External theme CSS -->
-{customThemes.map(url => (
+{customThemes.map((url) => (
   <link rel="stylesheet" href={url} />
 ))}
+```
 
 <!-- Custom font loading -->
 {customFonts && (
