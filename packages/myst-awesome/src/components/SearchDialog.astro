@@ -43,6 +43,7 @@ const { baseDir = '' } = Astro.props as Props;
   import '@awesome.me/webawesome/dist/components/input/input.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
   import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
+  import Fuse from 'fuse.js'
 
   /** @type {HTMLInputElement | null} */
   let launcherInput;
@@ -193,9 +194,6 @@ const { baseDir = '' } = Astro.props as Props;
   const ensureIndex = async () => {
     if (fuse) return;
     try {
-  // Load Fuse lazily from local dependency
-  const FuseMod = await import('fuse.js');
-      const Fuse = FuseMod.default || FuseMod;
       const res = await fetch('/fuse.json', { cache: 'force-cache' });
       docs = await res.json();
       // Configure keys with sensible weights
