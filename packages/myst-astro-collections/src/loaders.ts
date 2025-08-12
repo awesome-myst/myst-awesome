@@ -1,4 +1,5 @@
 import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
+import PQueue from "p-queue";
 import {
   readFileSync,
   existsSync,
@@ -94,7 +95,8 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
             return Object.keys(out).length ? out : undefined;
           };
 
-          const pageFetches = references.map(async (ref) => {
+          // Build queue tasks so we can control concurrency with p-queue
+          const pageTasks = references.map((ref) => async () => {
             try {
               const base = {
                 url: (ref as any)?.url as string | undefined,
@@ -132,7 +134,8 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
             }
           });
 
-          const fuseEntries = await Promise.all(pageFetches);
+          const queue = new PQueue({ concurrency: 16 });
+          const fuseEntries = await queue.addAll(pageTasks);
           // Filter out entries missing essential fields (url and kind)
           const fuseFiltered = fuseEntries.filter(
             (e) =>
