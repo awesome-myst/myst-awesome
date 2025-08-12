@@ -29,6 +29,7 @@
     project: { staticConfig: { /* mirrors myst.yml */ } }
   });
   ```
+  - For search index generation, set `server.generateSearchIndex: true`.
 - Usage in Astro: `await getCollection('pages')`, `(await getCollection('projectFrontmatter'))[0]`.
 
 ## Astro + Web Awesome Conventions

@@ -64,7 +64,7 @@ import {
 export const collections = {
   mystXref: createMystXrefCollection({
   baseUrl: "http://localhost:3100",
-  generateFuse: true // set to false to disable public/fuse.json
+  generateSearchIndex: true // set to false to disable public/fuse.json
   }),
   pages: createPagesCollection(),
   // Only include the collections you need
@@ -99,7 +99,7 @@ const xref = await getEntry('mystXref', 'myst-xref');
 - `MystServerConfig`: Server configuration
   - `baseUrl` (string): Base URL of the MyST content server (default: `http://localhost:3100`).
   - `timeout` (number): Request timeout in ms (default: `5000`).
-  - `generateFuse` (boolean): Generate `public/fuse.json` search index from `myst.xref.json` (default: `true`).
+  - `generateSearchIndex` (boolean): Generate `public/fuse.json` search index from `myst.xref.json` (default: `true`).
   - `fuseConcurrency` (number): Concurrency used to fetch page JSON for fuse generation (default: `16`).
   - `includeKeywords` (boolean): Include `frontmatter.keywords` in `fuse.json` entries (default: `false`).
 - `ProjectConfig`: Project configuration (configPath, staticConfig)
@@ -107,7 +107,7 @@ const xref = await getEntry('mystXref', 'myst-xref');
 
 #### Fuse search index (fuse.json)
 
-When `generateFuse` is enabled, the XRef loader writes `public/fuse.json` containing a list of documents suitable for Fuse.js:
+When `generateSearchIndex` is enabled, the XRef loader writes `public/fuse.json` containing a list of documents suitable for Fuse.js:
 
 ```
 [
@@ -130,6 +130,8 @@ Notes:
 - Entries missing a `url` or `kind` are skipped.
 - The file is saved under your working directory’s `public/` folder so Astro can serve it directly.
  - Use `fuseConcurrency` to tune throughput, and `includeKeywords` to opt-in keywords.
+
+ 
 
 ## Requirements
 

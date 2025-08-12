@@ -6,7 +6,7 @@ export const collections = createMystCollections({
     baseUrl: "http://localhost:3100",
     timeout: 10000,
     // Enable fuse index generation for search
-    generateFuse: true,
+    generateSearchIndex: true,
     includeKeywords: true,
   },
   project: {

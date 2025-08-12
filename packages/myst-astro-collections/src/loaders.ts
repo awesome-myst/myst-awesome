@@ -20,7 +20,7 @@ export interface MystServerConfig {
   /** Timeout for requests in milliseconds */
   timeout?: number;
   /** Generate a public/fuse.json search index from myst.xref.json (default: true) */
-  generateFuse?: boolean;
+  generateSearchIndex?: boolean;
   /** Concurrency for fetching page JSON when generating fuse.json (default: 16) */
   fuseConcurrency?: number;
   /** Include frontmatter.keywords in fuse.json entries (default: false) */
@@ -44,10 +44,12 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
   const {
     baseUrl = "http://localhost:3100",
     timeout = 5000,
-    generateFuse = true,
+    generateSearchIndex,
     fuseConcurrency = 16,
     includeKeywords = false,
   } = config;
+  const shouldGenerateIndex =
+    typeof generateSearchIndex === "boolean" ? generateSearchIndex : true;
 
   return async () => {
     try {
@@ -80,7 +82,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
       }
 
       // Optionally generate a Fuse.js-friendly index at public/fuse.json
-      if (generateFuse) {
+      if (shouldGenerateIndex) {
         try {
           // Build entries from references, fetching page data when kind === 'page'
           const references = Array.isArray(xrefData?.references)
