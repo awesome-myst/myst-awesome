@@ -18,10 +18,11 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@awesome-myst/myst-astro-collections": "workspace:*",
+    "@awesome-myst/myst-zod": "^0.6.0",
     "@awesome.me/webawesome": "^3.0.0-beta.4",
     "astro": "5.12.8",
-    "@awesome-myst/myst-zod": "^0.6.0",
-    "@awesome-myst/myst-astro-collections": "workspace:*",
+    "fuse.js": "^7.1.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {

@@ -1,0 +1,440 @@
+---
+// No server-side props needed
+---
+
+<div class="search-launcher">
+  <wa-input class="nav-search" placeholder="Search" size="medium">
+    <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+    <kbd slot="end" class="search-shortcut">/</kbd>
+  </wa-input>
+
+  <wa-dialog class="search-dialog" label="Search" no-header>
+    <div class="search-container">
+      <div class="search-left">
+        <div class="search-top">
+          <wa-input class="search-input" placeholder="Type to search…" size="medium">
+            <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+          </wa-input>
+          <div class="keys-help">
+            <span><kbd>/</kbd> to search</span>
+            <span><kbd>↑</kbd><kbd>↓</kbd> to navigate</span>
+            <span><kbd>Enter</kbd> to open</span>
+            <span><kbd>Esc</kbd> to close</span>
+          </div>
+        </div>
+        <div class="progress-row" hidden>
+          <wa-progress-bar indeterminate></wa-progress-bar>
+          <span class="progress-text">Loading index…</span>
+        </div>
+        <ul class="results" role="listbox" aria-label="Search results"></ul>
+      </div>
+      <div class="search-right">
+        <div class="preview-header">
+          <span class="preview-title">Preview</span>
+          <label class="zoom">
+            <span>Zoom</span>
+            <input class="zoom-input" type="range" min="50" max="150" value="100" />
+          </label>
+        </div>
+        <div class="preview-frame">
+          <iframe class="preview-iframe" title="Result preview" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </wa-dialog>
+</div>
+
+<script>
+  // @ts-nocheck
+  import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
+  import '@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js';
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+
+  /** @type {HTMLInputElement | null} */
+  let launcherInput;
+  /** @type {HTMLElement | null} */
+  let dialog;
+  /** @type {HTMLElement | null} */
+  let pageLayout;
+  /** @type {HTMLElement | null} */
+  let mobileDrawer;
+  /** @type {HTMLInputElement | null} */
+  let searchInput;
+  /** @type {HTMLUListElement | null} */
+  let resultsEl;
+  /** @type {HTMLElement | null} */
+  let progressRow;
+  /** @type {HTMLIFrameElement | null} */
+  let previewIframe;
+  /** @type {HTMLInputElement | null} */
+  let zoomInput;
+
+  /** @type {any} */
+  let fuse = null; // Fuse instance
+  /** @type {any[] | null} */
+  let docs = null; // Loaded fuse.json array
+  /** @type {number} */
+  let selectedIndex = -1;
+  /** @type {any[]} */
+  let lastResults = [];
+
+  const pickPreferredDialog = () => {
+    const view = pageLayout?.getAttribute('data-view') || 'desktop';
+    if (view === 'mobile') {
+      // Prefer the dialog rendered inside the mobile drawer
+      const mobile = mobileDrawer?.querySelector('.search-dialog');
+      if (mobile) return mobile;
+    }
+    // Prefer the dialog inside the desktop page menu
+    const desktopMenu = document.querySelector('.page-menu[data-view="desktop"]');
+    const desktop = desktopMenu?.querySelector('.search-dialog');
+    return desktop || document.querySelector('.search-dialog');
+  };
+
+  const refreshScopedRefs = () => {
+    if (!dialog) return;
+    searchInput = dialog.querySelector('.search-input');
+    resultsEl = dialog.querySelector('.results');
+    progressRow = dialog.querySelector('.progress-row');
+    previewIframe = dialog.querySelector('.preview-iframe');
+    zoomInput = dialog.querySelector('.zoom-input');
+  };
+
+  const openDialog = () => {
+    // Determine the active dialog for the current viewport
+    const target = pickPreferredDialog();
+    if (!target) return;
+    dialog = target;
+    refreshScopedRefs();
+    // Attach input listeners scoped to this dialog instance
+    if (searchInput) {
+      const handleInputLocal = () => {
+        const q = searchInput?.value || '';
+        doSearch(q);
+      };
+      searchInput.addEventListener('input', handleInputLocal, { once: false });
+      // @ts-ignore
+      searchInput.addEventListener('wa-input', handleInputLocal, { once: false });
+      // @ts-ignore
+      searchInput.addEventListener('sl-input', handleInputLocal, { once: false });
+    }
+    // On mobile, ensure the drawer is open so the dialog is visible
+    const view = pageLayout?.getAttribute('data-view') || 'desktop';
+    if (view === 'mobile' && mobileDrawer && !(mobileDrawer).open) {
+      try { (mobileDrawer as any).open = true; } catch {}
+    }
+
+    // Use component API to open; event handlers will mark readiness
+    try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
+    // Defer visibility enforcement to next frame
+    requestAnimationFrame(() => {
+      dialog?.removeAttribute('hidden');
+      // @ts-ignore
+      dialog?.show?.();
+      ensureVisible();
+    });
+    ensureIndex();
+  // Signal opened for tests
+  // @ts-ignore
+  (window as any).__searchOpened = true;
+  };
+
+  const closeDialog = () => {
+    if (!dialog) return;
+    try { (dialog as any).open = false; } catch {
+      dialog.removeAttribute('open');
+    }
+    // @ts-ignore
+    dialog.hide?.();
+    dialog.setAttribute('hidden', '');
+    selectedIndex = -1;
+    renderResults([]);
+    launcherInput?.focus();
+  // @ts-ignore
+  (window as any).__searchOpened = false;
+  };
+
+  const ensureIndex = async () => {
+    if (fuse) return;
+    showProgress(true);
+    try {
+  // Load Fuse lazily from local dependency
+  const FuseMod = await import('fuse.js');
+      const Fuse = FuseMod.default || FuseMod;
+      const res = await fetch('/fuse.json', { cache: 'force-cache' });
+      docs = await res.json();
+      // Configure keys with sensible weights
+      const options = {
+        includeScore: true,
+        threshold: 0.4,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        keys: [
+          { name: 'frontmatter.title', weight: 0.5 },
+          { name: 'frontmatter.description', weight: 0.3 },
+          { name: 'frontmatter.keywords', weight: 0.2 },
+          { name: 'identifier', weight: 0.2 },
+          { name: 'url', weight: 0.2 },
+        ],
+      };
+      fuse = new Fuse(docs, options);
+    } catch (e) {
+      console.warn('Search index load failed:', e);
+    } finally {
+      showProgress(false);
+    }
+  };
+
+  const showProgress = (show) => {
+    if (!progressRow) return;
+    progressRow.hidden = !show;
+  };
+
+  /** @param {any[]} items */
+  const renderResults = (items) => {
+    if (!resultsEl) return;
+    resultsEl.innerHTML = '';
+    lastResults = items;
+    items.forEach((it, idx) => {
+      const entry = it.item || it; // Fuse result or raw item
+      const li = document.createElement('li');
+      li.className = 'result-item' + (idx === selectedIndex ? ' selected' : '');
+      li.role = 'option';
+      li.dataset.index = String(idx);
+      li.innerHTML = `
+        <div class="result-title">${escapeHtml(entry.url || '')}</div>
+        <div class="result-subtitle">
+          ${entry.frontmatter?.title ? `<span class="fm-title">${escapeHtml(entry.frontmatter.title)}</span>` : ''}
+          ${entry.frontmatter?.description ? `<span class="fm-desc">${escapeHtml(entry.frontmatter.description)}</span>` : ''}
+        </div>
+      `;
+      li.addEventListener('click', () => navigateToIndex(idx));
+      resultsEl.appendChild(li);
+    });
+    updatePreview();
+  };
+
+  /** @param {string} query */
+  const doSearch = async (query) => {
+    if (!query || !query.trim()) {
+      selectedIndex = -1;
+      renderResults([]);
+      return;
+    }
+    await ensureIndex();
+    if (!fuse) return;
+    const res = fuse.search(query, { limit: 50 });
+    selectedIndex = res.length ? 0 : -1;
+    renderResults(res);
+    scrollSelectedIntoView();
+  };
+
+  /** @param {number} idx */
+  const navigateToIndex = (idx) => {
+    const sel = lastResults[idx];
+    const entry = sel?.item || sel;
+    if (entry?.url) {
+      window.location.href = entry.url;
+    }
+  };
+
+  const updatePreview = () => {
+    if (!previewIframe) return;
+    const sel = selectedIndex >= 0 ? lastResults[selectedIndex] : null;
+    const entry = sel?.item || sel;
+    const url = entry?.url || '';
+    if (url) {
+      previewIframe.src = url;
+    }
+  };
+
+  const scrollSelectedIntoView = () => {
+    if (!resultsEl) return;
+    const selEl = resultsEl.querySelector('.result-item.selected');
+    if (selEl) selEl.scrollIntoView({ block: 'nearest' });
+  };
+
+  /** @param {string} str */
+  const escapeHtml = (str) => str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    launcherInput = document.querySelector('.search-launcher .nav-search');
+    pageLayout = document.querySelector('.page-layout');
+    mobileDrawer = document.querySelector('.mobile-nav-drawer');
+
+    // Open dialog when clicking the launcher input
+    launcherInput?.addEventListener('focus', openDialog);
+    launcherInput?.addEventListener('click', openDialog);
+
+  // Global '/' shortcut to open search when not typing in an input/textarea
+    /** @param {KeyboardEvent} e */
+    const onGlobalKey = (e) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (document.activeElement?.tagName || '').toLowerCase();
+        const active = /** @type {HTMLElement | null} */ (document.activeElement as any);
+        if (tag !== 'input' && tag !== 'textarea' && active?.isContentEditable !== true) {
+          e.preventDefault();
+          openDialog();
+        }
+      }
+    };
+    window.addEventListener('keydown', onGlobalKey);
+
+  // Search input typing (read value directly to avoid event typing issues)
+  const handleInput = () => {
+      const q = searchInput?.value || '';
+      doSearch(q);
+  };
+  // Attach input listeners lazily on open when refs are scoped
+
+    // Keyboard navigation inside dialog
+    /** @param {KeyboardEvent} e */
+    const onDialogKey = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDialog();
+        return;
+      }
+      if (!lastResults.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % lastResults.length;
+        renderResults(lastResults);
+        scrollSelectedIntoView();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + lastResults.length) % lastResults.length;
+        renderResults(lastResults);
+        scrollSelectedIntoView();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex >= 0) navigateToIndex(selectedIndex);
+      }
+    };
+    // Capture navigation keys at window level when dialog is open
+    window.addEventListener('keydown', (e) => {
+      // Delegate to dialog navigation only when the dialog is open
+      // @ts-ignore
+      if ((window as any).__searchOpened === true) onDialogKey(e);
+    });
+
+    // Zoom control
+    const onZoom = () => {
+      if (!zoomInput) return;
+      const val = Number(zoomInput && 'value' in zoomInput ? (zoomInput.value as any) : 100);
+      const scale = Math.max(0.5, Math.min(1.5, val / 100));
+      const frame = dialog?.querySelector('.preview-frame');
+      if (frame) {
+        frame.setAttribute('style', `--preview-scale: ${scale}`);
+      }
+    };
+    zoomInput?.addEventListener('input', onZoom);
+
+    // Hook into dialog lifecycle events to set open/close flags reliably
+    const markOpened = () => {
+      ensureVisible();
+      setTimeout(() => searchInput?.focus(), 0);
+      // @ts-ignore
+      (window as any).__searchOpened = true;
+    };
+    const markClosed = () => {
+      // @ts-ignore
+      (window as any).__searchOpened = false;
+    };
+    // Attach to any dialog currently present (desktop and mobile); the active one will fire
+    document.querySelectorAll('.search-dialog').forEach((d) => {
+      d.addEventListener('wa-show', markOpened);
+      d.addEventListener('wa-after-show', markOpened);
+      d.addEventListener('wa-hide', markClosed);
+      d.addEventListener('wa-after-hide', markClosed);
+    });
+
+    // Signal readiness for E2E tests
+    // @ts-ignore
+    (window as any).__searchReady = true;
+
+    // In some environments the custom element may toggle [hidden]; ensure it's visible when open
+    const observer = new MutationObserver(() => {
+      // Ensure whichever dialog is currently open stays visible
+      const current = document.querySelector('.search-dialog[open]');
+      if (current) {
+        dialog = current as HTMLElement;
+        refreshScopedRefs();
+        ensureVisible();
+      }
+    });
+    document.querySelectorAll('.search-dialog').forEach((d) => {
+      observer.observe(d, { attributes: true, attributeFilter: ['hidden', 'open', 'style'] });
+    });
+  });
+
+  const ensureVisible = () => {
+    if (!dialog) return;
+    dialog.removeAttribute('hidden');
+    const el = dialog;
+    try {
+      (el as any).style.display = 'block';
+      (el as any).style.visibility = 'visible';
+      (el as any).style.opacity = '1';
+    } catch {}
+  };
+
+  // Expose minimal test hooks for E2E
+  // @ts-ignore
+  (window as any).__searchOpen = () => openDialog();
+  // @ts-ignore
+  (window as any).__searchClose = () => closeDialog();
+  // @ts-ignore
+  (window as any).__searchSetQuery = (q) => { try { if (searchInput) searchInput.value = String(q || ''); } catch {}; doSearch(String(q || '')); };
+  // @ts-ignore
+  (window as any).__searchResultsCount = () => Array.isArray(lastResults) ? lastResults.length : 0;
+  // @ts-ignore
+  (window as any).__searchSelectedUrl = () => { const sel = selectedIndex >= 0 ? lastResults[selectedIndex] : null; const entry = sel?.item || sel; return entry?.url || null; };
+</script>
+
+<style>
+  /* Ensure dialog host is visible when open for testing and predictable UX */
+  .search-dialog[open] {
+  display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .search-launcher { width: 100%; }
+  .nav-search { width: 100%; }
+  .search-shortcut { font-family: var(--wa-font-family-code); font-size: var(--wa-font-size-xs); padding: var(--wa-space-3xs) var(--wa-space-2xs); background-color: var(--wa-color-neutral-fill-quiet); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); }
+
+  .search-container { display: grid; grid-template-columns: 1fr 1fr; gap: var(--wa-space-m); width: min(100%, 1100px); min-height: 70vh; }
+  .search-left { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; }
+  .search-right { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; }
+
+  .search-top { display: flex; flex-direction: column; gap: var(--wa-space-2xs); }
+  .keys-help { display: flex; flex-wrap: wrap; gap: var(--wa-space-s); color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-s); }
+  .keys-help kbd { font-family: var(--wa-font-family-code); padding: 2px 6px; border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet); }
+
+  .progress-row { display: flex; align-items: center; gap: var(--wa-space-s); }
+  .progress-text { color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-s); }
+
+  .results { list-style: none; margin: 0; padding: 0; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); flex: 1; }
+  .result-item { padding: var(--wa-space-s); border-bottom: 1px solid var(--wa-color-surface-border); cursor: pointer; }
+  .result-item:last-child { border-bottom: none; }
+  .result-item.selected { background: var(--wa-color-brand-fill-quiet); color: var(--wa-color-brand-on-quiet); }
+  .result-title { font-weight: var(--wa-font-weight-semibold); }
+  .result-subtitle { color: var(--wa-color-text-quiet); font-size: var(--wa-font-size-s); display: flex; gap: var(--wa-space-xs); flex-wrap: wrap; }
+
+  .preview-header { display: flex; justify-content: space-between; align-items: center; }
+  .zoom { display: inline-flex; align-items: center; gap: var(--wa-space-xs); font-size: var(--wa-font-size-s); color: var(--wa-color-text-quiet); }
+  .preview-frame { position: relative; flex: 1; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); }
+  .preview-iframe { width: calc(100% / var(--preview-scale, 1)); height: calc(100% / var(--preview-scale, 1)); transform: scale(var(--preview-scale, 1)); transform-origin: 0 0; border: 0; background: white; }
+
+  @media (max-width: 900px) {
+    .search-container { grid-template-columns: 1fr; }
+    .preview-frame { min-height: 40vh; }
+  }
+</style>

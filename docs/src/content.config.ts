@@ -5,6 +5,9 @@ export const collections = createMystCollections({
   server: {
     baseUrl: "http://localhost:3100",
     timeout: 10000,
+    // Enable fuse index generation for search
+    generateFuse: true,
+    includeKeywords: true,
   },
   project: {
     // Load configuration from myst.yml file (relative to docs directory)
