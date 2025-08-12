@@ -21,6 +21,10 @@ export interface MystServerConfig {
   timeout?: number;
   /** Generate a public/fuse.json search index from myst.xref.json (default: true) */
   generateFuse?: boolean;
+  /** Concurrency for fetching page JSON when generating fuse.json (default: 16) */
+  fuseConcurrency?: number;
+  /** Include frontmatter.keywords in fuse.json entries (default: false) */
+  includeKeywords?: boolean;
 }
 
 /**
@@ -41,6 +45,8 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
     baseUrl = "http://localhost:3100",
     timeout = 5000,
     generateFuse = true,
+    fuseConcurrency = 16,
+    includeKeywords = false,
   } = config;
 
   return async () => {
@@ -88,7 +94,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
             if (typeof fm.title === "string") out.title = fm.title;
             if (typeof fm.description === "string")
               out.description = fm.description;
-            if (Array.isArray(fm.keywords))
+            if (includeKeywords && Array.isArray(fm.keywords))
               out.keywords = fm.keywords.filter(
                 (k: any) => typeof k === "string"
               );
@@ -134,7 +140,9 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
             }
           });
 
-          const queue = new PQueue({ concurrency: 16 });
+          const queue = new PQueue({
+            concurrency: Math.max(1, Math.floor(fuseConcurrency || 1)),
+          });
           const fuseEntries = await queue.addAll(pageTasks);
           // Filter out entries missing essential fields (url and kind)
           const fuseFiltered = fuseEntries.filter(

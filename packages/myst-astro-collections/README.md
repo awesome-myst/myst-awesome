@@ -100,6 +100,8 @@ const xref = await getEntry('mystXref', 'myst-xref');
   - `baseUrl` (string): Base URL of the MyST content server (default: `http://localhost:3100`).
   - `timeout` (number): Request timeout in ms (default: `5000`).
   - `generateFuse` (boolean): Generate `public/fuse.json` search index from `myst.xref.json` (default: `true`).
+  - `fuseConcurrency` (number): Concurrency used to fetch page JSON for fuse generation (default: `16`).
+  - `includeKeywords` (boolean): Include `frontmatter.keywords` in `fuse.json` entries (default: `false`).
 - `ProjectConfig`: Project configuration (configPath, staticConfig)
 - `MystCollectionsConfig`: Combined configuration for all collections
 
@@ -116,7 +118,7 @@ When `generateFuse` is enabled, the XRef loader writes `public/fuse.json` contai
     frontmatter?: {
       title?: string,
       description?: string,
-      keywords?: string[]
+  keywords?: string[] // included only when includeKeywords = true
     }
   }
 ]
@@ -127,6 +129,7 @@ Notes:
 - Non-page references include `url`, `kind`, and (if present) `identifier`.
 - Entries missing a `url` or `kind` are skipped.
 - The file is saved under your working directory’s `public/` folder so Astro can serve it directly.
+ - Use `fuseConcurrency` to tune throughput, and `includeKeywords` to opt-in keywords.
 
 ## Requirements
 
