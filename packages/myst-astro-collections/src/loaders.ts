@@ -129,6 +129,31 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
           }
 
           const pageData = await pageResponse.json();
+
+          // Persist this page JSON into public/ at ref.url
+          try {
+            const publicDir = resolve(process.cwd(), "public");
+            if (!existsSync(publicDir)) {
+              mkdirSync(publicDir, { recursive: true });
+            }
+            const urlPath = String(ref.data).replace(/^\/+/, ""); // strip leading '/'
+            const targetPath = join(publicDir, urlPath);
+            const targetDir = dirname(targetPath);
+            if (!existsSync(targetDir)) {
+              mkdirSync(targetDir, { recursive: true });
+            }
+            writeFileSync(
+              targetPath,
+              JSON.stringify(pageData, null, 2),
+              "utf-8"
+            );
+            console.log(`✓ Saved page JSON to public/${urlPath}`);
+          } catch (writeErr) {
+            console.warn(
+              `Failed to write page JSON for ${ref.url} to public/:`,
+              writeErr
+            );
+          }
           return {
             id: ref.url, // Use URL as the ID
             ...ref, // Include original reference data
