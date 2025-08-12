@@ -30,7 +30,7 @@ const { baseDir = '' } = Astro.props as Props;
           <span class="preview-title">Preview</span>
         </div>
         <div class="preview-frame">
-          <iframe class="preview-iframe" title="Result preview" loading="lazy"></iframe>
+          <wa-zoomable-frame class="preview-iframe" title="Result preview" zoom="0.3" zoom-levels="0.3 0.4 0.5 0.75 1.0" loading="lazy"></wa-zoomable-frame>
         </div>
       </div>
     </div>
@@ -42,6 +42,8 @@ const { baseDir = '' } = Astro.props as Props;
   import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
   import '@awesome.me/webawesome/dist/components/input/input.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
   /** @type {HTMLInputElement | null} */
   let launcherInput;
@@ -299,7 +301,7 @@ const { baseDir = '' } = Astro.props as Props;
     const entry = sel?.item || sel;
     const url = entry?.url || '';
     if (url) {
-  previewIframe.src = prefixUrl(url);
+      previewIframe.src = prefixUrl(url);
     }
   };
 
@@ -512,7 +514,6 @@ const { baseDir = '' } = Astro.props as Props;
 
   .preview-header { display: flex; justify-content: space-between; align-items: center; }
   .preview-frame { position: relative; overflow: auto; border: 1px solid var(--wa-color-surface-border); border-radius: var(--wa-border-radius-m); flex: 1; }
-  .preview-iframe { width: calc(100% / var(--preview-scale)); height: calc(100% / var(--preview-scale)); transform: scale(var(--preview-scale)); transform-origin: 0 0; border: 0; background: white; }
 
   /* Single-column layout already places preview below results on all viewports */
 </style>
