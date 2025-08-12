@@ -4,8 +4,13 @@ test.describe("Navigation Responsive Fix", () => {
   test("navigation should reappear when transitioning back from mobile to desktop", async ({
     page,
   }) => {
-  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".page-body, .page-menu, .mobile-nav-toggle, body", { timeout: 15000 });
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(
+      ".page-body, .page-menu, .mobile-nav-toggle, body",
+      { timeout: 15000 }
+    );
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.waitForLoadState("networkidle");
@@ -62,8 +67,12 @@ test.describe("Navigation Responsive Fix", () => {
   test("aside should also reappear when transitioning back from mobile to desktop", async ({
     page,
   }) => {
-  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".page-body, .page-aside, body", { timeout: 15000 });
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(".page-body, .page-aside, body", {
+      timeout: 15000,
+    });
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.waitForLoadState("networkidle");

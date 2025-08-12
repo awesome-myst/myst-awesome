@@ -5,10 +5,12 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
     page,
   }) => {
     // Navigate to the docs-example page (which uses DocsLayout)
-  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Wait for content to load
-  await page.waitForSelector("body", { timeout: 15000 });
+    await page.waitForSelector("body", { timeout: 15000 });
 
     // Check that the page loads successfully
     await expect(page.locator("body")).toBeVisible();
@@ -61,11 +63,13 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
   });
 
   test("visual verification - narrow width layout", async ({ page }) => {
-  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Set narrow viewport
     await page.setViewportSize({ width: 850, height: 800 });
-  await page.waitForSelector("body", { timeout: 15000 });
+    await page.waitForSelector("body", { timeout: 15000 });
 
     // Take a screenshot for manual verification
     await page.screenshot({ path: "test-results/narrow-width-850px.png" });

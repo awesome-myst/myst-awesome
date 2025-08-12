@@ -13,7 +13,7 @@ test.describe("Responsive Layout Fix", () => {
     // Set viewport to narrow width (850px - between 768px and 920px where the issue occurred)
     await page.setViewportSize({ width: 850, height: 800 });
 
-  // Content readiness handled by DOMContentLoaded + selector above
+    // Content readiness handled by DOMContentLoaded + selector above
 
     // Check that page body exists
     const pageBody = page.locator(".page-body");
@@ -67,7 +67,7 @@ test.describe("Responsive Layout Fix", () => {
     // Set viewport to wide width
     await page.setViewportSize({ width: 1200, height: 800 });
 
-  // Content readiness handled by DOMContentLoaded + selector above
+    // Content readiness handled by DOMContentLoaded + selector above
 
     // Check that page body exists
     const pageBody = page.locator(".page-body");

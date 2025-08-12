@@ -14,8 +14,12 @@ test.describe("Theme Switching", () => {
     );
 
     // Navigate to the docs-example page which has theme controls
-  await page.goto("http://localhost:4322/docs-example", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".theme-selector, .color-scheme-toggle, body", { timeout: 15000 });
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(".theme-selector, .color-scheme-toggle, body", {
+      timeout: 15000,
+    });
 
     // Wait for components to be fully loaded
     await page.waitForTimeout(1000);
