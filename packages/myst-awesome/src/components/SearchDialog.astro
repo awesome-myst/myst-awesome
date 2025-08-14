@@ -210,7 +210,7 @@ const { baseDir = '' } = Astro.props as Props;
       else if (entry.url?.includes('component')) icon = 'puzzle-piece';
 
       li.innerHTML = `
-  <div class="result-title"><wa-icon name="${icon}" aria-hidden="true"></wa-icon>&nbsp;&nbsp;<span>${escapeHtml(entry.frontmatter?.title || entry.title || 'Untitled')}</span></div>
+  <div class="result-title"><wa-icon name="${icon}" aria-hidden="true"></wa-icon>&nbsp;&nbsp;<span>${escapeHtml(entry.frontmatter?.title || entry.title || entry.url)}</span></div>
         <div class="result-subtitle">
           ${entry.frontmatter?.description ? `<span>${escapeHtml(entry.frontmatter.description)}</span>` : ''}
         </div>
