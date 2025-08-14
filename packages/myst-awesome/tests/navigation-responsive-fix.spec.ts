@@ -13,8 +13,7 @@ test.describe("Navigation Responsive Fix", () => {
     );
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Allow time for responsive handlers
     const desktopNav = page.locator('.page-menu[data-view="desktop"]');
     const hamburger = page.locator(".mobile-nav-toggle");
     // Desktop: navigation should be visible, hamburger hidden
@@ -32,7 +31,7 @@ test.describe("Navigation Responsive Fix", () => {
     expect(hamburgerDisplay).toBe("none");
     // Switch to mobile view
     await page.setViewportSize({ width: 600, height: 800 });
-    await page.waitForTimeout(500); // Allow time for JavaScript responsive handler
+    await page.waitForTimeout(1000); // Allow time for JavaScript responsive handler
     // Mobile: navigation should be hidden, hamburger visible
     if ((await desktopNav.count()) > 0) {
       const navDisplayMobile = await desktopNav.evaluate(
@@ -48,7 +47,7 @@ test.describe("Navigation Responsive Fix", () => {
     expect(hamburgerDisplayMobile).toBe("block");
     // Switch back to desktop view - this is the critical test
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForTimeout(500); // Allow time for JavaScript responsive handler
+    await page.waitForTimeout(1000); // Allow time for JavaScript responsive handler
     // Desktop (second time): navigation should be visible again, hamburger hidden
     if ((await desktopNav.count()) > 0) {
       const navDisplayBack = await desktopNav.evaluate(
@@ -75,8 +74,7 @@ test.describe("Navigation Responsive Fix", () => {
     });
     // Start in desktop view
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Allow time for responsive handlers
     const aside = page.locator(".page-aside");
     // Desktop: aside should be visible
     if ((await aside.count()) > 0) {
@@ -87,7 +85,7 @@ test.describe("Navigation Responsive Fix", () => {
       expect(asideDisplay).not.toBe("none");
       // Switch to mobile view
       await page.setViewportSize({ width: 600, height: 800 });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000); // Allow time for responsive handlers
       // Mobile: aside should be hidden
       const asideDisplayMobile = await aside.evaluate(
         (el) => window.getComputedStyle(el).display
@@ -97,7 +95,7 @@ test.describe("Navigation Responsive Fix", () => {
       expect(asideDisplayMobile).not.toBe("none");
       // Switch back to desktop view
       await page.setViewportSize({ width: 1200, height: 800 });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000); // Allow time for responsive handlers
       // Desktop (second time): aside should be visible again
       const asideDisplayBack = await aside.evaluate(
         (el) => window.getComputedStyle(el).display
