@@ -70,6 +70,7 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
     // Set narrow viewport
     await page.setViewportSize({ width: 850, height: 800 });
     await page.waitForSelector("body", { timeout: 15000 });
+    await page.waitForTimeout(1000); // Allow time for responsive changes
 
     // Take a screenshot for manual verification
     await page.screenshot({ path: "test-results/narrow-width-850px.png" });
@@ -79,11 +80,14 @@ test.describe("Responsive Layout CSS Fix Verification", () => {
   });
 
   test("visual verification - wide width layout", async ({ page }) => {
-    await page.goto("http://localhost:4322/docs-example");
+    await page.goto("http://localhost:4322/docs-example", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Set wide viewport
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForLoadState("networkidle");
+    await page.waitForSelector("body", { timeout: 15000 });
+    await page.waitForTimeout(1000); // Allow time for responsive changes
 
     // Take a screenshot for manual verification
     await page.screenshot({ path: "test-results/wide-width-1200px.png" });
