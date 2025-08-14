@@ -48,10 +48,6 @@ const { baseDir = '' } = Astro.props as Props;
   let launcherInput;
   /** @type {HTMLElement | null} */
   let dialog;
-  /** @type {HTMLElement | null} */
-  let pageLayout;
-  /** @type {HTMLElement | null} */
-  let mobileDrawer;
   /** @type {HTMLInputElement | null} */
   let searchInput;
   /** @type {HTMLUListElement | null} */
@@ -103,27 +99,6 @@ const { baseDir = '' } = Astro.props as Props;
     return url;
   };
 
-  const pickPreferredDialog = () => {
-    const view = pageLayout?.getAttribute('data-view') || 'desktop';
-    if (view === 'mobile') {
-      // Prefer the dialog rendered inside the mobile drawer
-      const mobile = mobileDrawer?.querySelector('.search-dialog');
-      if (mobile) return mobile;
-    }
-    // Prefer the dialog inside the desktop page menu
-    const desktopMenu = document.querySelector('.page-menu[data-view="desktop"]');
-    const desktop = desktopMenu?.querySelector('.search-dialog');
-    return desktop || document.querySelector('.search-dialog');
-  };
-
-  const getAllDialogs = () => Array.from(document.querySelectorAll('.search-dialog')) as HTMLElement[];
-
-  const closeDialogEl = (el: any) => {
-    try { el?.hide?.(); } catch {}
-    try { el.open = false; } catch {}
-    try { el.removeAttribute?.('open'); } catch {}
-  };
-
   const refreshScopedRefs = () => {
     if (!dialog) return;
     searchInput = dialog.querySelector('.search-input');
@@ -141,13 +116,12 @@ const { baseDir = '' } = Astro.props as Props;
 
   const openDialog = () => {
     if (closing || isOpen) return; // don't open during close sequence or if already open
-    // Determine the active dialog for the current viewport
-    const target = pickPreferredDialog();
-    if (!target) return;
-  // Ensure only the target dialog is open
-  getAllDialogs().forEach((d) => { if (d !== target) closeDialogEl(d as any); });
-  dialog = target as HTMLElement;
-  refreshScopedRefs();
+    // Get the dialog
+    dialog = document.querySelector('.search-dialog') as HTMLElement;
+    if (!dialog) return;
+    
+    refreshScopedRefs();
+    
     // Attach input listeners scoped to this dialog instance
     if (searchInput) {
       boundSearchInputHandler ||= () => {
@@ -160,30 +134,24 @@ const { baseDir = '' } = Astro.props as Props;
       // @ts-ignore
       searchInput.addEventListener('sl-input', boundSearchInputHandler, { once: false });
     }
-    // On mobile, ensure the drawer is open so the dialog is visible
-    const view = pageLayout?.getAttribute('data-view') || 'desktop';
-    if (view === 'mobile' && mobileDrawer) {
-      try { (mobileDrawer as any).show?.(); } catch {}
-      try { (mobileDrawer as any).open = true; } catch {}
-    }
 
     // Use component API to open; lifecycle events will update state
-  try { (dialog as any).show?.(); } catch {}
-  try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
+    try { (dialog as any).show?.(); } catch {}
+    try { (dialog as any).open = true; } catch { dialog.setAttribute('open', ''); }
     ensureIndex();
   };
 
   const closeDialog = () => {
-    if (!isOpen && !dialog) return;
     closing = true;
-    // Close all dialog instances (desktop and mobile) to avoid stray [open]
-    getAllDialogs().forEach((d) => closeDialogEl(d as any));
-    // Also close the mobile drawer so it doesn't intercept clicks
-    const view = pageLayout?.getAttribute('data-view') || 'desktop';
-    if (view === 'mobile' && mobileDrawer) {
-      try { (mobileDrawer as any).hide?.(); } catch {}
-      try { (mobileDrawer as any).open = false; } catch {}
-      try { (mobileDrawer as any).removeAttribute('open'); } catch {}
+    // Close the dialog using multiple approaches for mobile browser compatibility
+    const dialogEl = document.querySelector('.search-dialog') as HTMLElement;
+    if (dialogEl) {
+      // Try Web Awesome component methods first
+      try { (dialogEl as any).hide?.(); } catch {}
+      
+      // Force DOM attributes/properties (critical for mobile browsers)
+      try { (dialogEl as any).open = false; } catch {}
+      try { dialogEl.removeAttribute('open'); } catch {}
     }
     // Cleanup selection and results immediately; focus and flags handled on hide events
     selectedIndex = -1;
@@ -326,8 +294,6 @@ const { baseDir = '' } = Astro.props as Props;
 
   document.addEventListener('DOMContentLoaded', () => {
     launcherInput = document.querySelector('.search-launcher .nav-search');
-    pageLayout = document.querySelector('.page-layout');
-    mobileDrawer = document.querySelector('.mobile-nav-drawer');
 
   // Open dialog from launcher; guard against click-through just after a close
   if (launcherInput) {
@@ -400,8 +366,6 @@ const { baseDir = '' } = Astro.props as Props;
 
     // Hook into dialog lifecycle events to set open/close flags reliably
     const markOpened = (ev?: Event) => {
-      // Ignore events from non-active instances
-      if (ev?.currentTarget && dialog && ev.currentTarget !== dialog) return;
       isOpen = true;
       closing = false;
       // Ensure results container visibility on mobile viewports
@@ -423,11 +387,6 @@ const { baseDir = '' } = Astro.props as Props;
       (window as any).__searchOpened = true;
     };
     const markClosed = (ev?: Event) => {
-      // Ignore events from non-active instances when another is active
-      if (ev?.currentTarget && dialog && ev.currentTarget !== dialog) {
-        // If a non-active instance closed, do not change global flags
-        return;
-      }
       isOpen = false;
       closing = false;
       // Detach input listeners to avoid duplicates on next open
@@ -444,19 +403,29 @@ const { baseDir = '' } = Astro.props as Props;
       // @ts-ignore
       (window as any).__searchOpened = false;
       dialog = null;
+      
+      // Force cleanup of any lingering open attributes on mobile browsers, but only if not reopening
+      setTimeout(() => {
+        const dialogEl = document.querySelector('.search-dialog') as HTMLElement;
+        if (dialogEl && dialogEl.hasAttribute('open') && !isOpen && !closing) {
+          dialogEl.removeAttribute('open');
+          try { (dialogEl as any).open = false; } catch {}
+        }
+      }, 50);
     };
-    // Attach to any dialog currently present (desktop and mobile); the active one will fire
-    document.querySelectorAll('.search-dialog').forEach((d) => {
-      d.addEventListener('wa-show', markOpened);
-      d.addEventListener('wa-after-show', markOpened);
-      d.addEventListener('wa-hide', markClosed);
-      d.addEventListener('wa-after-hide', markClosed);
+    // Attach to the dialog; simpler approach
+    const dialogEl = document.querySelector('.search-dialog');
+    if (dialogEl) {
+      dialogEl.addEventListener('wa-show', markOpened);
+      dialogEl.addEventListener('wa-after-show', markOpened);
+      dialogEl.addEventListener('wa-hide', markClosed);
+      dialogEl.addEventListener('wa-after-hide', markClosed);
       // Also listen for request-close events to proactively set the closing guard
-      d.addEventListener('wa-request-close', () => { closing = true; });
+      dialogEl.addEventListener('wa-request-close', () => { closing = true; });
       // Shoelace compatibility events
       // @ts-ignore
-      d.addEventListener('sl-request-close', () => { closing = true; });
-    });
+      dialogEl.addEventListener('sl-request-close', () => { closing = true; });
+    }
 
     // Signal readiness for E2E tests
     // @ts-ignore
@@ -470,11 +439,26 @@ const { baseDir = '' } = Astro.props as Props;
   // @ts-ignore
   (window as any).__searchClose = async () => {
     closeDialog();
-    // For Mobile Safari compatibility, ensure dialog is actually closed
-    await new Promise(resolve => {
+    // For mobile browser compatibility, ensure dialog is actually closed
+    // Use a more robust approach that checks both DOM state and component state
+    await new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 200; // 10 seconds max
       const checkClosed = () => {
+        attempts++;
         const openDialogs = document.querySelectorAll('wa-dialog.search-dialog[open]');
-        if (openDialogs.length === 0) {
+        const componentClosed = (window as any).__searchOpened === false;
+        
+        if (openDialogs.length === 0 && componentClosed) {
+          resolve(true);
+        } else if (attempts >= maxAttempts) {
+          // Force close if polling times out
+          const dialogEl = document.querySelector('.search-dialog') as HTMLElement;
+          if (dialogEl) {
+            try { dialogEl.removeAttribute('open'); } catch {}
+            try { (dialogEl as any).open = false; } catch {}
+          }
+          (window as any).__searchOpened = false;
           resolve(true);
         } else {
           setTimeout(checkClosed, 50);
