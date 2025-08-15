@@ -25,9 +25,12 @@ const { page } = Astro.props as PageProps;
 // Fetch all collections
 const allPages = await getCollection('pages');
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
-// console.log('Project pages template config:', projectConfig);
+console.log('Project pages template config:', projectConfig);
 
-// console.log('Page data:', page.data);
+console.log('Page data:', page.data);
+
+const showToc = !(typeof page.data.frontmatter?.options?.hide_outline !== 'undefined' ? page.data.frontmatter?.options?.hide_outline : projectConfig.data?.options?.hide_outline);
+const showTitleBlock = !(typeof page.data.frontmatter?.options?.hide_title_block !== 'undefined' ? page.data.frontmatter?.options?.hide_title_block : projectConfig.data?.options?.hide_title_block);
 
 // Extract metadata
 const title = page.data.frontmatter?.title ||
@@ -134,7 +137,9 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
   section="Book"
   baseDir="/book"
   tocItems={tocItems}
+  showToc={showToc}
   showBreadcrumbs={true}
+  showTitleBlock={showTitleBlock}
   showEditButton={true}
   editUrl={`${projectConfig?.data.project?.github || ''}/edit/main/docs/${page.data?.url === '/' ? 'index' : (page.data?.url || '').slice(1)}.md`}
   author={projectConfig?.data.project?.authors?.[0] || 'MyST Team'}

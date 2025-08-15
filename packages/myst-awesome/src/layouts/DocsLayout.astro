@@ -8,15 +8,13 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
-console.log('Project pages template config:', projectConfig);
+// console.log('Project pages template config:', projectConfig);
 
 const projectTitle = projectConfig?.data?.title ||
                      'Awesome Docs';
 
 // Get logo path from site options
 const logoPath = projectConfig?.data?.options?.logo;
-
-const showTocDefault = !!!projectConfig.data?.options?.hide_outline;
 
 // Dynamic import for logo if it exists
 let logoImage: ImageMetadata | undefined;
@@ -72,6 +70,7 @@ export interface Props {
   tocItems?: TocItem[];
   showToc?: boolean;
   showBreadcrumbs?: boolean;
+  showTitleBlock?: boolean;
   showEditButton?: boolean;
   editUrl?: string;
   lastModified?: Date;
@@ -90,8 +89,9 @@ const {
   theme = 'default',
   colorScheme = 'auto',
   tocItems,
-  showToc = showTocDefault,
+  showToc = true,
   showBreadcrumbs = true,
+  showTitleBlock = true,
   showEditButton = false,
   editUrl,
   lastModified,
@@ -216,7 +216,7 @@ const {
   <!-- Main content with article wrapper -->
   <article class="docs-article myst-content">
     <!-- Article header -->
-    <header class="article-header">
+    {showTitleBlock && (<header class="article-header">
       <h1 class="article-title">{title}</h1>
       {description && <p class="article-description">{description}</p>}
 
@@ -235,6 +235,7 @@ const {
         )}
       </div>
     </header>
+    )}
 
     <!-- Main content -->
     <div class="article-content">

@@ -100,7 +100,7 @@ site:
 - **Default**: `false`
 - **Description**: Hide the default title block that shows page metadata (useful for landing pages).
 - **Example**: `hide_title_block: true`
-- **Themes**: `book-theme`, `article-theme`
+- **Themes**: `awesome-book`
 - **Page-level**: Can be overridden in page frontmatter under `site.hide_title_block`
 
 #### `folders`
