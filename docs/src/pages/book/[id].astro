@@ -161,42 +161,19 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
 
   <!-- Main Content -->
   {page.data ? (
-    <article class="myst-content">
-      {/* <!-- Page header with metadata -->
-      <header class="page-header">
-        <h1>{title}</h1>
-        {description && description !== title && (
-          <p class="page-description">{description}</p>
-        )}
+    <!-- Render MyST content -->
+    <div class="content-body" set:html={renderMystContent(page.data)} />
 
-        <div class="page-meta">
-          <div class="meta-item">
-            <wa-icon name="link" variant="solid"></wa-icon>
-            <span>URL: {page.data.url}</span>
-          </div>
-          {page.data.identifier && (
-            <div class="meta-item">
-              <wa-icon name="hash" variant="solid"></wa-icon>
-              <span>ID: {page.data.identifier}</span>
-            </div>
-          )}
-        </div>
-      </header> */}
-
-      <!-- Render MyST content -->
-      <div class="content-body" set:html={renderMystContent(page.data)} />
-
-      <!-- Show frontmatter if available -->
-      {page.data.frontmatter && Object.keys(page.data.frontmatter).length > 0 && (
-        <details class="frontmatter-details">
-          <summary>
-            <wa-icon name="info-circle" variant="solid"></wa-icon>
-            Page Frontmatter
-          </summary>
-          <pre class="frontmatter-code">{JSON.stringify(page.data.frontmatter, null, 2)}</pre>
-        </details>
-      )}
-    </article>
+    <!-- Show frontmatter if available -->
+    {page.data.frontmatter && Object.keys(page.data.frontmatter).length > 0 && (
+      <details class="frontmatter-details">
+        <summary>
+          <wa-icon name="info-circle" variant="solid"></wa-icon>
+          Page Frontmatter
+        </summary>
+        <pre class="frontmatter-code">{JSON.stringify(page.data.frontmatter, null, 2)}</pre>
+      </details>
+    )}
   ) : (
     <div class="loading-container">
       <wa-spinner size="large"></wa-spinner>
