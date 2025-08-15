@@ -6,12 +6,19 @@ import Footer from '../components/Footer.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import type { Entry } from '@awesome-myst/myst-zod';
 
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
 // console.log('Project pages template config:', projectConfig);
 
 const projectTitle = projectConfig?.data?.title ||
                      'Awesome Docs';
+
+// Get TOC from project config
+const toc = projectConfig?.data?.toc || [];
+
+// Get current page URL for navigation highlighting
+const currentPath = Astro.url.pathname;
 
 // Get logo path from site options
 const logoPath = projectConfig?.data?.options?.logo;
@@ -54,6 +61,44 @@ if (logoPath) {
     console.error('Error loading logo:', error);
   }
 }
+
+// Helper function to generate URL from TOC entry
+function getEntryUrl(entry: Entry): string | null {
+  if ('file' in entry) {
+    // Remove .md extension if present and ensure it starts with /
+    const cleanFile = entry.file.replace(/\.md$/, '');
+    return cleanFile.startsWith('/') ? cleanFile : `/${cleanFile}`;
+  }
+  if ('url' in entry) {
+    return entry.url;
+  }
+  // Pattern entries and parent-only entries don't have direct URLs
+  return null;
+}
+
+// Helper function to get entry title
+function getEntryTitle(entry: Entry): string {
+  if ('title' in entry && entry.title) {
+    return entry.title;
+  }
+  if ('file' in entry) {
+    // Generate title from filename
+    const filename = entry.file.split('/').pop()?.replace(/\.md$/, '') || entry.file;
+    return filename.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  }
+  if ('pattern' in entry) {
+    return `Pattern: ${entry.pattern}`;
+  }
+  return 'Unknown';
+}
+
+// Helper function to check if entry is navigable (has a URL)
+function isNavigableEntry(entry: Entry): boolean {
+  return 'file' in entry || 'url' in entry;
+}
+
 interface TocItem {
   level: number;
   title: string;
@@ -72,14 +117,14 @@ export interface Props {
   showBreadcrumbs?: boolean;
   showTitleBlock?: boolean;
   showEditButton?: boolean;
+  showThemeSelector?: boolean; // new prop to enable theme selector
+  showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
   editUrl?: string;
   lastModified?: Date;
   author?: string;
   section?: string;
   nextPage?: { title: string; href: string };
   prevPage?: { title: string; href: string };
-  showThemeSelector?: boolean; // new prop to enable theme selector
-  showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
   baseDir?: string; // prefix for search dialog URLs (e.g., "/book")
 }
 
@@ -93,14 +138,14 @@ const {
   showBreadcrumbs = true,
   showTitleBlock = true,
   showEditButton = false,
+  showThemeSelector = false,
+  showColorSchemeSelector = true,
   editUrl,
   lastModified,
   author,
   section,
   nextPage,
   prevPage,
-  showThemeSelector = false,
-  showColorSchemeSelector = true,
   baseDir,
   ...rest
 } = Astro.props;
@@ -185,32 +230,60 @@ const {
   </div>
 
   <nav slot="navigation" class="docs-navigation">
-    <div class="nav-section">
-      <h3 class="nav-section-title">Getting Started</h3>
-      <ul class="nav-list">
-        <li><a href="/docs/installation" class="nav-link">Installation</a></li>
-        <li><a href="/docs/quickstart" class="nav-link">Quick Start</a></li>
-        <li><a href="/docs/configuration" class="nav-link">Configuration</a></li>
-      </ul>
-    </div>
-
-    <div class="nav-section">
-      <h3 class="nav-section-title">Components</h3>
-      <ul class="nav-list">
-        <li><a href="/docs/components/layout" class="nav-link current">Layout</a></li>
-        <li><a href="/docs/components/navigation" class="nav-link">Navigation</a></li>
-        <li><a href="/docs/components/content" class="nav-link">Content</a></li>
-      </ul>
-    </div>
-
-    <div class="nav-section">
-      <h3 class="nav-section-title">Theming</h3>
-      <ul class="nav-list">
-        <li><a href="/docs/theming/colors" class="nav-link">Colors</a></li>
-        <li><a href="/docs/theming/typography" class="nav-link">Typography</a></li>
-        <li><a href="/docs/theming/customization" class="nav-link">Customization</a></li>
-      </ul>
-    </div>
+    {toc.map((entry: Entry) => {
+      const url = getEntryUrl(entry);
+      const title = getEntryTitle(entry);
+      
+      // If entry has children, render as a section
+      if ('children' in entry && entry.children) {
+        return (
+          <div class="nav-section">
+            {/* Section title - clickable if the parent has a URL */}
+            {url ? (
+              <h3 class="nav-section-title">
+                <a href={url} class={`nav-section-link${currentPath === url || currentPath === `${url}/` ? ' current' : ''}`}>
+                  {title}
+                </a>
+              </h3>
+            ) : (
+              <h3 class="nav-section-title">{title}</h3>
+            )}
+            <ul class="nav-list">
+              {entry.children.map((child: Entry) => {
+                const childUrl = getEntryUrl(child);
+                const childTitle = getEntryTitle(child);
+                
+                if (isNavigableEntry(child) && childUrl) {
+                  const isCurrentPage = currentPath === childUrl || currentPath === `${childUrl}/`;
+                  return (
+                    <li>
+                      <a href={childUrl} class={`nav-link${isCurrentPage ? ' current' : ''}`}>{childTitle}</a>
+                    </li>
+                  );
+                }
+                return null;
+              })}
+            </ul>
+          </div>
+        );
+      }
+      
+      // If entry is a standalone navigable item, render as a single-item section
+      if (isNavigableEntry(entry) && url) {
+        const isCurrentPage = currentPath === url || currentPath === `${url}/`;
+        return (
+          <div class="nav-section">
+            <ul class="nav-list">
+              <li>
+                <a href={url} class={`nav-link${isCurrentPage ? ' current' : ''}`}>{title}</a>
+              </li>
+            </ul>
+          </div>
+        );
+      }
+      
+      return null;
+    })}
   </nav>
 
   <!-- Main content with article wrapper -->
@@ -514,6 +587,20 @@ const {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 var(--wa-space-s) 0;
+  }
+
+  .nav-section-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--wa-transition-fast);
+  }
+
+  .nav-section-link:hover {
+    color: var(--wa-color-brand-fill-loud);
+  }
+
+  .nav-section-link.current {
+    color: var(--wa-color-brand-fill-loud);
   }
 
   .nav-list {

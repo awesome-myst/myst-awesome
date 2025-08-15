@@ -3,6 +3,7 @@ import DocsLayout from '@awesome-myst/myst-awesome/layouts/DocsLayout.astro';
 import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import pr from '../../../_build/templates/site/myst/book-theme/public/build/_shared/dist-6TTSG3GK';
 
 export async function getStaticPaths() {
   // Get all page entries from the pages collection
@@ -26,6 +27,7 @@ const { page } = Astro.props as PageProps;
 const allPages = await getCollection('pages');
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
 console.log('Project pages template config:', projectConfig);
+console.log('toc', projectConfig.data.toc);
 
 console.log('Page data:', page.data);
 
