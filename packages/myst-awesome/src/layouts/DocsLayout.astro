@@ -178,7 +178,10 @@ const {
         />
       </div>
     )}
-  <SearchDialog baseDir={baseDir} />
+    <!-- Desktop search (hidden on mobile) -->
+    <div class="desktop-search-container">
+      <SearchDialog baseDir={baseDir} />
+    </div>
   </div>
 
   <nav slot="navigation" class="docs-navigation">
@@ -366,6 +369,18 @@ const {
 <style>
   /* Documentation-specific styles */
 
+  .desktop-search-container {
+    display: block;
+    width: 100%;
+  }
+
+  /* Show mobile search and hide desktop search on mobile */
+  @media (max-width: 920px) {
+    .desktop-search-container {
+      display: none;
+    }
+  }
+
   /* Header */
   .docs-header {
     display: flex;
@@ -373,6 +388,14 @@ const {
     align-items: center;
     width: 100%;
     gap: var(--wa-space-m);
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 920px) {
+    .docs-header {
+      flex-wrap: nowrap;
+      gap: var(--wa-space-s);
+    }
   }
 
   .docs-branding {
@@ -692,8 +715,14 @@ const {
       gap: var(--wa-space-s);
     }
 
+    .mobile-search-container {
+      order: 2;
+      max-width: none;
+    }
+
     .docs-controls {
       justify-content: center;
+      order: 3;
     }
 
     .article-meta {
