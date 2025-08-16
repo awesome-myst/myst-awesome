@@ -5,13 +5,29 @@ import type { CollectionEntry } from 'astro:content';
 export async function getStaticPaths() {
   // Get all page entries from the pages collection
   const pages = await getCollection('pages');
+  const projectConfig = (await getCollection('projectFrontmatter'))[0];
+  const foldersOption = projectConfig?.data?.options?.folders || false;
 
   return pages
     .filter((page) => page.id && page.id !== '/' && page.id.startsWith('/'))
-    .map((page) => ({
-      params: { id: page.id.slice(1) }, // Remove leading slash
-      props: { page },
-    }));
+    .map((page) => {
+      let id = page.id.slice(1); // Remove leading slash
+      
+      // Handle folder structure based on folders option
+      if (!foldersOption) {
+        // When folders is false (default), flatten the path by using only the filename
+        const pathParts = id.split('/');
+        id = pathParts[pathParts.length - 1] || id;
+      } else {
+        // When folders is true, encode slashes as '--' for URL compatibility
+        id = id.replace(/\//g, '--');
+      }
+      
+      return {
+        params: { id },
+        props: { page },
+      };
+    });
 }
 
 interface Props {

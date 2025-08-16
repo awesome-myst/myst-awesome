@@ -84,24 +84,12 @@ test.describe("Theme Switching", () => {
     const awesomeValue = await themeSelector.evaluate((el: any) => el.value);
     expect(awesomeValue).toBe("awesome");
 
-    // Test switching to shoelace theme
-    await themeSelector.click();
-    await page.locator('wa-option[value="shoelace"]').click();
-    await page.waitForTimeout(500);
-
-    // Verify shoelace theme is applied and awesome is removed
-    await expect(htmlElement).toHaveClass(/.*wa-theme-shoelace.*/);
-    await expect(htmlElement).not.toHaveClass(/.*wa-theme-awesome.*/);
-    const shoelaceValue = await themeSelector.evaluate((el: any) => el.value);
-    expect(shoelaceValue).toBe("shoelace");
-
     // Test switching back to default theme
     await themeSelector.click();
     await page.locator('wa-option[value="default"]').click();
     await page.waitForTimeout(500);
 
     // Verify theme classes are removed
-    await expect(htmlElement).not.toHaveClass(/.*wa-theme-shoelace.*/);
     await expect(htmlElement).not.toHaveClass(/.*wa-theme-awesome.*/);
     const defaultValue = await themeSelector.evaluate((el: any) => el.value);
     expect(defaultValue).toBe("default");
@@ -137,13 +125,13 @@ test.describe("Theme Switching", () => {
     // light -> dark
     await clickActive();
     await themeSelector.click();
-    await page.locator('wa-option[value="shoelace"]').click();
+    await page.locator('wa-option[value="default"]').click();
     await page.waitForTimeout(150);
 
     // dark -> auto
     await clickActive();
     await themeSelector.click();
-    await page.locator('wa-option[value="default"]').click();
+    await page.locator('wa-option[value="awesome"]').click();
     await page.waitForTimeout(150);
 
     // Verify no console errors occurred

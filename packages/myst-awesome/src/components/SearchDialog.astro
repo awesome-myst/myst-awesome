@@ -1,6 +1,9 @@
 ---
-interface Props { baseDir?: string }
-const { baseDir = '' } = Astro.props as Props;
+interface Props {
+  baseDir?: string;
+  foldersOption?: boolean;
+}
+const { baseDir = '', foldersOption = false } = Astro.props as Props;
 ---
 
 <div class="search-launcher">
@@ -9,7 +12,7 @@ const { baseDir = '' } = Astro.props as Props;
     <kbd slot="end" class="search-shortcut">/</kbd>
   </wa-input>
 
-  <wa-dialog class="search-dialog" label="Search" no-header data-base-dir={baseDir}>
+  <wa-dialog class="search-dialog" label="Search" no-header data-base-dir={baseDir} data-folders-option={foldersOption}>
     <div class="search-container">
       <div class="search-left">
         <div class="search-top">
@@ -82,21 +85,52 @@ const { baseDir = '' } = Astro.props as Props;
     return s === '/' ? '' : s;
   };
 
+  // Get folders option from data attribute
+  const getFoldersOption = () => {
+    return dialog?.dataset?.foldersOption === 'true';
+  };
+
+  // Transform MyST URLs to match site URL structure when folders: true
+  const transformMystUrl = (url) => {
+    if (!url || url === '/') return url;
+
+    const foldersEnabled = getFoldersOption();
+    if (!foldersEnabled) {
+      // When folders: false, URLs are flattened to just the filename
+      const pathParts = url.split('/').filter(Boolean);
+      if (pathParts.length > 0) {
+        return '/' + pathParts[pathParts.length - 1];
+      }
+      return url;
+    } else {
+      // When folders: true, encode forward slashes as '--'
+      if (url.startsWith('/') && url.length > 1) {
+        const pathWithoutLeading = url.slice(1);
+        return '/' + pathWithoutLeading.replace(/\//g, '--');
+      }
+      return url;
+    }
+  };
+
   // Prefix relative root URLs with baseDir when present
   const prefixUrl = (url) => {
     if (!url) return url;
     // Do not prefix absolute or hash URLs
     if (/^(https?:)?\/\//.test(url) || url.startsWith('#')) return url;
+
+    // Transform MyST URL structure first
+    const transformedUrl = transformMystUrl(url);
+
     const base = getBaseDir();
-    if (!base) return url;
+    if (!base) return transformedUrl;
     // Only prefix root-relative paths
-    if (url.startsWith('/')) {
+    if (transformedUrl.startsWith('/')) {
       // Avoid double-prefix if already under base
-      if (url.startsWith(base + '/')) return url;
-      return (base + url).replace(/\/+/, '/');
+      if (transformedUrl.startsWith(base + '/')) return transformedUrl;
+      return (base + transformedUrl).replace(/\/+/, '/');
     }
     // For relative paths, leave as-is
-    return url;
+    return transformedUrl;
   };
 
   const refreshScopedRefs = () => {
@@ -161,7 +195,8 @@ const { baseDir = '' } = Astro.props as Props;
   const ensureIndex = async () => {
     if (fuse) return;
     try {
-      const res = await fetch('/fuse.json', { cache: 'force-cache' });
+      // const res = await fetch('/fuse.json', { cache: 'force-cache' });
+      const res = await fetch('/fuse.json');
       docs = await res.json();
       // Configure keys with sensible weights
       const options = {
@@ -252,7 +287,7 @@ const { baseDir = '' } = Astro.props as Props;
       if (seen.has(key)) continue;
       seen.add(key);
       deduped.push(r);
-      if (deduped.length >= 10) break; // enforce display cap
+      if (deduped.length >= 20) break; // enforce display cap
     }
     selectedIndex = deduped.length ? 0 : -1;
     renderResults(deduped);
@@ -264,7 +299,7 @@ const { baseDir = '' } = Astro.props as Props;
     const sel = lastResults[idx];
     const entry = sel?.item || sel;
     if (entry?.url) {
-  window.location.href = prefixUrl(entry.url);
+      window.location.href = prefixUrl(entry.url);
     }
   };
 

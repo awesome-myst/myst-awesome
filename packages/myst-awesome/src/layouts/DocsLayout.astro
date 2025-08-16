@@ -19,7 +19,6 @@ const toc = projectConfig?.data?.toc || [];
 
 // Get current page URL for navigation highlighting
 const currentPath = Astro.url.pathname;
-console.log('Current page URL:', currentPath);
 
 // Get logo path and folders option from site options
 const logoPath = projectConfig?.data?.options?.logo;
@@ -69,14 +68,17 @@ function getEntryUrl(entry: Entry): string | null {
   if ('file' in entry) {
     // Remove .md extension if present
     let cleanFile = entry.file.replace(/\.md$/, '');
-    
+
     // Handle folder structure based on folders option
     if (!foldersOption) {
       // When folders is false (default), flatten the path by using only the filename
       const pathParts = cleanFile.split('/');
       cleanFile = pathParts[pathParts.length - 1] || cleanFile;
+    } else {
+      // When folders is true, encode slashes as '--' for URL compatibility
+      cleanFile = cleanFile.replace(/\//g, '--');
     }
-    
+
     // Ensure URL starts with / and add baseDir
     return cleanFile.startsWith('/') ? `${baseDir}${cleanFile}` : `${baseDir}/${cleanFile}`;
   }
@@ -234,16 +236,14 @@ const {
     )}
     <!-- Desktop search (hidden on mobile) -->
     <div class="desktop-search-container">
-      <SearchDialog baseDir={baseDir} />
+      <SearchDialog baseDir={baseDir} foldersOption={foldersOption} />
     </div>
   </div>
 
   <nav slot="navigation" class="docs-navigat | 'shoelace'ion">
     {toc.map((entry: Entry) => {
-      console.log(`Entry: ${JSON.stringify(entry)}`);
       const url = getEntryUrl(entry);
       const title = getEntryTitle(entry);
-      console.log(`Entry: ${title}, URL: ${url}`);
 
       // If entry has children, render as a section
       if ('children' in entry && entry.children) {

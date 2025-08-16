@@ -106,9 +106,9 @@ site:
 #### `folders`
 - **Type**: `boolean`
 - **Default**: `false`
-- **Description**: Include folder structure in URLs. When enabled, nested folders become path segments in URLs.
+- **Description**: Include folder structure in URLs. When enabled, nested folders become `--` delimited segments in URLs.
 - **Example**: `folders: true`
-- **Themes**: `book-theme`, `article-theme`
+- **Themes**: `awesome-book`
 
 ### Styling Options
 

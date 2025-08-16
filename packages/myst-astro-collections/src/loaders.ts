@@ -286,9 +286,6 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
 
       // Filter out any null results and return
       const validPages = pageDataResults.filter((data) => data !== null);
-      console.log(
-        `Loaded ${validPages.length} valid pages out of ${pageReferences.length} references`
-      );
 
       return validPages;
     } catch (error) {

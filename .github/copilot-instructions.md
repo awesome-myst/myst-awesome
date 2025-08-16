@@ -51,7 +51,7 @@
   - JS sets `data-view` on `.page-layout` via `matchMedia` using `mobileBreakpoint` (default 768px).
   - Do NOT globally hide the aside with `display: none` in shared layouts; collapse via grid instead.
 - Docs-only responsive hiding lives in the docs app (example):
-  - `docs/src/pages/book/[id].astro` adds `:global` CSS to hide TOC/aside ≤920px when needed.
+  - `docs/src/pages/book/[...slug].astro` adds `:global` CSS to hide TOC/aside ≤920px when needed.
 - Named slots drive composition: `navigation` → sidebar, `aside` → TOC, default slot → main content.
 
 ## Testing
@@ -68,7 +68,7 @@
   - `packages/myst-awesome/src/components/*Resolver.astro` – component override system
 - Docs app:
   - `docs/src/content.config.ts` – MyST → Astro collections
-  - `docs/src/pages/book/[id].astro` – docs page + docs-only responsive CSS
+  - `docs/src/pages/book/[...slug].astro` – docs page + docs-only responsive CSS
   - `docs/myst.yml` – MyST project config; `docs/directives.mjs` – custom directives
 - Collections pkg: `packages/myst-astro-collections/src/` – loader/validation glue
 
