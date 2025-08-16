@@ -19,9 +19,11 @@ const toc = projectConfig?.data?.toc || [];
 
 // Get current page URL for navigation highlighting
 const currentPath = Astro.url.pathname;
+console.log('Current page URL:', currentPath);
 
-// Get logo path from site options
+// Get logo path and folders option from site options
 const logoPath = projectConfig?.data?.options?.logo;
+const foldersOption = projectConfig?.data?.options?.folders || false;
 
 // Dynamic import for logo if it exists
 let logoImage: ImageMetadata | undefined;
@@ -65,12 +67,21 @@ if (logoPath) {
 // Helper function to generate URL from TOC entry
 function getEntryUrl(entry: Entry): string | null {
   if ('file' in entry) {
-    // Remove .md extension if present and ensure it starts with /
-    const cleanFile = entry.file.replace(/\.md$/, '');
-    return cleanFile.startsWith('/') ? cleanFile : `/${cleanFile}`;
+    // Remove .md extension if present
+    let cleanFile = entry.file.replace(/\.md$/, '');
+    
+    // Handle folder structure based on folders option
+    if (!foldersOption) {
+      // When folders is false (default), flatten the path by using only the filename
+      const pathParts = cleanFile.split('/');
+      cleanFile = pathParts[pathParts.length - 1] || cleanFile;
+    }
+    
+    // Ensure URL starts with / and add baseDir
+    return cleanFile.startsWith('/') ? `${baseDir}${cleanFile}` : `${baseDir}/${cleanFile}`;
   }
   if ('url' in entry) {
-    return entry.url;
+    return `${baseDir}${entry.url}`;
   }
   // Pattern entries and parent-only entries don't have direct URLs
   return null;
@@ -84,7 +95,7 @@ function getEntryTitle(entry: Entry): string {
   if ('file' in entry) {
     // Generate title from filename
     const filename = entry.file.split('/').pop()?.replace(/\.md$/, '') || entry.file;
-    return filename.split('-').map(word => 
+    return filename.split('-').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   }
@@ -110,7 +121,7 @@ export interface Props {
   title?: string;
   description?: string;
   // theme?: 'default' | 'awesome' | 'shoelace' | 'brutalist' | 'glossy' | 'matter' | 'mellow' | 'playful' | 'premium' | 'tailspin';
-  theme?: 'default' | 'awesome' | 'shoelace';
+  theme?: 'default' | 'awesome';
   colorScheme?: 'light' | 'dark' | 'auto';
   tocItems?: TocItem[];
   showToc?: boolean;
@@ -146,7 +157,7 @@ const {
   section,
   nextPage,
   prevPage,
-  baseDir,
+  baseDir = '/',
   ...rest
 } = Astro.props;
 ---
@@ -172,11 +183,10 @@ const {
     <div class="docs-controls">
       <!-- Theme selector (optional) -->
       {showThemeSelector && (
-        <wa-select class="theme-selector" appearance="filled" size="small" value={theme}>
+        <wa-select class="theme-selector" placeholder="Select theme" appearance="filled" size="small" value={theme}>
           <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
           <wa-option value="default">Default</wa-option>
           <wa-option value="awesome">Awesome</wa-option>
-          <wa-option value="shoelace">Shoelace</wa-option>
         </wa-select>
       )}
 
@@ -200,12 +210,11 @@ const {
   {showBreadcrumbs && (
     <div slot="subheader" class="docs-breadcrumbs">
       <wa-breadcrumb>
-        <wa-breadcrumb-item href="/">
+        <wa-breadcrumb-item href={baseDir}>
           <wa-icon slot="start" name="house" variant="solid"></wa-icon>
           Home
         </wa-breadcrumb-item>
-        <wa-breadcrumb-item href="/docs">Documentation</wa-breadcrumb-item>
-        {section && <wa-breadcrumb-item href={`/docs/${section.toLowerCase()}`}>{section}</wa-breadcrumb-item>}
+        {section && <wa-breadcrumb-item href={`${baseDir}${section.toLowerCase()}`}>{section}</wa-breadcrumb-item>}
         <wa-breadcrumb-item>{title}</wa-breadcrumb-item>
       </wa-breadcrumb>
     </div>
@@ -229,11 +238,13 @@ const {
     </div>
   </div>
 
-  <nav slot="navigation" class="docs-navigation">
+  <nav slot="navigation" class="docs-navigat | 'shoelace'ion">
     {toc.map((entry: Entry) => {
+      console.log(`Entry: ${JSON.stringify(entry)}`);
       const url = getEntryUrl(entry);
       const title = getEntryTitle(entry);
-      
+      console.log(`Entry: ${title}, URL: ${url}`);
+
       // If entry has children, render as a section
       if ('children' in entry && entry.children) {
         return (
@@ -252,7 +263,7 @@ const {
               {entry.children.map((child: Entry) => {
                 const childUrl = getEntryUrl(child);
                 const childTitle = getEntryTitle(child);
-                
+
                 if (isNavigableEntry(child) && childUrl) {
                   const isCurrentPage = currentPath === childUrl || currentPath === `${childUrl}/`;
                   return (
@@ -267,7 +278,7 @@ const {
           </div>
         );
       }
-      
+
       // If entry is a standalone navigable item, render as a single-item section
       if (isNavigableEntry(entry) && url) {
         const isCurrentPage = currentPath === url || currentPath === `${url}/`;
@@ -281,7 +292,7 @@ const {
           </div>
         );
       }
-      
+
       return null;
     })}
   </nav>
