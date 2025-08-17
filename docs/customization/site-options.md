@@ -42,6 +42,7 @@ site:
     hide_outline: false
     hide_title_block: false
     folders: false
+    base_dir: /docs
 
     # Styling
     style: assets/custom-styles.css
@@ -109,6 +110,15 @@ site:
 - **Description**: Include folder structure in URLs. When enabled, nested folders become `--` delimited segments in URLs.
 - **Example**: `folders: true`
 - **Themes**: `awesome-book`
+
+#### `base_dir`
+- **Type**: `string`
+- **Default**: `""`
+- **Description**: Base directory prefix for all page URLs in the book section. This controls the root path under which all book pages are served.
+- **Example**: `base_dir: /documentation`
+- **Themes**: `awesome-book`
+- **Environment Variable**: Can be overridden with the `BASE_DIR` environment variable
+- **Note**: The value should start with a forward slash (e.g., `/docs`) and will be used as a prefix for all page URLs in the book section.
 
 ### Styling Options
 

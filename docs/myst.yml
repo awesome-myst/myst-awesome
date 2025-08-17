@@ -29,3 +29,4 @@ site:
   options:
     favicon: assets/favicon.ico
     logo: assets/logo.png
+    base_dir: /book  # Base directory for book pages (can be overridden with BASE_DIR env var)
