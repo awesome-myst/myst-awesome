@@ -95,6 +95,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
     if (!url || url === '/') return url;
 
     const foldersEnabled = getFoldersOption();
+    console.log(`Folders enabled: ${foldersEnabled}`);
     if (!foldersEnabled) {
       // When folders: false, URLs are flattened to just the filename
       const pathParts = url.split('/').filter(Boolean);
@@ -106,6 +107,8 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       // When folders: true, encode forward slashes as '--'
       if (url.startsWith('/') && url.length > 1) {
         const pathWithoutLeading = url.slice(1);
+        console.log(`Transforming URL: ${pathWithoutLeading}`);
+        console.log(pathWithoutLeading.replace(/\//g, '--'));
         return '/' + pathWithoutLeading.replace(/\//g, '--');
       }
       return url;
@@ -120,6 +123,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
 
     // Transform MyST URL structure first
     const transformedUrl = transformMystUrl(url);
+    console.log(`Transformed URL: ${transformedUrl}`);
 
     const base = getBaseDir();
     if (!base) return transformedUrl;
@@ -195,8 +199,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
   const ensureIndex = async () => {
     if (fuse) return;
     try {
-      // const res = await fetch('/fuse.json', { cache: 'force-cache' });
-      const res = await fetch('/fuse.json');
+      const res = await fetch('/fuse.json', { cache: 'force-cache' });
       docs = await res.json();
       // Configure keys with sensible weights
       const options = {
@@ -287,7 +290,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       if (seen.has(key)) continue;
       seen.add(key);
       deduped.push(r);
-      if (deduped.length >= 20) break; // enforce display cap
+      if (deduped.length >= 10) break; // enforce display cap
     }
     selectedIndex = deduped.length ? 0 : -1;
     renderResults(deduped);
@@ -299,6 +302,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
     const sel = lastResults[idx];
     const entry = sel?.item || sel;
     if (entry?.url) {
+      console.log(`Navigating to: ${entry.url}`);
       window.location.href = prefixUrl(entry.url);
     }
   };

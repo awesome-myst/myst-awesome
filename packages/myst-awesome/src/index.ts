@@ -10,4 +10,5 @@ export { default as Themes } from "./components/Themes.astro";
 export { default as ThemesResolver } from "./components/ThemesResolver.astro";
 
 // Export utilities
-export * from "./lib/getComponent";
+export * from "./lib/get-component.ts";
+export * from "./lib/generate-page-url.ts";
