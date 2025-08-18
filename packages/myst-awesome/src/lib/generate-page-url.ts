@@ -1,5 +1,5 @@
 /** Helper function to generate URL from page ID based on folders option */
-function generatePageUrl(
+export function generatePageUrl(
   pageId: string,
   foldersOption: boolean,
   baseDir: string
@@ -23,5 +23,3 @@ function generatePageUrl(
 
   return `${baseDir}/${urlPath}`;
 }
-
-export default generatePageUrl;

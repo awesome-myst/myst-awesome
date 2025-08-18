@@ -1,9 +1,12 @@
 ---
 import DocsLayout from '@awesome-myst/myst-awesome/layouts/DocsLayout.astro';
 import NavigationMenu from '@awesome-myst/myst-awesome/components/NavigationMenu.astro';
+
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import generatePageUrl from '@awesome-myst/myst-awesome/lib/generate-page-url.ts';
+
+import { generatePageUrl } from '@awesome-myst/myst-awesome/lib/generate-page-url.ts';
+import { generatePageToc } from '@awesome-myst/myst-awesome/lib/generate-page-toc.ts';
 
 export async function getStaticPaths() {
   try {
@@ -96,33 +99,7 @@ const navItems = allPages
     icon: p.id === '/' ? 'home' : 'file-text'
   }));
 
-// Extract table of contents from MyST content
-const tocItems: Array<{level: number, title: string, href: string, id: string}> = [];
-
-if (page.data.mdast) {
-  // Simple extraction of headings from the MyST AST
-  const extractHeadings = (node: any): void => {
-    if (node.type === 'heading' && node.depth && node.depth <= 4) {
-      const text = node.children?.map((child: any) => child.value || '').join('') || '';
-      if (text) {
-        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        tocItems.push({
-          level: node.depth,
-          title: text,
-          href: `#${id}`,
-          id: id
-        });
-      }
-    }
-    if (node.children) {
-      node.children.forEach(extractHeadings);
-    }
-  };
-
-  if (page.data.mdast.children) {
-    page.data.mdast.children.forEach(extractHeadings);
-  }
-}
+const tocItems = showToc ? generatePageToc(page.data) : [];
 
 // Function to render MyST content as HTML (simplified)
 function renderMystContent(content: any): string {
