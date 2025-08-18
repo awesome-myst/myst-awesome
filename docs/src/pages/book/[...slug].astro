@@ -7,6 +7,7 @@ import type { CollectionEntry } from 'astro:content';
 
 import { generatePageUrl } from '@awesome-myst/myst-awesome/lib/generate-page-url.ts';
 import { generatePageToc } from '@awesome-myst/myst-awesome/lib/generate-page-toc.ts';
+import { renderMystAst } from '@awesome-myst/myst-awesome/lib/render-myst-ast.ts';
 
 export async function getStaticPaths() {
   try {
@@ -101,50 +102,6 @@ const navItems = allPages
 
 const tocItems = showToc ? generatePageToc(page.data) : [];
 
-// Function to render MyST content as HTML (simplified)
-function renderMystContent(content: any): string {
-  if (!content?.mdast) {
-    return '<p>No content available</p>';
-  }
-
-  // This is a simplified renderer - in a real implementation you'd want
-  // to use a proper MyST-to-HTML renderer
-  const renderNode = (node: any): string => {
-    switch (node.type) {
-      case 'paragraph':
-        return `<p>${node.children?.map(renderNode).join('') || ''}</p>`;
-      case 'heading':
-        const level = Math.min(6, Math.max(1, node.depth || 2));
-        const text = node.children?.map(renderNode).join('') || '';
-        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        return `<h${level} id="${id}">${text}</h${level}>`;
-      case 'text':
-        return node.value || '';
-      case 'emphasis':
-        return `<em>${node.children?.map(renderNode).join('') || ''}</em>`;
-      case 'strong':
-        return `<strong>${node.children?.map(renderNode).join('') || ''}</strong>`;
-      case 'inlineCode':
-        return `<code>${node.value || ''}</code>`;
-      case 'code':
-        return `<pre><code class="language-${node.lang || ''}">${node.value || ''}</code></pre>`;
-      case 'list':
-        const tag = node.ordered ? 'ol' : 'ul';
-        return `<${tag}>${node.children?.map(renderNode).join('') || ''}</${tag}>`;
-      case 'listItem':
-        return `<li>${node.children?.map(renderNode).join('') || ''}</li>`;
-      case 'blockquote':
-        return `<blockquote>${node.children?.map(renderNode).join('') || ''}</blockquote>`;
-      case 'link':
-        return `<a href="${node.url || '#'}">${node.children?.map(renderNode).join('') || ''}</a>`;
-      default:
-        return node.children?.map(renderNode).join('') || '';
-    }
-  };
-
-  return content.mdast.children?.map(renderNode).join('\n') || '';
-}
-
 // Get prev/next pages for navigation
 const currentIndex = allPages.findIndex(p => p.id === page.id);
 const prevPage = currentIndex > 0 ? allPages[currentIndex - 1] : null;
@@ -187,7 +144,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
   <!-- Main Content -->
   {page.data ? (
     <!-- Render MyST content -->
-    <div class="content-body" set:html={renderMystContent(page.data)} />
+    <div class="content-body" set:html={renderMystAst(page.data.mdast)} />
 
     <!-- Show frontmatter if available -->
     {page.data.frontmatter && Object.keys(page.data.frontmatter).length > 0 && (
