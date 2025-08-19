@@ -1,0 +1,262 @@
+---
+title: "Science Icons Demo"
+description: "Demonstration of the scienceicons library integration with Web Awesome"
+---
+
+<script>
+  // Import the scienceicons library to register it
+  import '../lib/wa-scienceicons.ts';
+  
+  // Import the Web Awesome icon component
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/card/card.js';
+</script>
+
+<style>
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--wa-space-m);
+    margin: var(--wa-space-l) 0;
+  }
+  
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wa-space-s);
+    padding: var(--wa-space-m);
+    border: 1px solid var(--wa-color-neutral-200);
+    border-radius: var(--wa-border-radius-m);
+    text-align: center;
+    background: var(--wa-color-neutral-0);
+    transition: all 0.2s ease;
+  }
+  
+  .icon-item:hover {
+    border-color: var(--wa-color-primary-400);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .icon-item wa-icon {
+    font-size: 2rem;
+    color: var(--wa-color-primary-600);
+  }
+  
+  .icon-name {
+    font-size: 0.75rem;
+    color: var(--wa-color-neutral-600);
+    font-family: monospace;
+  }
+  
+  .demo-section {
+    margin: var(--wa-space-xl) 0;
+  }
+  
+  .color-demo {
+    display: flex;
+    gap: var(--wa-space-l);
+    align-items: center;
+    margin: var(--wa-space-m) 0;
+  }
+  
+  .large-icons {
+    display: flex;
+    gap: var(--wa-space-l);
+    align-items: center;
+    margin: var(--wa-space-m) 0;
+  }
+  
+  .large-icons wa-icon {
+    font-size: 3rem;
+  }
+</style>
+
+<wa-card class="demo-section">
+  <h1>Science Icons Integration Demo</h1>
+  <p>This page demonstrates the integration of <strong>scienceicons</strong> with Web Awesome's icon system.</p>
+  
+  <h2>Setup Required</h2>
+  <p>To use these icons, you need to:</p>
+  <ol>
+    <li>Copy scienceicons from <code>node_modules/scienceicons/optimized/24/solid/</code> to <code>public/scienceicons/</code></li>
+    <li>Import the wa-scienceicons module in your application</li>
+  </ol>
+</wa-card>
+
+<wa-card class="demo-section">
+  <h2>Basic Usage</h2>
+  <p>Science icons can be used with the <code>&lt;wa-icon&gt;</code> component:</p>
+  
+  <div class="large-icons">
+    <wa-icon library="scienceicons" name="github"></wa-icon>
+    <wa-icon library="scienceicons" name="jupyter"></wa-icon>
+    <wa-icon library="scienceicons" name="orcid"></wa-icon>
+    <wa-icon library="scienceicons" name="myst"></wa-icon>
+  </div>
+  
+  <pre><code>&lt;wa-icon library="scienceicons" name="github"&gt;&lt;/wa-icon&gt;
+&lt;wa-icon library="scienceicons" name="jupyter"&gt;&lt;/wa-icon&gt;
+&lt;wa-icon library="scienceicons" name="orcid"&gt;&lt;/wa-icon&gt;
+&lt;wa-icon library="scienceicons" name="myst"&gt;&lt;/wa-icon&gt;</code></pre>
+</wa-card>
+
+<wa-card class="demo-section">
+  <h2>Color Customization</h2>
+  <p>Icons inherit the current text color and can be styled with CSS:</p>
+  
+  <div class="color-demo">
+    <wa-icon library="scienceicons" name="jupyter" style="color: #f37626;"></wa-icon>
+    <wa-icon library="scienceicons" name="github" style="color: #333;"></wa-icon>
+    <wa-icon library="scienceicons" name="orcid" style="color: #a6ce39;"></wa-icon>
+    <wa-icon library="scienceicons" name="discord" style="color: #5865f2;"></wa-icon>
+  </div>
+</wa-card>
+
+<wa-card class="demo-section">
+  <h2>Available Icons</h2>
+  <p>All available science icons in the library:</p>
+  
+  <div class="icon-grid">
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="arxiv"></wa-icon>
+      <span class="icon-name">arxiv</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="binder"></wa-icon>
+      <span class="icon-name">binder</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="bluesky"></wa-icon>
+      <span class="icon-name">bluesky</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc-by"></wa-icon>
+      <span class="icon-name">cc-by</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc-nc"></wa-icon>
+      <span class="icon-name">cc-nc</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc-nd"></wa-icon>
+      <span class="icon-name">cc-nd</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc-sa"></wa-icon>
+      <span class="icon-name">cc-sa</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc-zero"></wa-icon>
+      <span class="icon-name">cc-zero</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="cc"></wa-icon>
+      <span class="icon-name">cc</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="curvenote"></wa-icon>
+      <span class="icon-name">curvenote</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="discord"></wa-icon>
+      <span class="icon-name">discord</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="discourse"></wa-icon>
+      <span class="icon-name">discourse</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="email"></wa-icon>
+      <span class="icon-name">email</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="github"></wa-icon>
+      <span class="icon-name">github</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="jupyter-book"></wa-icon>
+      <span class="icon-name">jupyter-book</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="jupyter-text"></wa-icon>
+      <span class="icon-name">jupyter-text</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="jupyter"></wa-icon>
+      <span class="icon-name">jupyter</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="linkedin"></wa-icon>
+      <span class="icon-name">linkedin</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="mastodon"></wa-icon>
+      <span class="icon-name">mastodon</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="myst"></wa-icon>
+      <span class="icon-name">myst</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="open-access"></wa-icon>
+      <span class="icon-name">open-access</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="orcid"></wa-icon>
+      <span class="icon-name">orcid</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="osi"></wa-icon>
+      <span class="icon-name">osi</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="ror"></wa-icon>
+      <span class="icon-name">ror</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="slack"></wa-icon>
+      <span class="icon-name">slack</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="twitter"></wa-icon>
+      <span class="icon-name">twitter</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="website"></wa-icon>
+      <span class="icon-name">website</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="x"></wa-icon>
+      <span class="icon-name">x</span>
+    </div>
+    <div class="icon-item">
+      <wa-icon library="scienceicons" name="youtube"></wa-icon>
+      <span class="icon-name">youtube</span>
+    </div>
+  </div>
+</wa-card>
+
+<wa-card class="demo-section">
+  <h2>JavaScript API</h2>
+  <p>The library also provides utility functions for working with scienceicons:</p>
+  
+  <pre><code>import &#123; 
+  getScienceIconNames, 
+  isScienceIcon, 
+  getScienceIconUrl,
+  registerScienceIconsLibrary 
+&#125; from './lib/wa-scienceicons.js';
+
+// Get all available icon names
+const icons = getScienceIconNames();
+
+// Check if an icon exists
+const exists = isScienceIcon('github'); // true
+
+// Get the URL for an icon
+const url = getScienceIconUrl('jupyter');
+
+// Register with custom base URL
+registerScienceIconsLibrary('/custom/path');</code></pre>
+</wa-card>
