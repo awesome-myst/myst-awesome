@@ -4,6 +4,7 @@ import type {
   Node,
   Heading,
   Paragraph,
+  Myst,
 } from "@awesome-myst/myst-zod";
 
 /** Function to render MyST content as HTML (simplified) */
@@ -68,8 +69,7 @@ export function renderMystAst(root: Root): string {
         }</a>`;
       }
       case "myst":
-        // Myst-specific node, render children or return empty string
-        return (node as Parent).children?.map(renderNode).join("") || "";
+        return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
         return (node as Parent).children?.map(renderNode).join("") || "";
