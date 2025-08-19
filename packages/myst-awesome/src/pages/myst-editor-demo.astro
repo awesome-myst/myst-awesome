@@ -1,0 +1,184 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="MyST Editor Demo">
+  <main class="container">
+    <h1>MyST Editor Component Demo</h1>
+    <p>
+      This page demonstrates the <code>wa-myst-editor</code> web component, which provides
+      a live MyST markdown editor with real-time preview.
+    </p>
+
+    <h2>Basic Usage</h2>
+    <p>
+      The component automatically processes MyST markdown and displays a live preview
+      using the MyST parser and basic transformations.
+    </p>
+
+    <wa-myst-editor
+      placeholder="Try typing some MyST markdown here..."
+      value={`# Hello MyST!
+
+This is a **MyST markdown** editor with live preview.
+
+## Features
+
+- Live preview as you type
+- MyST syntax support
+- Web Awesome styling
+- Responsive design
+
+### Code Example
+
+\`\`\`python
+def hello_world():
+    print('Hello from MyST!')
+\`\`\`
+
+### Math Support
+
+Some inline math: $E = mc^2$
+
+### Lists
+
+1. First item
+2. Second item
+   - Nested item
+   - Another nested item
+
+> This is a blockquote showing MyST's capabilities.
+
+[Learn more about MyST](https://mystmd.org)`}
+    ></wa-myst-editor>
+
+    <h2>Properties</h2>
+    <p>The <code>wa-myst-editor</code> component supports the following properties:</p>
+    
+    <ul>
+      <li><code>value</code> - The MyST markdown content</li>
+      <li><code>placeholder</code> - Placeholder text for the textarea</li>
+      <li><code>readonly</code> - Make the editor read-only</li>
+    </ul>
+
+    <h3>Read-only Example</h3>
+    <p>Here's a read-only editor showing MyST syntax:</p>
+
+    <wa-myst-editor
+      readonly
+      value={`# Read-only MyST Editor
+
+This editor is **read-only** and shows how MyST content can be displayed.
+
+## MyST Features
+
+MyST supports many features including:
+
+- Directives and roles
+- Cross-references
+- Mathematical notation
+- Code blocks with syntax highlighting
+
+\`\`\`{note}
+This is a MyST note directive (though it may not render perfectly in this simplified preview).
+\`\`\``}
+    ></wa-myst-editor>
+
+    <h2>JavaScript API</h2>
+    <p>The component provides several methods for programmatic control:</p>
+
+    <ul>
+      <li><code>setValue(content)</code> - Set the editor content</li>
+      <li><code>getValue()</code> - Get the current content</li>
+      <li><code>getAst()</code> - Get the parsed MyST AST</li>
+      <li><code>focus()</code> - Focus the editor</li>
+    </ul>
+
+    <button id="demo-button" class="demo-button">Try JavaScript API</button>
+
+    <div id="api-demo" style="margin-top: 1rem;"></div>
+  </main>
+</Layout>
+
+<script>
+  // Import the component
+  import '../lib/wa-myst-editor.js';
+
+  // Demo JavaScript API usage
+  document.getElementById('demo-button')?.addEventListener('click', () => {
+    const editor = document.createElement('wa-myst-editor');
+    editor.setValue(`# Generated Content
+
+This content was set using the \`setValue()\` JavaScript API.
+
+Current time: ${new Date().toLocaleTimeString()}
+
+## API Methods
+
+- \`setValue()\` - ✅ Used to set this content
+- \`getValue()\` - Returns the current markdown
+- \`getAst()\` - Returns the parsed MyST AST
+- \`focus()\` - Focuses the editor
+
+Try editing this content!`);
+
+    const container = document.getElementById('api-demo');
+    if (container) {
+      container.innerHTML = '<h3>Programmatically Created Editor:</h3>';
+      container.appendChild(editor);
+      
+      // Focus after a short delay to ensure it's rendered
+      setTimeout(() => editor.focus(), 100);
+    }
+  });
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: var(--wa-font-family-body, system-ui);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--wa-font-family-heading, inherit);
+    color: var(--wa-color-text-normal);
+  }
+
+  wa-myst-editor {
+    margin: 2rem 0;
+  }
+
+  .demo-button {
+    background: var(--wa-color-brand-fill-loud, #007acc);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--wa-border-radius-m, 6px);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .demo-button:hover {
+    background: var(--wa-color-brand-fill-louder, #005999);
+  }
+
+  code {
+    background: var(--wa-color-surface-raised, #f5f5f5);
+    padding: 0.2em 0.4em;
+    border-radius: var(--wa-border-radius-s, 3px);
+    font-family: var(--wa-font-family-code, monospace);
+  }
+
+  ul, ol {
+    line-height: 1.6;
+  }
+
+  p {
+    line-height: 1.6;
+    color: var(--wa-color-text-normal);
+  }
+</style>

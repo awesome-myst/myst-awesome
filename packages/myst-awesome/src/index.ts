@@ -13,3 +13,7 @@ export { default as ThemesResolver } from "./components/ThemesResolver.astro";
 export * from "./lib/get-component.ts";
 export * from "./lib/generate-page-url.ts";
 export * from "./lib/generate-page-toc.ts";
+export * from "./lib/render-myst-ast.ts";
+
+// Export web components
+export { WaMystEditor } from "./lib/wa-myst-editor.ts";

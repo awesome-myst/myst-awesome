@@ -67,6 +67,9 @@ export function renderMystAst(root: Root): string {
           (node as Parent).children?.map(renderNode).join("") || ""
         }</a>`;
       }
+      case "myst":
+        // Myst-specific node, render children or return empty string
+        return (node as Parent).children?.map(renderNode).join("") || "";
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
         return (node as Parent).children?.map(renderNode).join("") || "";
