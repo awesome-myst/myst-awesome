@@ -12,6 +12,7 @@ export class WaMystEditor extends LitElement {
     :host {
       display: block;
       font-family: var(--wa-font-family-body, system-ui);
+      margin-block: var(--wa-space-l, 2rem);
     }
 
     .editor-container {
