@@ -84,7 +84,7 @@ const description = page.data.frontmatter?.description ||
                    projectConfig?.data.project?.description
                    || '';
 
-// Get baseDir from site options or environment variable, with fallback to '/book'
+// Get baseDir from site options or environment variable
 const baseDir = projectConfig?.data?.options?.base_dir ||
                 import.meta.env.BASE_DIR ||
                 '';
@@ -111,7 +111,7 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
 <DocsLayout
   title={title}
   description={description}
-  section="Book"
+  section="Guide"
   baseDir={baseDir}
   tocItems={tocItems}
   showToc={showToc}
