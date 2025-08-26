@@ -5,8 +5,10 @@ project:
   title: MyST Awesome
   description: MyST-MD site theme built with Web Awesome.
   keywords: ["myst", "myst-md", "theme", "webawesome", "shoelace", "astro", "book", "furo"]
-  authors: ["Matt McCormick"]
   github: "https://github.com/awesome-myst/myst-awesome"
+  license:
+    code: MIT
+    content: CC-BY-4.0
   references:
     python: https://docs.python.org/3.13/
     jupyterbook: https://jupyterbook.org/en/stable/
@@ -25,7 +27,7 @@ project:
         - file: authoring/typography.md
 
 site:
-  title: MyST Awesome Guide
+  title: MyST Awesome 
   options:
     favicon: assets/favicon.ico
     logo: assets/logo.png

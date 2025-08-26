@@ -1,0 +1,62 @@
+---
+/**
+ * Affiliations component for MyST frontmatter
+ * Props:
+ * - affiliations: Array of affiliation objects (when displaying all affiliations)
+ * - affiliationId: String ID to lookup specific affiliation (when displaying single affiliation)
+ */
+const { affiliations, affiliationId } = Astro.props;
+
+// Helper function to get affiliation data
+function getAffiliation(affiliationId: string, affiliations: any[]) {
+  if (!affiliations) return { name: affiliationId };
+  const affiliationsLookup = Object.fromEntries(
+    affiliations.map(({ id, ...rest }: any) => [id, rest])
+  );
+  return affiliationsLookup[affiliationId] ?? { name: affiliationId };
+}
+
+// Determine what to render
+const renderSingle = affiliationId && affiliations;
+const renderList = !affiliationId && affiliations && affiliations.length > 0;
+
+// For single affiliation rendering
+let singleAffiliation = null;
+let displayName = '';
+let rorUrl = null;
+
+if (renderSingle) {
+  singleAffiliation = getAffiliation(affiliationId, affiliations);
+  displayName = singleAffiliation.name || singleAffiliation.institution;
+  rorUrl = singleAffiliation.ror ? `https://ror.org/${singleAffiliation.ror.replace(/(https?:\/\/)?ror\.org\//, '')}` : null;
+}
+---
+
+{renderSingle && (
+  <span>
+    {displayName}
+    {rorUrl && (
+      <a href={rorUrl} target="_blank" rel="noopener noreferrer" title="Research Organization Registry" style="margin-left: var(--wa-space-xs);">
+        <wa-icon library="scienceicons" name="ror" style="font-size:1rem;vertical-align:middle;" />
+      </a>
+    )}
+  </span>
+)}
+
+{renderList && (
+  <div class="affiliations-list">
+    <h4 style="font-size: var(--wa-font-size-small); font-weight: var(--wa-font-weight-semibold); color: var(--wa-color-neutral-700); margin-bottom: var(--wa-space-s);">Affiliations</h4>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+      {affiliations.map((aff: any) => (
+        <li style="font-size: var(--wa-font-size-small); margin-bottom: var(--wa-space-xs);">
+          {aff.name || aff.institution}
+          {aff.ror && (
+            <a href={`https://ror.org/${aff.ror.replace(/(https?:\/\/)?ror\.org\//, '')}`} target="_blank" rel="noopener noreferrer" title="Research Organization Registry" style="margin-left: var(--wa-space-xs);">
+              <wa-icon library="scienceicons" name="ror" style="font-size:1rem;vertical-align:middle;" />
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

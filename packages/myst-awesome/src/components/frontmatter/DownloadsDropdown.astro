@@ -1,0 +1,73 @@
+---
+/**
+ * DownloadsDropdown component for MyST frontmatter
+ * Displays download options for various formats (PDF, etc.)
+ * Props:
+ * - downloads: Array of download/export objects from frontmatter
+ */
+const { downloads } = Astro.props;
+
+// Helper function to get icon for download format
+function getDownloadIcon(format: string) {
+  const formatLower = format.toLowerCase();
+  if (formatLower.includes('pdf')) return 'download';
+  if (formatLower.includes('jupyter') || formatLower.includes('ipynb')) return 'jupyter';
+  if (formatLower.includes('tex') || formatLower.includes('latex')) return 'download';
+  return 'download';
+}
+
+// Helper function to get file extension for display
+function getFileExtension(url: string, format: string) {
+  const urlExt = url.split('.').pop()?.toLowerCase();
+  if (urlExt) return urlExt.toUpperCase();
+  
+  const formatLower = format.toLowerCase();
+  if (formatLower.includes('pdf')) return 'PDF';
+  if (formatLower.includes('jupyter') || formatLower.includes('ipynb')) return 'IPYNB';
+  if (formatLower.includes('tex')) return 'TEX';
+  return format.toUpperCase();
+}
+---
+
+<script>
+  // Import Web Awesome dropdown components
+  import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
+  import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+{downloads && downloads.length > 0 && (
+  <div style="margin-bottom: var(--wa-space-l);">
+    <wa-dropdown>
+      <wa-button slot="trigger" variant="outline" size="small">
+        <wa-icon name="download" slot="prefix" />
+        Downloads
+      </wa-button>
+      
+      {downloads.map((download: any) => {
+        const format = download.format || 'Download';
+        const url = download.url;
+        const title = download.title || format;
+        const icon = getDownloadIcon(format);
+        const extension = getFileExtension(url, format);
+        
+        return (
+          <wa-dropdown-item>
+            <a 
+              href={url}
+              download
+              style="display: flex; align-items: center; gap: var(--wa-space-s); width: 100%; padding: var(--wa-space-s); text-decoration: none; color: inherit; border-radius: var(--wa-border-radius);"
+              onmouseover="this.style.backgroundColor='var(--wa-color-neutral-50)'"
+              onmouseout="this.style.backgroundColor='transparent'"
+            >
+              <wa-icon library="scienceicons" name={icon} style="font-size:1rem;" />
+              <span style="flex: 1;">{title}</span>
+              <span style="font-size: var(--wa-font-size-x-small); color: var(--wa-color-neutral-500);">{extension}</span>
+            </a>
+          </wa-dropdown-item>
+        );
+      })}
+    </wa-dropdown>
+  </div>
+)}

@@ -1,0 +1,120 @@
+---
+/**
+ * LaunchButton component for MyST frontmatter
+ * Displays launch options for Jupyter/Binder environments
+ * Props:
+ * - thebe: Thebe configuration from frontmatter
+ * - kernelName: Optional kernel name
+ */
+const { thebe, kernelName } = Astro.props;
+
+// Helper function to build Binder URL
+function buildBinderUrl(repo: string, ref: string = 'HEAD', path: string = '') {
+  const baseUrl = 'https://mybinder.org/v2/gh';
+  let url = `${baseUrl}/${repo}/${ref}`;
+  if (path) {
+    url += `?urlpath=tree/${encodeURIComponent(path)}`;
+  }
+  return url;
+}
+
+// Helper function to build JupyterHub URL
+function buildJupyterHubUrl(hubUrl: string, repo: string, path: string = '') {
+  let url = `${hubUrl}/hub/user-redirect/git-pull?repo=${encodeURIComponent(repo)}`;
+  if (path) {
+    url += `&urlpath=tree/${encodeURIComponent(path)}`;
+  }
+  return url;
+}
+
+// Extract launch options from thebe config
+const binderOptions = thebe?.binder;
+const jupyterHubUrl = thebe?.server?.url;
+const repoUrl = binderOptions?.repo || thebe?.repository;
+const repoRef = binderOptions?.ref || 'HEAD';
+const notebookPath = thebe?.path || '';
+
+const hasLaunchOptions = binderOptions || jupyterHubUrl;
+---
+
+<script>
+  // Import Web Awesome components
+  import '@awesome.me/webawesome/dist/components/button-group/button-group.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
+  import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+{hasLaunchOptions && (
+  <div style="margin-bottom: var(--wa-space-l);">
+    <wa-button-group>
+      {binderOptions && repoUrl && (
+        <wa-button 
+          variant="primary"
+          onclick={`window.open('${buildBinderUrl(repoUrl, repoRef, notebookPath)}', '_blank')`}
+        >
+          <wa-icon library="scienceicons" name="binder" slot="prefix" />
+          Launch Binder
+        </wa-button>
+      )}
+      
+      {jupyterHubUrl && repoUrl && (
+        <wa-button 
+          variant="primary"
+          onclick={`window.open('${buildJupyterHubUrl(jupyterHubUrl, repoUrl, notebookPath)}', '_blank')`}
+        >
+          <wa-icon library="scienceicons" name="jupyter" slot="prefix" />
+          Launch JupyterHub
+        </wa-button>
+      )}
+      
+      {/* More launch options dropdown */}
+      <wa-dropdown>
+        <wa-button variant="primary" slot="trigger">
+          <wa-icon name="chevron-down" />
+        </wa-button>
+        
+        {binderOptions && repoUrl && (
+          <wa-dropdown-item>
+            <a 
+              href={buildBinderUrl(repoUrl, repoRef, notebookPath)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display: flex; align-items: center; gap: var(--wa-space-s); width: 100%; padding: var(--wa-space-s); text-decoration: none; color: inherit; border-radius: var(--wa-border-radius);"
+              onmouseover="this.style.backgroundColor='var(--wa-color-neutral-50)'"
+              onmouseout="this.style.backgroundColor='transparent'"
+            >
+              <wa-icon library="scienceicons" name="binder" style="font-size:1rem;" />
+              <span>Open in Binder</span>
+            </a>
+          </wa-dropdown-item>
+        )}
+        
+        {repoUrl && (
+          <wa-dropdown-item>
+            <a 
+              href={repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display: flex; align-items: center; gap: var(--wa-space-s); width: 100%; padding: var(--wa-space-s); text-decoration: none; color: inherit; border-radius: var(--wa-border-radius);"
+              onmouseover="this.style.backgroundColor='var(--wa-color-neutral-50)'"
+              onmouseout="this.style.backgroundColor='transparent'"
+            >
+              <wa-icon library="scienceicons" name="github" style="font-size:1rem;" />
+              <span>View Source</span>
+            </a>
+          </wa-dropdown-item>
+        )}
+        
+        {kernelName && (
+          <wa-dropdown-item>
+            <span style="font-size: var(--wa-font-size-small); color: var(--wa-color-neutral-500); padding: var(--wa-space-xs) var(--wa-space-s);">
+              Kernel: {kernelName}
+            </span>
+          </wa-dropdown-item>
+        )}
+      </wa-dropdown>
+    </wa-button-group>
+  </div>
+)}

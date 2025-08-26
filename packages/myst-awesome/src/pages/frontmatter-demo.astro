@@ -1,0 +1,186 @@
+---
+/**
+ * Demo page for MyST Frontmatter Components
+ * Shows all frontmatter components with sample data
+ */
+import FrontmatterBlock from '../components/frontmatter/FrontmatterBlock.astro';
+import Authors from '../components/frontmatter/Authors.astro';
+import Affiliations from '../components/frontmatter/Affiliations.astro';
+import LicenseBadges from '../components/frontmatter/LicenseBadges.astro';
+import DownloadsDropdown from '../components/frontmatter/DownloadsDropdown.astro';
+import LaunchButton from '../components/frontmatter/LaunchButton.astro';
+
+// Sample frontmatter data for testing
+const sampleFrontmatter = {
+  title: "Machine Learning in Scientific Computing",
+  subtitle: "A comprehensive guide to modern ML techniques",
+  doi: "10.1000/xyz123",
+  authors: [
+    {
+      name: "Dr. Jane Smith",
+      orcid: "0000-0001-2345-6789",
+      email: "jane.smith@university.edu", 
+      affiliations: ["uni1", "lab1"]
+    },
+    {
+      name: "Prof. John Doe",
+      orcid: "0000-0009-8765-4321",
+      affiliations: ["uni2"]
+    }
+  ],
+  affiliations: [
+    {
+      id: "uni1",
+      name: "University of Science",
+      ror: "https://ror.org/01234567"
+    },
+    {
+      id: "uni2", 
+      name: "Institute of Technology",
+      ror: "https://ror.org/09876543"
+    },
+    {
+      id: "lab1",
+      name: "Computational Biology Lab"
+    }
+  ],
+  license: [
+    {
+      id: "CC-BY-4.0",
+      name: "Creative Commons Attribution 4.0",
+      url: "https://creativecommons.org/licenses/by/4.0/",
+      CC: true
+    },
+    {
+      id: "MIT",
+      name: "MIT License", 
+      url: "https://opensource.org/licenses/MIT",
+      osi: true
+    }
+  ],
+  downloads: [
+    {
+      format: "pdf",
+      url: "/downloads/paper.pdf",
+      title: "Download PDF"
+    },
+    {
+      format: "jupyter",
+      url: "/downloads/notebook.ipynb", 
+      title: "Download Notebook"
+    }
+  ],
+  thebe: {
+    repository: "username/repo-name",
+    binder: {
+      repo: "username/repo-name",
+      ref: "main"
+    },
+    server: {
+      url: "https://hub.jupyter.org"
+    },
+    path: "notebooks/example.ipynb"
+  }
+};
+
+const title = "MyST Frontmatter Components Demo";
+const description = "Demonstration of MyST frontmatter components using WebAwesome and scienceicons";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  
+  <!-- Web Awesome CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.4/dist/styles/webawesome.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0-beta.4/dist/styles/themes/default.css">
+  
+  <!-- Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">{title}</h1>
+      <p class="text-lg text-gray-600">{description}</p>
+    </header>
+
+    <main class="space-y-8">
+      <!-- Full FrontmatterBlock Demo -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Complete Frontmatter Block</h2>
+        <FrontmatterBlock frontmatter={sampleFrontmatter} />
+      </section>
+
+      <!-- Individual Component Demos -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Individual Components</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Authors -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium mb-3">Authors Component</h3>
+            <Authors authors={sampleFrontmatter.authors} affiliations={sampleFrontmatter.affiliations} />
+          </div>
+
+          <!-- Affiliations -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium mb-3">Affiliations Component</h3>
+            <Affiliations affiliations={sampleFrontmatter.affiliations} />
+          </div>
+
+          <!-- License Badges -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium mb-3">License Badges</h3>
+            <LicenseBadges license={sampleFrontmatter.license} />
+          </div>
+
+          <!-- Downloads Dropdown -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium mb-3">Downloads Dropdown</h3>
+            <DownloadsDropdown downloads={sampleFrontmatter.downloads} />
+          </div>
+
+          <!-- Launch Button -->
+          <div class="bg-white p-6 rounded-lg shadow col-span-1 md:col-span-2">
+            <h3 class="text-lg font-medium mb-3">Launch Button</h3>
+            <LaunchButton thebe={sampleFrontmatter.thebe} kernelName="python3" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Usage Instructions -->
+      <section class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Usage</h2>
+        <div class="prose max-w-none">
+          <p class="mb-4">These components are designed to work with MyST frontmatter data loaded via Astro collections:</p>
+          
+          <pre class="bg-gray-100 p-4 rounded text-sm overflow-x-auto"><code>---
+import FrontmatterBlock from '../components/frontmatter/FrontmatterBlock.astro';
+
+// In your [...slug].astro page
+const pageData = await getPage(Astro.params.slug);
+---
+
+&lt;FrontmatterBlock frontmatter=&#123;pageData.data.frontmatter&#125; /&gt;</code></pre>
+
+          <h3 class="text-lg font-semibold mt-6 mb-2">Available Components:</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>FrontmatterBlock</strong> - Main orchestrating component</li>
+            <li><strong>Authors</strong> - Display authors with ORCID/email links</li>
+            <li><strong>Affiliations</strong> - Display institutional affiliations with ROR links</li>
+            <li><strong>LicenseBadges</strong> - Display Creative Commons and other license badges</li>
+            <li><strong>DownloadsDropdown</strong> - Download options for various formats</li>
+            <li><strong>LaunchButton</strong> - Launch buttons for Jupyter/Binder environments</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
