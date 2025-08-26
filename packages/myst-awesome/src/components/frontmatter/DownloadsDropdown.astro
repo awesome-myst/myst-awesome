@@ -40,10 +40,7 @@ function getFileExtension(url: string, format: string) {
 {downloads && downloads.length > 0 && (
   <div style="margin-bottom: var(--wa-space-l);">
     <wa-dropdown>
-      <wa-button slot="trigger" variant="outline" size="small">
-        <wa-icon name="download" slot="prefix" />
-        Downloads
-      </wa-button>
+      <wa-icon name="download" slot="trigger" style="cursor: pointer; font-size: 1.25rem; color: var(--wa-color-primary-600);" />
       
       {downloads.map((download: any) => {
         const format = download.format || 'Download';
