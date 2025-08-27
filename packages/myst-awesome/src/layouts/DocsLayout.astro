@@ -136,7 +136,6 @@ export interface Props {
   showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
   editUrl?: string;
   lastModified?: Date;
-  author?: string;
   section?: string;
   nextPage?: { title: string; href: string };
   prevPage?: { title: string; href: string };
@@ -159,7 +158,6 @@ const {
   showColorSchemeSelector = true,
   editUrl,
   lastModified,
-  author,
   section,
   nextPage,
   prevPage,
@@ -310,11 +308,8 @@ const {
       {description && <p class="article-description">{description}</p>}
 
       <div class="article-meta">
-        {author && <span class="article-author">By {author}</span>}
-        {lastModified && (
-          <time class="article-date" datetime={lastModified.toISOString()}>
-            Updated {lastModified.toLocaleDateString()}
-          </time>
+        {showFrontmatterBlock && frontmatter && (
+          <FrontmatterBlock frontmatter={frontmatter} baseUrl={`${baseDir}/scienceicons`} />
         )}
         {showEditButton && editUrl && (
           <a href={editUrl} class="edit-link">
@@ -327,9 +322,6 @@ const {
 
     <!-- Main content -->
     <div class="article-content">
-      {showFrontmatterBlock && frontmatter && (
-        <FrontmatterBlock frontmatter={frontmatter} baseUrl={`${baseDir}/scienceicons`} />
-      )}
       <slot />
     </div>
 
@@ -373,7 +365,7 @@ const {
   )}
 
   <!-- Footer -->
-  <Footer slot="footer" />
+  <Footer slot="footer" lastModified={lastModified} />
 </BasePage>
 
 <script>

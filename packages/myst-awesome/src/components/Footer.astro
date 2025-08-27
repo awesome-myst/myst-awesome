@@ -3,6 +3,7 @@ interface Props {
   year?: number;
   brandName?: string;
   showBrand?: boolean;
+  lastModified?: Date;
   sections?: Array<{
     title: string;
     links: Array<{
@@ -16,6 +17,7 @@ const {
   year = new Date().getFullYear(),
   brandName = "MyST Awesome Theme",
   showBrand = true,
+  lastModified,
   sections = [
     {
       title: "Documentation",
@@ -62,6 +64,15 @@ const {
   {showBrand && (
     <div class="footer-bottom">
       <p>&copy; {year} {brandName}. Built with Web Awesome and Astro.</p>
+      {lastModified && (
+        <time class="last-modified">
+          Last updated: {lastModified.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </time>
+      )}
     </div>
   )}
 </footer>
@@ -112,10 +123,16 @@ const {
     text-align: center;
   }
 
-  .footer-bottom p {
+  .footer-bottom time {
     margin: 0;
     color: var(--wa-color-text-quiet);
     font-size: var(--wa-font-size-s);
+  }
+
+  .footer-bottom .last-modified {
+    margin-top: var(--wa-space-xs);
+    font-size: var(--wa-font-size-xs);
+    opacity: 0.8;
   }
 
   /* Responsive adjustments */
