@@ -1,11 +1,18 @@
 ---
 /**
  * LaunchButton component for MyST frontmatter
- * Displays launch options for Jupyter/Binder environments
+ * Displays Jupyter/Binder launch options
  * Props:
  * - thebe: Thebe configuration from frontmatter
- * - kernelName: Optional kernel name
+ * - kernelName: Optional kernel name for display
  */
+import type { ExpandedThebeFrontmatter } from '@awesome-myst/myst-zod';
+
+interface Props {
+  thebe?: ExpandedThebeFrontmatter;
+  kernelName?: string;
+}
+
 const { thebe, kernelName } = Astro.props;
 
 // Helper function to build Binder URL

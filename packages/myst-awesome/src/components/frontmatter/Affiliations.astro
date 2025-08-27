@@ -1,11 +1,20 @@
 ---
 /**
  * Affiliations component for MyST frontmatter
+ * Displays institutional affiliations with ROR links
  * Props:
- * - affiliations: Array of affiliation objects (when displaying all affiliations)
- * - affiliationId: String ID to lookup specific affiliation (when displaying single affiliation)
+ * - affiliations: Array of Affiliation objects from frontmatter
+ * - mode: 'single' | 'list' - whether to display one affiliation or multiple
  */
-const { affiliations, affiliationId } = Astro.props;
+import type { Affiliation } from '@awesome-myst/myst-zod';
+
+interface Props {
+  affiliations?: Affiliation[];
+  mode?: 'single' | 'list';
+  affiliationId?: string; // For single mode - ID of specific affiliation to display
+}
+
+const { affiliations, mode = 'list', affiliationId } = Astro.props;
 
 // Helper function to get affiliation data
 function getAffiliation(affiliationId: string, affiliations: any[]) {

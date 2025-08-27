@@ -5,6 +5,12 @@
  * Props:
  * - downloads: Array of download/export objects from frontmatter
  */
+import type { Download } from '@awesome-myst/myst-zod';
+
+interface Props {
+  downloads?: Download[];
+}
+
 const { downloads } = Astro.props;
 
 // Helper function to get icon for download format

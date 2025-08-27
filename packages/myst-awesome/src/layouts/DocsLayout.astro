@@ -3,10 +3,11 @@ import BasePage from './BasePage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import SearchDialog from '../components/SearchDialog.astro';
 import Footer from '../components/Footer.astro';
+import FrontmatterBlock from '../components/frontmatter/FrontmatterBlock.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import type { Entry } from '@awesome-myst/myst-zod';
+import type { Entry, ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
 
 const projectConfig = (await getCollection('projectFrontmatter'))[0];
 // console.log('Project pages template config:', projectConfig);
@@ -129,6 +130,7 @@ export interface Props {
   showToc?: boolean;
   showBreadcrumbs?: boolean;
   showTitleBlock?: boolean;
+  showFrontmatterBlock?: boolean;
   showEditButton?: boolean;
   showThemeSelector?: boolean; // new prop to enable theme selector
   showColorSchemeSelector?: boolean; // new prop to enable color scheme selector
@@ -139,6 +141,7 @@ export interface Props {
   nextPage?: { title: string; href: string };
   prevPage?: { title: string; href: string };
   baseDir?: string; // prefix for search dialog URLs (e.g., "/book")
+  frontmatter?: ProjectAndPageFrontmatter; // MyST page frontmatter data
 }
 
 const {
@@ -150,6 +153,7 @@ const {
   showToc = true,
   showBreadcrumbs = true,
   showTitleBlock = true,
+  showFrontmatterBlock = false,
   showEditButton = false,
   showThemeSelector = false,
   showColorSchemeSelector = true,
@@ -160,6 +164,7 @@ const {
   nextPage,
   prevPage,
   baseDir = '/',
+  frontmatter,
   ...rest
 } = Astro.props;
 ---
@@ -322,6 +327,9 @@ const {
 
     <!-- Main content -->
     <div class="article-content">
+      {showFrontmatterBlock && frontmatter && (
+        <FrontmatterBlock frontmatter={frontmatter} baseUrl={`${baseDir}/scienceicons`} />
+      )}
       <slot />
     </div>
 

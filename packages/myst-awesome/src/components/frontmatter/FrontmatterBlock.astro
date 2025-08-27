@@ -4,83 +4,88 @@
  * Main component that orchestrates all frontmatter display
  * Props:
  * - frontmatter: The page frontmatter data from page.data.frontmatter
+ * - baseUrl: Optional base URL for scienceicons (e.g., '/book' for subdirectory deployments)
  */
+import type { ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
 import Authors from './Authors.astro';
 import Affiliations from './Affiliations.astro';
 import LicenseBadges from './LicenseBadges.astro';
 import DownloadsDropdown from './DownloadsDropdown.astro';
 import LaunchButton from './LaunchButton.astro';
 
-const { frontmatter } = Astro.props;
+interface Props {
+  frontmatter: ProjectAndPageFrontmatter;
+  baseUrl?: string;
+}
+
+const { frontmatter, baseUrl } = Astro.props;
 
 // DOI helper function
 function formatDoi(doi: string) {
   return doi.replace(/^(https?:\/\/)?(dx\.)?doi\.org\//, '');
 }
+console.log('frontmatter', frontmatter)
 ---
+
+{frontmatter && (
+  <div style="padding: var(--wa-space-xl);" data-frontmatter-baseurl={baseUrl}>
+    <!-- DOI -->
+    {frontmatter.doi && (
+      <div style="margin-bottom: var(--wa-space-l);">
+        <a 
+          href={`https://doi.org/${formatDoi(frontmatter.doi)}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style="color: var(--wa-color-primary-600); font-size: var(--wa-font-size-small); text-decoration: none;"
+          onmouseover="this.style.color='var(--wa-color-primary-800)'"
+          onmouseout="this.style.color='var(--wa-color-primary-600)'"
+        >
+          DOI: {formatDoi(frontmatter.doi)}
+        </a>
+      </div>
+    )}
+    
+    <!-- Authors -->
+    {frontmatter.authors && (
+      <Authors authors={frontmatter.authors} affiliations={frontmatter.affiliations} />
+    )}
+    
+    <!-- Affiliations (if not shown with authors) -->
+    {frontmatter.affiliations && !frontmatter.authors && (
+      <Affiliations affiliations={frontmatter.affiliations} />
+    )}
+    
+    <!-- License Badges -->
+    {frontmatter.license && (
+      <LicenseBadges iconOnly={true} license={frontmatter.license} />
+    )}
+    
+    <!-- Downloads -->
+    {frontmatter.downloads && (
+      <DownloadsDropdown downloads={frontmatter.downloads} />
+    )}
+    
+    <!-- Launch Button (for Jupyter/Binder) -->
+    {frontmatter.thebe && (
+      <LaunchButton thebe={frontmatter.thebe} />
+    )}
+  </div>
+)}
 
 <script>
   // Import Web Awesome components
-  import '@awesome.me/webawesome/dist/components/card/card.js';
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/button/button.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
   
-  // Import scienceicons
-  import '../../lib/wa-scienceicons.ts';
+  // Import and register scienceicons
+  import { registerScienceIconsLibrary } from '../../lib/wa-scienceicons.ts';
+  
+  // Register scienceicons library if running in browser
+  if (typeof window !== 'undefined') {
+    // Get baseUrl from the component props (passed via data attribute)
+    const frontmatterElement = document.querySelector('[data-frontmatter-baseurl]');
+    const baseUrl = frontmatterElement?.getAttribute('data-frontmatter-baseurl') || undefined;
+    registerScienceIconsLibrary(baseUrl);
+  }
 </script>
-
-{frontmatter && (
-  <wa-card class="frontmatter-block" style="margin-bottom: var(--wa-space-xl);">
-    <div style="padding: var(--wa-space-xl);">
-      <!-- Title and Subtitle -->
-      {frontmatter.title && (
-        <h1 style="font-size: var(--wa-font-size-3xl); font-weight: var(--wa-font-weight-bold); color: var(--wa-color-neutral-900); margin-bottom: var(--wa-space-s);">{frontmatter.title}</h1>
-      )}
-      {frontmatter.subtitle && (
-        <p style="font-size: var(--wa-font-size-lg); color: var(--wa-color-neutral-600); margin-bottom: var(--wa-space-l);">{frontmatter.subtitle}</p>
-      )}
-      
-      <!-- DOI -->
-      {frontmatter.doi && (
-        <div style="margin-bottom: var(--wa-space-l);">
-          <a 
-            href={`https://doi.org/${formatDoi(frontmatter.doi)}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style="color: var(--wa-color-primary-600); font-size: var(--wa-font-size-small); text-decoration: none;"
-            onmouseover="this.style.color='var(--wa-color-primary-800)'"
-            onmouseout="this.style.color='var(--wa-color-primary-600)'"
-          >
-            DOI: {formatDoi(frontmatter.doi)}
-          </a>
-        </div>
-      )}
-      
-      <!-- Authors -->
-      {frontmatter.authors && (
-        <Authors authors={frontmatter.authors} affiliations={frontmatter.affiliations} />
-      )}
-      
-      <!-- Affiliations (if not shown with authors) -->
-      {frontmatter.affiliations && !frontmatter.authors && (
-        <Affiliations affiliations={frontmatter.affiliations} />
-      )}
-      
-      <!-- License Badges -->
-      {frontmatter.license && (
-        <LicenseBadges license={frontmatter.license} />
-      )}
-      
-      <!-- Downloads -->
-      {frontmatter.downloads && (
-        <DownloadsDropdown downloads={frontmatter.downloads} />
-      )}
-      
-      <!-- Launch Button (for Jupyter/Binder) -->
-      {frontmatter.thebe && (
-        <LaunchButton thebe={frontmatter.thebe} />
-      )}
-    </div>
-  </wa-card>
-)}

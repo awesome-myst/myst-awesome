@@ -124,9 +124,6 @@ export function registerScienceIconsLibrary(baseUrl?: string) {
   });
 }
 
-// Auto-register with default settings
-registerScienceIconsLibrary();
-
 // Export the icon list for use by other modules
 export { SCIENCEICONS };
 

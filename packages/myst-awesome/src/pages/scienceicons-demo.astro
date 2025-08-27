@@ -10,6 +10,14 @@ description: "Demonstration of the scienceicons library integration with Web Awe
   // Import the Web Awesome icon component
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
   import '@awesome.me/webawesome/dist/components/card/card.js';
+
+  // Import and register scienceicons
+  import { registerScienceIconsLibrary } from '../lib/wa-scienceicons.ts';
+  
+  // Register scienceicons library if running in browser
+  if (typeof window !== 'undefined') {
+    registerScienceIconsLibrary();
+  }
 </script>
 
 <style>

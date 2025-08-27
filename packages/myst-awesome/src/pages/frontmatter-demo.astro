@@ -114,7 +114,11 @@ const description = "Demonstration of MyST frontmatter components using WebAweso
       <!-- Full FrontmatterBlock Demo -->
       <section>
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Complete Frontmatter Block</h2>
+        <p class="text-gray-600 mb-4">Default usage (icons served from /scienceicons):</p>
         <FrontmatterBlock frontmatter={sampleFrontmatter} />
+        
+        <p class="text-gray-600 mb-4 mt-6">With custom baseUrl (e.g., for subdirectory deployments):</p>
+        <FrontmatterBlock frontmatter={sampleFrontmatter} baseUrl="/book" />
       </section>
 
       <!-- Individual Component Demos -->
@@ -123,20 +127,20 @@ const description = "Demonstration of MyST frontmatter components using WebAweso
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Authors -->
-          <div class="bg-white p-6 rounded-lg shadow">
-            <h3 class="text-lg font-medium mb-3">Authors Component</h3>
+          <div style="background: white; padding: var(--wa-space-xl); border-radius: var(--wa-border-radius); box-shadow: var(--wa-shadow-small);">
+            <h3 style="font-size: var(--wa-font-size-lg); font-weight: var(--wa-font-weight-medium); margin-bottom: var(--wa-space-s);">Authors Component</h3>
             <Authors authors={sampleFrontmatter.authors} affiliations={sampleFrontmatter.affiliations} />
           </div>
 
           <!-- Affiliations -->
-          <div class="bg-white p-6 rounded-lg shadow">
-            <h3 class="text-lg font-medium mb-3">Affiliations Component</h3>
+          <div style="background: white; padding: var(--wa-space-xl); border-radius: var(--wa-border-radius); box-shadow: var(--wa-shadow-small);">
+            <h3 style="font-size: var(--wa-font-size-lg); font-weight: var(--wa-font-weight-medium); margin-bottom: var(--wa-space-s);">Affiliations Component</h3>
             <Affiliations affiliations={sampleFrontmatter.affiliations} />
           </div>
 
           <!-- License Badges -->
-          <div class="bg-white p-6 rounded-lg shadow">
-            <h3 class="text-lg font-medium mb-3">License Badges</h3>
+          <div style="background: white; padding: var(--wa-space-xl); border-radius: var(--wa-border-radius); box-shadow: var(--wa-shadow-small);">
+            <h3 style="font-size: var(--wa-font-size-lg); font-weight: var(--wa-font-weight-medium); margin-bottom: var(--wa-space-s);">License Badges</h3>
             <LicenseBadges license={sampleFrontmatter.license} />
           </div>
 

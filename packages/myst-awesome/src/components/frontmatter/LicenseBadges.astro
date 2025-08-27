@@ -5,27 +5,45 @@
  * Props:
  * - license: License object or array from frontmatter
  */
-const { license } = Astro.props;
+import type { Licenses } from '@awesome-myst/myst-zod';
 
-// Normalize license to array
-const licenses = Array.isArray(license) ? license : [license];
+interface Props {
+  license?: Licenses;
+  iconOnly?: boolean;
+}
+
+const { license, iconOnly = false } = Astro.props;
+
+// Extract licenses from the new structure
+const allLicenses: any[] = [];
+if (license) {
+  if (license.content) {
+    allLicenses.push({ ...license.content, type: 'content' });
+  }
+  if (license.code) {
+    allLicenses.push({ ...license.code, type: 'code' });
+  }
+}
 
 // Helper function to get CC icon name from license ID
 function getCCIconName(licenseId: string) {
   const ccMatch = /^(CC[^-]*(?:-[A-Z0-9]+)*)/i.exec(licenseId);
   if (!ccMatch) return null;
+
+  console.log('ccMatch', ccMatch)
   
   const ccType = ccMatch[1].toLowerCase();
+  console.log('ccType', ccType)
   const iconMap: Record<string, string> = {
-    'cc': 'cc',
     'cc-by': 'cc-by',
+    'cc-by-4': 'cc-by',
     'cc-nc': 'cc-nc', 
     'cc-nd': 'cc-nd',
     'cc-sa': 'cc-sa',
     'cc-zero': 'cc-zero'
   };
   
-  return iconMap[ccType] || 'cc';
+  return iconMap[ccType] || null;
 }
 
 // Helper function to check if license is Creative Commons
@@ -37,28 +55,46 @@ function isCreativeCommons(licenseObj: any) {
 function isOSIApproved(licenseObj: any) {
   return licenseObj.osi || licenseObj.OSI;
 }
+
+console.log('allLicenses', allLicenses)
 ---
 
-{licenses && licenses.length > 0 && (
+{allLicenses && allLicenses.length > 0 && (
   <div style="margin-bottom: var(--wa-space-l);">
-    <h4 style="font-size: var(--wa-font-size-small); font-weight: var(--wa-font-weight-semibold); color: var(--wa-color-neutral-700); margin-bottom: var(--wa-space-s);">License</h4>
     <div style="display: flex; flex-wrap: wrap; gap: var(--wa-space-s);">
-      {licenses.map((lic: any) => {
+      {allLicenses.map((lic: any) => {
         if (!lic) return null;
         
         const licenseUrl = lic.url || (lic.id ? `https://creativecommons.org/licenses/${lic.id.toLowerCase()}/4.0/` : '#');
         const licenseName = lic.name || lic.title || lic.id || 'Unknown License';
+        const licenseType = lic.type; // 'content' or 'code'
         
         return (
           <a 
             href={licenseUrl}
             target="_blank"
             rel="noopener noreferrer"
-            style="display: inline-flex; align-items: center; gap: var(--wa-space-xs); padding: var(--wa-space-xs) var(--wa-space-s); background: var(--wa-color-neutral-100); border-radius: var(--wa-border-radius); font-size: var(--wa-font-size-small); text-decoration: none; color: var(--wa-color-neutral-900); transition: background-color 0.2s;"
-            title={licenseName}
-            onmouseover="this.style.backgroundColor='var(--wa-color-neutral-200)'"
-            onmouseout="this.style.backgroundColor='var(--wa-color-neutral-100)'"
+            style={iconOnly 
+              ? "display: inline-flex; align-items: center; color: var(--wa-color-neutral-700); text-decoration: none; transition: color 0.2s;"
+              : "display: inline-flex; align-items: center; gap: var(--wa-space-xs); padding: var(--wa-space-xs) var(--wa-space-s); background: var(--wa-color-neutral-100); border-radius: var(--wa-border-radius); font-size: var(--wa-font-size-small); text-decoration: none; color: var(--wa-color-neutral-900); transition: background-color 0.2s;"
+            }
+            title={`${licenseName} (${licenseType} license)`}
+            onmouseover={iconOnly 
+              ? "this.style.color='var(--wa-color-primary-600)'"
+              : "this.style.backgroundColor='var(--wa-color-neutral-200)'"
+            }
+            onmouseout={iconOnly 
+              ? "this.style.color='var(--wa-color-neutral-700)'"
+              : "this.style.backgroundColor='var(--wa-color-neutral-100)'"
+            }
           >
+            {isCreativeCommons(lic) && (
+              <wa-icon 
+                library="scienceicons" 
+                name={'cc'} 
+                style="font-size:1rem;" 
+              />
+            )}
             {isCreativeCommons(lic) && getCCIconName(lic.id) && (
               <wa-icon 
                 library="scienceicons" 
@@ -70,13 +106,26 @@ function isOSIApproved(licenseObj: any) {
               <wa-icon 
                 library="scienceicons" 
                 name="osi" 
-                style="font-size:1rem;" 
+                style="font-size:1rem; transition: color 0.2s;"
+                class="osi-icon"
               />
             )}
-            <span>{licenseName}</span>
+            {!iconOnly && <span>{licenseName}</span>}
+            {!iconOnly && licenseType && (
+              <span style="font-size: var(--wa-font-size-xs); opacity: 0.7; margin-left: var(--wa-space-xs);">
+                ({licenseType})
+              </span>
+            )}
           </a>
         );
       })}
     </div>
   </div>
 )}
+
+<style>
+  /* OSI green hover effect */
+  a:hover .osi-icon {
+    color: #4aa94a !important;
+  }
+</style>

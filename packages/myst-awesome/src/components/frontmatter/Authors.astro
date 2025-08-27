@@ -1,10 +1,18 @@
 ---
 /**
  * Authors component for MyST frontmatter
+ * Displays authors with ORCID/email links and affiliation references
  * Props:
- * - authors: Array of author objects from frontmatter
- * - affiliations: Array of affiliation objects for lookup
+ * - authors: Array of Contributor objects from frontmatter
+ * - affiliations: Array of Affiliation objects from frontmatter
  */
+import type { Contributor, Affiliation } from '@awesome-myst/myst-zod';
+
+interface Props {
+  authors?: Contributor[];
+  affiliations?: Affiliation[];
+}
+
 const { authors, affiliations } = Astro.props;
 
 // Helper function to render affiliation by ID
