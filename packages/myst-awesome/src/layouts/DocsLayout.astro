@@ -303,21 +303,35 @@ const {
   <!-- Main content with article wrapper -->
   <article class="docs-article myst-content">
     <!-- Article header -->
-    {showTitleBlock && (<header class="article-header">
-      <h1 class="article-title">{title}</h1>
-      {description && <p class="article-description">{description}</p>}
+    {(showTitleBlock || showFrontmatterBlock || showEditButton) && (
+      <header class="article-header">
+        {showTitleBlock && (
+          <h1 class="article-title">{title}</h1>
+        )}
+        {description && (
+          <p class="article-description">
+            {description}
+          </p>
+        )}
 
-      <div class="article-meta">
-        {showFrontmatterBlock && frontmatter && (
-          <FrontmatterBlock frontmatter={frontmatter} baseUrl={`${baseDir}/scienceicons`} />
-        )}
-        {showEditButton && editUrl && (
-          <a href={editUrl} class="edit-link">
-            <wa-icon name="pen-to-square" variant="regular"></wa-icon>
-          </a>
-        )}
-      </div>
-    </header>
+        <div class="article-meta">
+          {showFrontmatterBlock && frontmatter && (
+            <FrontmatterBlock frontmatter={frontmatter} baseUrl={`${baseDir}/scienceicons`} />
+          )}
+          <div class="article-actions">
+            {showFrontmatterBlock && frontmatter?.github && (
+              <a href={frontmatter.github} target="_blank" rel="noopener noreferrer" class="article-github">
+                <wa-icon library="scienceicons" style="font-size:1rem;" name="github"></wa-icon>
+              </a>
+            )}
+            {showEditButton && editUrl && (
+              <a href={editUrl} class="edit-link">
+                <wa-icon name="pen-to-square" variant="regular"></wa-icon>
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
     )}
 
     <!-- Main content -->
@@ -673,22 +687,40 @@ const {
   .article-meta {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--wa-space-m);
     font-size: var(--wa-font-size-s);
     color: var(--wa-color-text-quiet);
+  }
+
+  .article-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+  }
+
+  .article-github {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-2xs);
+    color: var(--wa-color-text-quiet);
+    text-decoration: none;
+  }
+
+  .article-github:hover {
+    color: var(--wa-color-text-link);
   }
 
   .edit-link {
     display: flex;
     align-items: center;
     gap: var(--wa-space-2xs);
-    color: var(--wa-color-text-link);
+    color: var(--wa-color-text-quiet);
     text-decoration: none;
-    margin-left: auto;
   }
 
   .edit-link:hover {
-    text-decoration: underline;
+    color: var(--wa-color-text-link);
   }
 
   /* Article content */
@@ -829,8 +861,8 @@ const {
       gap: var(--wa-space-s);
     }
 
-    .edit-link {
-      margin-left: 0;
+    .article-actions {
+      align-self: flex-end;
     }
   }
 
