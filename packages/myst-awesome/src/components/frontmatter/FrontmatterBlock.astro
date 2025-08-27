@@ -28,10 +28,10 @@ console.log('frontmatter', frontmatter)
 ---
 
 {frontmatter && (
-  <div style="padding: var(--wa-space-xl);" data-frontmatter-baseurl={baseUrl}>
+  <div style="padding: var(--wa-space-xs);" data-frontmatter-baseurl={baseUrl}>
     <!-- DOI -->
     {frontmatter.doi && (
-      <div style="margin-bottom: var(--wa-space-l);">
+      <div>
         <a 
           href={`https://doi.org/${formatDoi(frontmatter.doi)}`} 
           target="_blank" 

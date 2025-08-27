@@ -30,10 +30,7 @@ function getCCIconName(licenseId: string) {
   const ccMatch = /^(CC[^-]*(?:-[A-Z0-9]+)*)/i.exec(licenseId);
   if (!ccMatch) return null;
 
-  console.log('ccMatch', ccMatch)
-  
   const ccType = ccMatch[1].toLowerCase();
-  console.log('ccType', ccType)
   const iconMap: Record<string, string> = {
     'cc-by': 'cc-by',
     'cc-by-4': 'cc-by',
@@ -55,12 +52,10 @@ function isCreativeCommons(licenseObj: any) {
 function isOSIApproved(licenseObj: any) {
   return licenseObj.osi || licenseObj.OSI;
 }
-
-console.log('allLicenses', allLicenses)
 ---
 
 {allLicenses && allLicenses.length > 0 && (
-  <div style="margin-bottom: var(--wa-space-l);">
+  <div style="margin-bottom: var(--wa-space-s);">
     <div style="display: flex; flex-wrap: wrap; gap: var(--wa-space-s);">
       {allLicenses.map((lic: any) => {
         if (!lic) return null;
