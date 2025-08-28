@@ -119,7 +119,6 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
   showTitleBlock={showTitleBlock}
   showFrontmatterBlock={true}
   showEditButton={true}
-  editUrl={`${projectConfig?.data.project?.github || ''}/edit/main/docs/${page.data?.url === '/' ? 'index' : (page.data?.url || '').slice(1)}.md`}
   lastModified={new Date()}
   frontmatter={page.data.frontmatter}
   nextPage={nextPage && nextPage.id ? {
