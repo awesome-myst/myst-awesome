@@ -1,0 +1,28 @@
+---
+/**
+ * Configurable LicenseBadges component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <LicenseBadgesResolver license={license} iconOnly={true} />
+ * 
+ * 2. With custom component:
+ *    import CustomLicenseBadges from './custom/MyLicenseBadges.astro';
+ *    <LicenseBadgesResolver component={CustomLicenseBadges} license={license} />
+ */
+import DefaultLicenseBadges from './frontmatter/LicenseBadges.astro';
+
+interface Props {
+  component?: any;
+  license: any;
+  iconOnly?: boolean;
+}
+
+const { component: CustomComponent, ...licenseBadgesProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...licenseBadgesProps} />
+) : (
+  <DefaultLicenseBadges {...licenseBadgesProps} />
+)}

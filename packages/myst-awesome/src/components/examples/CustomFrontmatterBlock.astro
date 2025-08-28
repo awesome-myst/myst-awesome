@@ -1,0 +1,159 @@
+---
+/**
+ * Example: Custom Frontmatter Block Component
+ * 
+ * This example shows how to create a custom frontmatter block
+ * that overrides the default layout and styling.
+ */
+import type { ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
+
+interface Props {
+  frontmatter: ProjectAndPageFrontmatter;
+  baseUrl?: string;
+  components?: any;
+}
+
+const { frontmatter, baseUrl, components } = Astro.props;
+
+// Format DOI helper function
+function formatDoi(doi: string) {
+  return doi.replace(/^(https?:\/\/)?(dx\.)?doi\.org\//, '');
+}
+---
+
+<div class="custom-frontmatter-block">
+  {frontmatter.title && (
+    <h2 class="paper-title">{frontmatter.title}</h2>
+  )}
+
+  {frontmatter.doi && (
+    <div class="doi-section">
+      <wa-badge variant="brand">
+        <wa-icon slot="start" name="link" variant="solid"></wa-icon>
+        <a 
+          href={`https://doi.org/${formatDoi(frontmatter.doi)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DOI: {formatDoi(frontmatter.doi)}
+        </a>
+      </wa-badge>
+    </div>
+  )}
+
+  {frontmatter.authors && (
+    <div class="authors-section">
+      <h3>Authors</h3>
+      <div class="authors-grid">
+        {frontmatter.authors.map(author => (
+          <div class="author-card">
+            <strong>{author.name}</strong>
+            {author.email && (
+              <div class="author-email">
+                <a href={`mailto:${author.email}`}>{author.email}</a>
+              </div>
+            )}
+            {author.orcid && (
+              <div class="author-orcid">
+                <wa-icon library="scienceicons" name="orcid"></wa-icon>
+                <a href={`https://orcid.org/${author.orcid}`} target="_blank">
+                  {author.orcid}
+                </a>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {frontmatter.license && (
+    <div class="license-section">
+      <h3>License</h3>
+      <wa-badge variant="success">
+        {frontmatter.license.code || frontmatter.license}
+      </wa-badge>
+    </div>
+  )}
+</div>
+
+<script>
+  import '@awesome.me/webawesome/dist/components/badge/badge.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  .custom-frontmatter-block {
+    background: var(--wa-color-surface-lowered);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-l);
+    padding: var(--wa-space-l);
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .paper-title {
+    margin: 0 0 var(--wa-space-m) 0;
+    color: var(--wa-color-brand-fill-loud);
+    font-size: var(--wa-font-size-xl);
+  }
+
+  .doi-section {
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .doi-section a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .authors-section h3,
+  .license-section h3 {
+    margin: var(--wa-space-m) 0 var(--wa-space-s) 0;
+    font-size: var(--wa-font-size-m);
+    color: var(--wa-color-text-quiet);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .authors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--wa-space-m);
+  }
+
+  .author-card {
+    background: var(--wa-color-surface-normal);
+    border: 1px solid var(--wa-color-surface-border);
+    border-radius: var(--wa-border-radius-m);
+    padding: var(--wa-space-m);
+  }
+
+  .author-email,
+  .author-orcid {
+    margin-top: var(--wa-space-xs);
+    font-size: var(--wa-font-size-s);
+  }
+
+  .author-orcid {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-2xs);
+  }
+
+  .author-email a,
+  .author-orcid a {
+    color: var(--wa-color-text-link);
+    text-decoration: none;
+  }
+
+  .author-email a:hover,
+  .author-orcid a:hover {
+    text-decoration: underline;
+  }
+
+  .license-section {
+    margin-top: var(--wa-space-l);
+    padding-top: var(--wa-space-l);
+    border-top: 1px solid var(--wa-color-surface-border);
+  }
+</style>

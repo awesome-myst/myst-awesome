@@ -1,0 +1,27 @@
+---
+/**
+ * Configurable SocialLinks component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <SocialLinksResolver socialLinks={socialLinks} />
+ * 
+ * 2. With custom component:
+ *    import CustomSocialLinks from './custom/MySocialLinks.astro';
+ *    <SocialLinksResolver component={CustomSocialLinks} socialLinks={socialLinks} />
+ */
+import DefaultSocialLinks from './frontmatter/SocialLinks.astro';
+
+interface Props {
+  component?: any;
+  socialLinks: any[];
+}
+
+const { component: CustomComponent, ...socialLinksProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...socialLinksProps} />
+) : (
+  <DefaultSocialLinks {...socialLinksProps} />
+)}

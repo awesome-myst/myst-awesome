@@ -16,9 +16,23 @@ import LaunchButton from './LaunchButton.astro';
 interface Props {
   frontmatter: ProjectAndPageFrontmatter;
   baseUrl?: string;
+  components?: {
+    authors?: any;
+    affiliations?: any;
+    licenseBadges?: any;
+    downloads?: any;
+    launchButton?: any;
+  };
 }
 
-const { frontmatter, baseUrl } = Astro.props;
+const { frontmatter, baseUrl, components } = Astro.props;
+
+// Get component overrides or use defaults
+const AuthorsComponent = components?.authors || Authors;
+const AffiliationsComponent = components?.affiliations || Affiliations;
+const LicenseBadgesComponent = components?.licenseBadges || LicenseBadges;
+const DownloadsComponent = components?.downloads || DownloadsDropdown;
+const LaunchButtonComponent = components?.launchButton || LaunchButton;
 
 // DOI helper function
 function formatDoi(doi: string) {
@@ -47,27 +61,27 @@ console.log('frontmatter', frontmatter)
     
     <!-- Authors -->
     {frontmatter.authors && (
-      <Authors authors={frontmatter.authors} affiliations={frontmatter.affiliations} />
+      <AuthorsComponent authors={frontmatter.authors} affiliations={frontmatter.affiliations} />
     )}
     
     <!-- Affiliations (if not shown with authors) -->
     {frontmatter.affiliations && !frontmatter.authors && (
-      <Affiliations affiliations={frontmatter.affiliations} />
+      <AffiliationsComponent affiliations={frontmatter.affiliations} />
     )}
     
     <!-- License Badges -->
     {frontmatter.license && (
-      <LicenseBadges iconOnly={true} license={frontmatter.license} />
+      <LicenseBadgesComponent iconOnly={true} license={frontmatter.license} />
     )}
     
     <!-- Downloads -->
     {frontmatter.downloads && (
-      <DownloadsDropdown downloads={frontmatter.downloads} />
+      <DownloadsComponent downloads={frontmatter.downloads} />
     )}
     
     <!-- Launch Button (for Jupyter/Binder) -->
     {frontmatter.thebe && (
-      <LaunchButton thebe={frontmatter.thebe} />
+      <LaunchButtonComponent thebe={frontmatter.thebe} />
     )}
   </div>
 )}

@@ -1,0 +1,27 @@
+---
+/**
+ * Configurable Affiliations component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <AffiliationsResolver affiliations={affiliations} />
+ * 
+ * 2. With custom component:
+ *    import CustomAffiliations from './custom/MyAffiliations.astro';
+ *    <AffiliationsResolver component={CustomAffiliations} affiliations={affiliations} />
+ */
+import DefaultAffiliations from './frontmatter/Affiliations.astro';
+
+interface Props {
+  component?: any;
+  affiliations: any[];
+}
+
+const { component: CustomComponent, ...affiliationsProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...affiliationsProps} />
+) : (
+  <DefaultAffiliations {...affiliationsProps} />
+)}

@@ -1,0 +1,27 @@
+---
+/**
+ * Configurable DOI component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <DOIResolver doi={doi} />
+ * 
+ * 2. With custom component:
+ *    import CustomDOI from './custom/MyDOI.astro';
+ *    <DOIResolver component={CustomDOI} doi={doi} />
+ */
+import DefaultDOI from './frontmatter/DOI.astro';
+
+interface Props {
+  component?: any;
+  doi: string;
+}
+
+const { component: CustomComponent, ...doiProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...doiProps} />
+) : (
+  <DefaultDOI {...doiProps} />
+)}

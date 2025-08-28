@@ -1,0 +1,27 @@
+---
+/**
+ * Configurable LaunchButton component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <LaunchButtonResolver thebe={thebe} />
+ * 
+ * 2. With custom component:
+ *    import CustomLaunchButton from './custom/MyLaunchButton.astro';
+ *    <LaunchButtonResolver component={CustomLaunchButton} thebe={thebe} />
+ */
+import DefaultLaunchButton from './frontmatter/LaunchButton.astro';
+
+interface Props {
+  component?: any;
+  thebe: any;
+}
+
+const { component: CustomComponent, ...launchButtonProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...launchButtonProps} />
+) : (
+  <DefaultLaunchButton {...launchButtonProps} />
+)}

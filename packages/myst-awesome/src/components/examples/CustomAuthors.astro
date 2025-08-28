@@ -1,0 +1,170 @@
+---
+/**
+ * Example: Custom Authors Component
+ * 
+ * This example shows how to create a custom authors component
+ * with a horizontal layout and profile pictures.
+ */
+interface Props {
+  authors: any[];
+  affiliations?: any[];
+}
+
+const { authors, affiliations } = Astro.props;
+
+// Helper to get affiliation by ID
+function getAffiliation(id: string) {
+  return affiliations?.find(aff => aff.id === id);
+}
+---
+
+<div class="custom-authors">
+  <h3 class="authors-title">Written by</h3>
+  <div class="authors-list">
+    {authors.map(author => (
+      <div class="author-item">
+        {author.avatar && (
+          <img 
+            src={author.avatar} 
+            alt={`${author.name} avatar`}
+            class="author-avatar"
+          />
+        )}
+        <div class="author-info">
+          <div class="author-name">{author.name}</div>
+          {author.email && (
+            <a href={`mailto:${author.email}`} class="author-email">
+              {author.email}
+            </a>
+          )}
+          {author.affiliations && (
+            <div class="author-affiliations">
+              {author.affiliations.map(affId => {
+                const affiliation = getAffiliation(affId);
+                return affiliation ? (
+                  <span class="affiliation-badge">{affiliation.name}</span>
+                ) : null;
+              })}
+            </div>
+          )}
+          {author.orcid && (
+            <a 
+              href={`https://orcid.org/${author.orcid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="author-orcid"
+              title="ORCID Profile"
+            >
+              <wa-icon library="scienceicons" name="orcid"></wa-icon>
+              ORCID
+            </a>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
+
+<style>
+  .custom-authors {
+    margin: var(--wa-space-m) 0;
+  }
+
+  .authors-title {
+    margin: 0 0 var(--wa-space-s) 0;
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-quiet);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .authors-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wa-space-l);
+  }
+
+  .author-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wa-space-s);
+    min-width: 200px;
+  }
+
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--wa-color-surface-border);
+  }
+
+  .author-info {
+    flex: 1;
+  }
+
+  .author-name {
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-normal);
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .author-email {
+    display: block;
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-link);
+    text-decoration: none;
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .author-email:hover {
+    text-decoration: underline;
+  }
+
+  .author-affiliations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wa-space-2xs);
+    margin-bottom: var(--wa-space-2xs);
+  }
+
+  .affiliation-badge {
+    background: var(--wa-color-neutral-fill-quiet);
+    color: var(--wa-color-neutral-on-quiet);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    border-radius: var(--wa-border-radius-s);
+    font-size: var(--wa-font-size-xs);
+  }
+
+  .author-orcid {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wa-space-3xs);
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-success-600);
+    text-decoration: none;
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    border: 1px solid var(--wa-color-success-200);
+    border-radius: var(--wa-border-radius-s);
+    background: var(--wa-color-success-50);
+  }
+
+  .author-orcid:hover {
+    background: var(--wa-color-success-100);
+  }
+
+  @media (max-width: 640px) {
+    .authors-list {
+      flex-direction: column;
+    }
+    
+    .author-item {
+      min-width: unset;
+    }
+  }
+</style>

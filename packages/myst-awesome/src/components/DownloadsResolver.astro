@@ -1,0 +1,27 @@
+---
+/**
+ * Configurable Downloads component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <DownloadsResolver downloads={downloads} />
+ * 
+ * 2. With custom component:
+ *    import CustomDownloads from './custom/MyDownloads.astro';
+ *    <DownloadsResolver component={CustomDownloads} downloads={downloads} />
+ */
+import DefaultDownloadsDropdown from './frontmatter/DownloadsDropdown.astro';
+
+interface Props {
+  component?: any;
+  downloads: any[];
+}
+
+const { component: CustomComponent, ...downloadsProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...downloadsProps} />
+) : (
+  <DefaultDownloadsDropdown {...downloadsProps} />
+)}

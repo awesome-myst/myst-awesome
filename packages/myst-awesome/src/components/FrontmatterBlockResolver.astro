@@ -1,0 +1,49 @@
+---
+/**
+ * Configurable FrontmatterBlock component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <FrontmatterBlockResolver frontmatter={frontmatter} />
+ * 
+ * 2. With custom component:
+ *    import CustomFrontmatter from './custom/MyFrontmatterBlock.astro';
+ *    <FrontmatterBlockResolver component={CustomFrontmatter} frontmatter={frontmatter} />
+ * 
+ * 3. With custom sub-components:
+ *    import CustomAuthors from './custom/MyAuthors.astro';
+ *    <FrontmatterBlockResolver 
+ *      frontmatter={frontmatter} 
+ *      components={{ authors: CustomAuthors }}
+ *    />
+ */
+import type { ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
+import DefaultFrontmatterBlock from './frontmatter/FrontmatterBlock.astro';
+
+interface Props {
+  component?: any;
+  frontmatter: ProjectAndPageFrontmatter;
+  baseUrl?: string;
+  components?: {
+    authors?: any;
+    affiliations?: any;
+    doi?: any;
+    downloads?: any;
+    launchButton?: any;
+    licenseBadges?: any;
+    socialLinks?: any;
+  };
+}
+
+const { 
+  component: CustomComponent, 
+  components,
+  ...frontmatterProps 
+} = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...frontmatterProps} components={components} />
+) : (
+  <DefaultFrontmatterBlock {...frontmatterProps} components={components} />
+)}

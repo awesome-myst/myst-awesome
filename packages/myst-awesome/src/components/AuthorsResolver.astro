@@ -1,0 +1,28 @@
+---
+/**
+ * Configurable Authors component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <AuthorsResolver authors={authors} affiliations={affiliations} />
+ * 
+ * 2. With custom component:
+ *    import CustomAuthors from './custom/MyAuthors.astro';
+ *    <AuthorsResolver component={CustomAuthors} authors={authors} />
+ */
+import DefaultAuthors from './frontmatter/Authors.astro';
+
+interface Props {
+  component?: any;
+  authors: any[];
+  affiliations?: any[];
+}
+
+const { component: CustomComponent, ...authorsProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...authorsProps} />
+) : (
+  <DefaultAuthors {...authorsProps} />
+)}
