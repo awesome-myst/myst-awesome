@@ -12,6 +12,23 @@ import { parse as parseYaml } from "yaml";
 import { randomUUID } from "node:crypto";
 
 /**
+ * Helper function to read baseDir from project configuration
+ */
+function getBaseDirFromConfig(configPath?: string): string {
+  try {
+    const fullPath = resolve(process.cwd(), configPath || "myst.yml");
+    if (!existsSync(fullPath)) {
+      return "";
+    }
+    const fileContent = readFileSync(fullPath, "utf-8");
+    const config = parseYaml(fileContent);
+    return config?.site?.options?.base_dir || "";
+  } catch {
+    return "";
+  }
+}
+
+/**
  * Configuration for MyST content server
  */
 export interface MystServerConfig {
@@ -25,6 +42,8 @@ export interface MystServerConfig {
   fuseConcurrency?: number;
   /** Include frontmatter.keywords in fuse.json entries (default: false) */
   includeKeywords?: boolean;
+  /** Base directory for public files (e.g. '/book') - will be read from myst.yml site.options.base_dir if not provided */
+  baseDir?: string;
 }
 
 /**
@@ -47,12 +66,16 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
     generateSearchIndex,
     fuseConcurrency = 16,
     includeKeywords = false,
+    baseDir: configBaseDir,
   } = config;
   const shouldGenerateIndex =
     typeof generateSearchIndex === "boolean" ? generateSearchIndex : true;
 
   return async () => {
     try {
+      // Get baseDir from config or read from myst.yml
+      const baseDir = configBaseDir || getBaseDirFromConfig();
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -68,15 +91,17 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
 
       const xrefData: XRef = await response.json();
 
-      // Persist a copy to public/myst.xref.json so Astro can serve it directly
+      // Persist a copy to public/[baseDir]/myst.xref.json so Astro can serve it directly
       try {
         const publicDir = resolve(process.cwd(), "public");
-        if (!existsSync(publicDir)) {
-          mkdirSync(publicDir, { recursive: true });
+        const targetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+        if (!existsSync(targetDir)) {
+          mkdirSync(targetDir, { recursive: true });
         }
-        const targetPath = join(publicDir, "myst.xref.json");
+        const targetPath = join(targetDir, "myst.xref.json");
         writeFileSync(targetPath, JSON.stringify(xrefData, null, 2), "utf-8");
-        console.log("✓ Saved myst.xref.json to public/ (", targetPath, ")");
+        const displayPath = baseDir ? `${baseDir}/myst.xref.json` : "myst.xref.json";
+        console.log(`✓ Saved myst.xref.json to public/${displayPath} (${targetPath})`);
       } catch (writeErr) {
         console.warn("Failed to write myst.xref.json to public/:", writeErr);
       }
@@ -154,10 +179,12 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
           );
 
           const publicDir = resolve(process.cwd(), "public");
-          if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
-          const fusePath = join(publicDir, "fuse.json");
+          const targetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+          if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
+          const fusePath = join(targetDir, "fuse.json");
           writeFileSync(fusePath, JSON.stringify(fuseFiltered, null), "utf-8");
-          console.log("✓ Saved fuse.json to public/ (", fusePath, ")");
+          const displayPath = baseDir ? `${baseDir}/fuse.json` : "fuse.json";
+          console.log(`✓ Saved fuse.json to public/${displayPath} (${fusePath})`);
         } catch (fuseErr) {
           console.warn("Failed to generate fuse.json:", fuseErr);
         }
@@ -181,10 +208,13 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
  * Custom loader for page references from myst.xref.json
  */
 export const createPagesLoader = (config: MystServerConfig = {}) => {
-  const { baseUrl = "http://localhost:3100", timeout = 5000 } = config;
+  const { baseUrl = "http://localhost:3100", timeout = 5000, baseDir: configBaseDir } = config;
 
   return async () => {
     try {
+      // Get baseDir from config or read from myst.yml
+      const baseDir = configBaseDir || getBaseDirFromConfig();
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -227,20 +257,21 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
 
           const pageData = await pageResponse.json();
 
-          // Persist this page JSON into public/ at ref.url
+          // Persist this page JSON into public/[baseDir]/ at ref.url
           try {
             const publicDir = resolve(process.cwd(), "public");
-            if (!existsSync(publicDir)) {
-              mkdirSync(publicDir, { recursive: true });
+            const baseTargetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+            if (!existsSync(baseTargetDir)) {
+              mkdirSync(baseTargetDir, { recursive: true });
             }
             const urlPath = String(ref.data).replace(/^\/+/, ""); // strip leading '/'
-            const targetPath = join(publicDir, urlPath);
+            const targetPath = join(baseTargetDir, urlPath);
             const targetDir = dirname(targetPath);
             if (!existsSync(targetDir)) {
               mkdirSync(targetDir, { recursive: true });
             }
             writeFileSync(targetPath, JSON.stringify(pageData, null), "utf-8");
-            // Also write a flat copy to public/${slug}.json where slug is based on ref.url
+            // Also write a flat copy to public/[baseDir]/${slug}.json where slug is based on ref.url
             {
               const urlVal = String(ref.url || "");
               let pathname = urlVal;
@@ -256,17 +287,19 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
                 ? trimmed.split("/").pop() || "index"
                 : "index";
               const slug = last;
-              const flatPath = join(publicDir, `${slug}.json`);
+              const flatPath = join(baseTargetDir, `${slug}.json`);
               writeFileSync(
                 flatPath,
                 JSON.stringify(pageData, null, 2),
                 "utf-8"
               );
             }
-            console.log(`✓ Saved page JSON to public/${urlPath}`);
+            const displayPath = baseDir ? `${baseDir}/${urlPath}` : urlPath;
+            console.log(`✓ Saved page JSON to public/${displayPath}`);
           } catch (writeErr) {
+            const displayPath = baseDir ? `${baseDir}/` : "";
             console.warn(
-              `Failed to write page JSON for ${ref.url} to public/:`,
+              `Failed to write page JSON for ${ref.url} to public/${displayPath}:`,
               writeErr
             );
           }
@@ -365,18 +398,21 @@ export const createProjectFrontmatterLoader = (config: ProjectConfig = {}) => {
           const faviconSourcePath = resolve(mystConfigDir, faviconRelativePath);
 
           if (existsSync(faviconSourcePath)) {
-            // Create public directory in the same directory as myst.yml
+            // Create public directory (with baseDir if specified) in the same directory as myst.yml
             const publicDir = join(mystConfigDir, "public");
-            if (!existsSync(publicDir)) {
-              mkdirSync(publicDir, { recursive: true });
+            const baseDir = frontmatter.site?.options?.base_dir || "";
+            const targetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+            if (!existsSync(targetDir)) {
+              mkdirSync(targetDir, { recursive: true });
             }
 
-            // Copy favicon to public directory with basename
+            // Copy favicon to public/[baseDir] directory with basename
             const faviconBasename = basename(faviconRelativePath);
-            const faviconTargetPath = join(publicDir, faviconBasename);
+            const faviconTargetPath = join(targetDir, faviconBasename);
             copyFileSync(faviconSourcePath, faviconTargetPath);
+            const displayPath = baseDir ? `${baseDir}/${faviconBasename}` : faviconBasename;
             console.log(
-              `✓ Copied favicon: ${faviconRelativePath} → public/${faviconBasename}`
+              `✓ Copied favicon: ${faviconRelativePath} → public/${displayPath}`
             );
           } else {
             console.warn(`⚠ Favicon file not found: ${faviconSourcePath}`);

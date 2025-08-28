@@ -10,6 +10,9 @@ import {
   pageSchema,
   projectFrontmatterSchema,
 } from "@awesome-myst/myst-zod";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { parse as parseYaml } from "yaml";
 
 /**
  * Configuration for all MyST collections
@@ -58,6 +61,20 @@ export const createProjectFrontmatterCollection = (
  */
 export const createMystCollections = (config: MystCollectionsConfig = {}) => {
   const { server = {}, project = {} } = config;
+
+  // Read baseDir from project config if not explicitly provided in server config
+  if (!server.baseDir && project.configPath) {
+    try {
+      const fullPath = resolve(process.cwd(), project.configPath);
+      if (existsSync(fullPath)) {
+        const fileContent = readFileSync(fullPath, "utf-8");
+        const config = parseYaml(fileContent);
+        server.baseDir = config?.site?.options?.base_dir || "";
+      }
+    } catch {
+      // Ignore errors and continue without baseDir
+    }
+  }
 
   return {
     mystXref: createMystXrefCollection(server),

@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("fuse.json generation", () => {
-  test("/fuse.json exists and has expected shape", async ({ request }) => {
-    const res = await request.get("/fuse.json");
+  test("/book/fuse.json exists and has expected shape", async ({ request }) => {
+    const res = await request.get("/book/fuse.json");
     expect(res.ok()).toBeTruthy();
     const data = await res.json();
 

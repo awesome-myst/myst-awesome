@@ -199,8 +199,15 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
   const ensureIndex = async () => {
     if (fuse) return;
     try {
-      const res = await fetch('/fuse.json', { cache: 'force-cache' });
+      const baseDir = getBaseDir();
+      const fuseUrl = baseDir ? `${baseDir}/fuse.json` : '/fuse.json';
+      console.log(`SearchDialog: Loading fuse index from ${fuseUrl}`);
+      const res = await fetch(fuseUrl, { cache: 'force-cache' });
+      if (!res.ok) {
+        throw new Error(`Failed to fetch fuse.json: ${res.status} ${res.statusText}`);
+      }
       docs = await res.json();
+      console.log(`SearchDialog: Loaded ${docs.length} search entries`);
       // Configure keys with sensible weights
       const options = {
         includeScore: true,
@@ -217,9 +224,9 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       };
       fuse = new Fuse(docs, options);
     } catch (e) {
-      console.warn('Search index load failed:', e);
-  } finally {
-  }
+      console.error('SearchDialog: Failed to load search index:', e);
+      // You might want to show a user-friendly error message here
+    }
   };
 
   /** @param {any[]} items */
