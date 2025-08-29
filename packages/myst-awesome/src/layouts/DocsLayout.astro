@@ -65,6 +65,12 @@ if (logoPath) {
   }
 }
 
+// Dynamic import for thumbnails
+let thumbnailImage: ImageMetadata | undefined;
+const thumbnailImages = import.meta.glob<{ default: ImageMetadata }>([
+  '/public/**/thumbnails/**/*.{jpeg,jpg,png,gif,svg,webp}'
+], { eager: true });
+
 // Helper function to generate URL from TOC entry
 function getEntryUrl(entry: Entry): string | null {
   if ('file' in entry) {
@@ -179,7 +185,28 @@ const {
 
 const editUrl_ = editUrl || frontmatter?.edit_url;
 
+// Find thumbnail image if frontmatter.thumbnail is defined
+if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
+  // Normalize thumbnail path - ensure it starts with /
+  const thumbnailPath = frontmatter.thumbnail.startsWith('/')
+    ? frontmatter.thumbnail
+    : `/${frontmatter.thumbnail}`;
 
+  // Try exact path match first
+  if (thumbnailImages[thumbnailPath]) {
+    thumbnailImage = thumbnailImages[thumbnailPath].default;
+  } else {
+    // If not found, search by filename in any of the thumbnail directories
+    const filename = thumbnailPath.split('/').pop();
+    const matchingThumbnail = Object.entries(thumbnailImages).find(([path]) =>
+      path.endsWith(`/${filename}`) || path === `/${filename}`
+    );
+
+    if (matchingThumbnail) {
+      thumbnailImage = matchingThumbnail[1].default;
+    }
+  }
+}
 ---
 
 <BasePage
@@ -324,16 +351,28 @@ const editUrl_ = editUrl || frontmatter?.edit_url;
           <h1 class="article-title">{title}</h1>
         )}
         {description && (
-          <p class="article-description">
-            {description}
-          </p>
+          <div class="article-description-container">
+            {thumbnailImage && (
+              <div class="article-thumbnail">
+                <Image
+                  src={thumbnailImage}
+                  alt={frontmatter?.title || title || "Page thumbnail"}
+                  height={96}
+                  class="thumbnail-image"
+                />
+              </div>
+            )}
+            <p class="article-description">
+              {description}
+            </p>
+          </div>
         )}
 
         <div class="article-meta">
           {showFrontmatterBlock && frontmatter && (
-            <FrontmatterBlockResolver 
+            <FrontmatterBlockResolver
               component={frontmatterComponent}
-              frontmatter={frontmatter} 
+              frontmatter={frontmatter}
               baseUrl={`/${baseDir}/scienceicons`}
               components={frontmatterComponents}
             />
@@ -702,6 +741,29 @@ const editUrl_ = editUrl || frontmatter?.edit_url;
     color: var(--wa-color-text-quiet);
     margin: 0 0 var(--wa-space-m) 0;
     line-height: var(--wa-line-height-relaxed);
+  }
+
+  .article-description-container {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wa-space-m);
+    margin-bottom: var(--wa-space-m);
+  }
+
+  .article-thumbnail {
+    flex-shrink: 0;
+  }
+
+  .thumbnail-image {
+    border-radius: var(--wa-border-radius-m);
+    box-shadow: var(--wa-shadow-s);
+    display: block;
+  }
+
+  /* When no thumbnail, description keeps its original margin */
+  .article-description-container .article-description {
+    margin-bottom: 0;
+    flex: 1;
   }
 
   .article-meta {
