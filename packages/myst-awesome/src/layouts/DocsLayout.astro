@@ -33,7 +33,8 @@ if (logoPath) {
     const images = import.meta.glob<{ default: ImageMetadata }>([
       '/*.{jpeg,jpg,png,gif,svg,webp}',
       '/src/assets/**/*.{jpeg,jpg,png,gif,svg,webp}',
-      '/public/**/*.{jpeg,jpg,png,gif,svg,webp}',
+      '/public/*.{jpeg,jpg,png,gif,svg,webp}',
+      '/public/assets/**/*.{jpeg,jpg,png,gif,svg,webp}',
       '/assets/**/*.{jpeg,jpg,png,gif,svg,webp}',
       '/docs/assets/**/*.{jpeg,jpg,png,gif,svg,webp}',
       '/images/**/*.{jpeg,jpg,png,gif,svg,webp}',
@@ -177,6 +178,8 @@ const {
 } = Astro.props;
 
 const editUrl_ = editUrl || frontmatter?.edit_url;
+
+
 ---
 
 <BasePage
@@ -331,7 +334,7 @@ const editUrl_ = editUrl || frontmatter?.edit_url;
             <FrontmatterBlockResolver 
               component={frontmatterComponent}
               frontmatter={frontmatter} 
-              baseUrl={`${baseDir}/scienceicons`}
+              baseUrl={`/${baseDir}/scienceicons`}
               components={frontmatterComponents}
             />
           )}

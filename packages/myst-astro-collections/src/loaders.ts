@@ -12,6 +12,73 @@ import { parse as parseYaml } from "yaml";
 import { randomUUID } from "node:crypto";
 
 /**
+ * Helper function to fetch and save HTTP thumbnails to public/thumbnails/
+ * Exported for testing purposes
+ */
+export async function processThumbnails(pageData: any, baseDir: string) {
+  if (!pageData?.frontmatter) return;
+
+  const frontmatter = pageData.frontmatter;
+  const publicDir = resolve(process.cwd(), "public");
+  const baseTargetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+  const thumbnailsDir = join(baseTargetDir, "thumbnails");
+
+  // Process thumbnail field
+  if (frontmatter.thumbnail && typeof frontmatter.thumbnail === "string") {
+    try {
+      if (!existsSync(thumbnailsDir)) {
+        mkdirSync(thumbnailsDir, { recursive: true });
+      }
+
+      const filename = basename(frontmatter.thumbnail);
+      const targetPath = join(thumbnailsDir, filename);
+
+      // Fetch the image
+      const response = await fetch(new URL(frontmatter.thumbnail, 'http://localhost:3100'));
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        writeFileSync(targetPath, new Uint8Array(buffer));
+
+        // Update frontmatter to point to local file
+        const newPath = baseDir ? `${baseDir}/thumbnails/${filename}` : `/thumbnails/${filename}`;
+        frontmatter.thumbnail = newPath;
+
+        console.log(`✓ Downloaded thumbnail: ${frontmatter.thumbnail} → public/${baseDir ? `${baseDir}/` : ""}thumbnails/${filename}`);
+      }
+    } catch (error) {
+      console.warn(`Failed to download thumbnail: ${frontmatter.thumbnail}`, error);
+    }
+  }
+
+  // Process thumbnailOptimized field
+  if (frontmatter.thumbnailOptimized && typeof frontmatter.thumbnailOptimized === "string") {
+    try {
+      if (!existsSync(thumbnailsDir)) {
+        mkdirSync(thumbnailsDir, { recursive: true });
+      }
+
+      const filename = basename(frontmatter.thumbnailOptimized);
+      const targetPath = join(thumbnailsDir, filename);
+
+      // Fetch the image
+      const response = await fetch(new URL(frontmatter.thumbnailOptimized, 'http://localhost:3100'));
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        writeFileSync(targetPath, new Uint8Array(buffer));
+
+        // Update frontmatter to point to local file
+        const newPath = baseDir ? `${baseDir}/thumbnails/${filename}` : `/thumbnails/${filename}`;
+        frontmatter.thumbnailOptimized = newPath;
+
+        console.log(`✓ Downloaded thumbnailOptimized: ${frontmatter.thumbnailOptimized} → public/${baseDir ? `${baseDir}/` : ""}thumbnails/${filename}`);
+      }
+    } catch (error) {
+      console.warn(`Failed to download thumbnailOptimized: ${frontmatter.thumbnailOptimized}`, error);
+    }
+  }
+}
+
+/**
  * Helper function to read baseDir from project configuration
  */
 function getBaseDirFromConfig(configPath?: string): string {
@@ -75,7 +142,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
     try {
       // Get baseDir from config or read from myst.yml
       const baseDir = configBaseDir || getBaseDirFromConfig();
-      
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -214,7 +281,7 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
     try {
       // Get baseDir from config or read from myst.yml
       const baseDir = configBaseDir || getBaseDirFromConfig();
-      
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -256,6 +323,9 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
           }
 
           const pageData = await pageResponse.json();
+
+          // Process HTTP thumbnails - fetch and save them locally
+          await processThumbnails(pageData, baseDir);
 
           // Persist this page JSON into public/[baseDir]/ at ref.url
           try {
