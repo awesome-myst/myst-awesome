@@ -135,6 +135,9 @@ importers:
       scienceicons:
         specifier: ^0.0.13
         version: 0.0.13
+      sharp:
+        specifier: ^0.34.3
+        version: 0.34.3
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
