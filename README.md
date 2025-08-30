@@ -1,19 +1,16 @@
-# MyST Awesome Theme
+# MyST Awesome
 
-A modern, responsive documentation theme built with [Astro](https://astro.build) and [Web Awesome](https://webawesome.com) components. Designed for technical documentation with excellent typography, accessibility, and user experience.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/awesome-myst/myst-awesome)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/awesome-myst/myst-awesome)
+A modern, responsive MyST-MD theme built with [Web Awesome](https://webawesome.com) components. Designed for scientific communication with excellent typography, accessibility, and user experience.
 
 ## ✨ Features
 
-- **📝 MyST Integration**: Seamless integration with MyST Markdown
-- **🎨 Multiple Themes**: Choose from 10 built-in Web Awesome themes
+- **📝 MyST Integration**: Seamless integration with [MyST Markdown](https://mystmd.org) for scientific communication
+- **🎨 Multiple Themes**: Choose from built-in, customizable Web Awesome themes
 - **🌓 Dark Mode**: Automatic and manual light/dark mode switching
 - **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile
 - **♿ Accessible**: WCAG 2.1 AA compliant with keyboard navigation
 - **⚡ Fast Performance**: Optimized for speed with Astro's static generation
-- **🔍 Search Ready**: Built-in search functionality support
+- **🔍 Search Ready**: Built-in fuzzy search functionality 
 - **🔧 Component Overrides**: Customize any component with your own implementations
 
 ## 🚀 Quick Start
@@ -37,7 +34,7 @@ pnpm dev
 pnpm dev-docs
 ```
 
-### Workspace Structure
+### 🏗️ Workspace Structure
 
 ```
 ├── packages/
@@ -51,51 +48,6 @@ pnpm dev-docs
 │   └── package.json
 ├── pnpm-workspace.yaml         # Workspace configuration
 └── package.json                # Root workspace package
-```
-
-### Basic Usage
-
-```astro
----
-// src/pages/my-docs.astro
-import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
----
-
-<DocsLayout 
-  title="My Documentation"
-  description="A guide to using MyST Awesome Theme"
->
-  <h1>Welcome to my documentation!</h1>
-  <p>Start writing your content here.</p>
-</DocsLayout>
-```
-
-## 🏗️ Project Structure
-
-```text
-/
-├── public/              # Static assets
-├── src/
-│   ├── components/      # Reusable Astro components
-│   │   ├── NavigationMenu.astro
-│   │   ├── TableOfContents.astro
-│   │   ├── ThemeControls.astro
-│   │   └── *Resolver.astro     # Component override resolvers
-│   ├── layouts/         # Page layouts
-│   │   ├── BasePage.astro      # Root layout with Web Awesome
-│   │   ├── DocsLayout.astro    # Documentation layout
-│   │   └── ContentLayout.astro # Content/blog layout
-│   ├── custom/          # Custom component examples
-│   │   ├── CustomNavigationMenu.astro
-│   │   └── CustomTableOfContents.astro
-│   ├── lib/             # Utilities and helpers
-│   │   └── getComponent.ts     # Component resolver utilities
-│   └── pages/           # Page routes
-├── docs/                # MyST documentation content
-│   ├── myst.yml         # MyST configuration
-│   └── *.md             # Markdown content files
-├── tests/               # Playwright tests
-└── astro.config.mjs     # Astro configuration with theme overrides
 ```
 
 ## 🎨 Component Override System
@@ -175,23 +127,14 @@ pnpm start-myst            # Headless MyST server only
 pnpm test                  # Playwright tests (requires both servers)
 ```
 
-**Note**: Tests require both Astro (:4321) and MyST (:3100) servers running.
-
 ## 🎨 Theming
 
 The theme leverages Web Awesome's comprehensive theming system:
 
 ### Available Themes
+
 - `default` - Clean, professional appearance
 - `awesome` - Vibrant colors and modern styling  
-- `shoelace` - Familiar Shoelace-inspired interface
-- `brutalist` - Bold, high-contrast design
-- `glossy` - Smooth, polished appearance
-- `matter` - Material Design inspired
-- `mellow` - Soft, gentle color palette
-- `playful` - Fun, energetic styling
-- `premium` - Sophisticated, elegant design
-- `tailspin` - Dynamic, movement-focused theme
 
 ### Theme Usage
 
@@ -272,7 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Live Demo](https://myst-awesome.netlify.app)
+<!-- - [Live Demo](https://myst-awesome.netlify.app) -->
 - [Documentation](./docs/)
 - [Component Override Guide](./docs/COMPONENT_OVERRIDES.md)
 - [Web Awesome Docs](https://webawesome.com/docs/)
