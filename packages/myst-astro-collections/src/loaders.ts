@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 import type { XRef, ProjectFrontmatter } from "@awesome-myst/myst-zod";
 import PQueue from "p-queue";
 import {

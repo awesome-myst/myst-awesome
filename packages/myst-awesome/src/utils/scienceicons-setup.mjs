@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 /**
  * Utility to setup scienceicons for docs with base_dir support
  */

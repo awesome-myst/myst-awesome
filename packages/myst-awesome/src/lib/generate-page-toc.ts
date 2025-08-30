@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 import type { Page, Node, Heading, Parent } from "@awesome-myst/myst-zod";
 
 export type TocItem = {

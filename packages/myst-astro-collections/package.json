@@ -33,8 +33,8 @@
     "content-collections",
     "documentation"
   ],
-  "author": "Matt McCormick",
-  "license": "Apache-2.0",
+  "author": "Fideus Labs LLC",
+  "license": "MIT",
   "dependencies": {
     "@awesome-myst/myst-zod": "^0.6.0",
     "@types/node": "^24.2.0",

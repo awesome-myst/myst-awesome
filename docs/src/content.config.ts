@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 import { createMystCollections } from "@awesome-myst/myst-astro-collections";
 
 // Create MyST collections with custom configuration

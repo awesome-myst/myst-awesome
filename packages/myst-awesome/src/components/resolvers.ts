@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 // Resolver components for easy importing
 export { default as FrontmatterBlockResolver } from './FrontmatterBlockResolver.astro';
 export { default as AuthorsResolver } from './AuthorsResolver.astro';

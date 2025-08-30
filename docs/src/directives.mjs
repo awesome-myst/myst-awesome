@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 import { u } from 'unist-builder';
 import { mystParse } from 'myst-parser';
 import { defaultDirectives } from 'myst-directives';

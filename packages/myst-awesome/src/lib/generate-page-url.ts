@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 /** Helper function to generate URL from page ID based on folders option */
 export function generatePageUrl(
   pageId: string,

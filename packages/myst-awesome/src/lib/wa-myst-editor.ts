@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { mystParse } from 'myst-parser';
 import { renderMystAst } from './render-myst-ast.js';

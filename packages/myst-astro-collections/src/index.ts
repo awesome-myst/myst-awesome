@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 // Re-export everything from loaders and collections
 export * from "./loaders.js";
 export * from "./collections.js";

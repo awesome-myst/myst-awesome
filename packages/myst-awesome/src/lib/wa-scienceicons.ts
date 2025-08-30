@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
 /**
  * Register scienceicons as a custom icon library for Web Awesome
  * 

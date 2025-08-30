@@ -10,8 +10,8 @@
     "myst-content-server": "myst start --headless",
     "test": "playwright test --config=tests/playwright.config.ts"
   },
-  "author": "",
-  "license": "Apache-2.0",
+  "author": "Fideus Labs LLC",
+  "license": "MIT",
   "dependencies": {
     "@awesome-myst/myst-astro-collections": "workspace:*",
     "@awesome-myst/myst-awesome": "workspace:*",
