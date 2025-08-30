@@ -1,10 +1,14 @@
 # MyST Awesome
 
+⚠️ **Alpha State**: This project is currently in alpha development. Features and APIs may change.
+
 A modern, responsive MyST-MD theme built with [Web Awesome](https://webawesome.com) components. Designed for scientific communication with excellent typography, accessibility, and user experience.
 
 ## ✨ Features
 
 - **📝 MyST Integration**: Seamless integration with [MyST Markdown](https://mystmd.org) for scientific communication
+- **🎨 Furo-Inspired Layout**: Clean, modern documentation layout inspired by the popular Furo Sphinx theme
+- **🌐 Static-First Deployment**: Optimized for sustainable, easy hosting on CDNs with minimal infrastructure requirements
 - **🎨 Multiple Themes**: Choose from built-in, customizable Web Awesome themes
 - **🌓 Dark Mode**: Automatic and manual light/dark mode switching
 - **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile
@@ -34,65 +38,32 @@ pnpm dev
 pnpm dev-docs
 ```
 
+For detailed setup instructions and customization options, see our comprehensive [documentation](./docs/).
+
 ### 🏗️ Workspace Structure
 
 ```
 ├── packages/
-│   └── myst-awesome/     # Main theme package
-│       ├── src/                # Astro components and layouts
-│       ├── tests/              # Playwright tests
+│   ├── myst-awesome/           # Main Astro theme package
+│   │   ├── src/                    # Astro components and layouts
+│   │   ├── tests/                  # Playwright tests for theme
+│   │   └── package.json
+│   └── myst-astro-collections/     # MyST to Astro content collections
+│       ├── src/                    # Collection loaders and schemas
+│       ├── tests/                  # Collection tests
 │       └── package.json
-├── docs/                       # MyST documentation content
+├── docs/                           # MyST documentation content
+│   ├── authoring/                  # Writing guides and examples
+│   ├── components/                 # Component documentation
+│   ├── customization/              # Theming and customization docs
+│   ├── src/                        # Astro pages and content config
+│   ├── tests/                      # Playwright tests for docs
 │   ├── index.md
 │   ├── myst.yml
 │   └── package.json
-├── pnpm-workspace.yaml         # Workspace configuration
-└── package.json                # Root workspace package
+├── pnpm-workspace.yaml             # Workspace configuration
+└── package.json                    # Root workspace package
 ```
-
-## 🎨 Component Override System
-
-One of the most powerful features of MyST Awesome Theme is the ability to override any component with your own custom implementations while maintaining full compatibility.
-
-### Quick Example
-
-```astro
----
-// Create a custom navigation component
-import DocsLayout from 'myst-awesome/layouts/DocsLayout.astro';
-import NavigationMenuResolver from 'myst-awesome/components/NavigationMenuResolver.astro';
-import MyCustomNav from './custom/MyCustomNav.astro';
----
-
-<DocsLayout title="Custom Navigation Demo">
-  <!-- Use custom navigation instead of default -->
-  <NavigationMenuResolver 
-    slot="navigation"
-    component={MyCustomNav}
-    items={navItems}
-  />
-  
-  <h1>Page with custom navigation!</h1>
-</DocsLayout>
-```
-
-### Available Override Points
-
-- **NavigationMenuResolver** - Sidebar navigation component
-- **TableOfContentsResolver** - Table of contents component  
-- **ThemeControlsResolver** - Theme and color scheme controls
-- **DocsLayoutResolver** - Entire page layout
-
-### Creating Custom Components
-
-1. **Study the Interface**: Look at the default component's props and structure
-2. **Create Your Component**: Build a replacement with the same interface
-3. **Use the Resolver**: Pass your component to the appropriate resolver
-4. **Test Thoroughly**: Ensure functionality, accessibility, and responsiveness
-
-See the [Component Override Guide](./docs/COMPONENT_OVERRIDES.md) for detailed documentation and examples.
-
-## 🧞 Commands
 
 ## 📚 Available Commands
 
@@ -127,62 +98,6 @@ pnpm start-myst            # Headless MyST server only
 pnpm test                  # Playwright tests (requires both servers)
 ```
 
-## 🎨 Theming
-
-The theme leverages Web Awesome's comprehensive theming system:
-
-### Available Themes
-
-- `default` - Clean, professional appearance
-- `awesome` - Vibrant colors and modern styling  
-
-### Theme Usage
-
-```astro
----
-// Set theme in layout
----
-<DocsLayout theme="awesome" colorScheme="auto">
-  <!-- Your content -->
-</DocsLayout>
-```
-
-Or use the built-in theme controls:
-
-```astro
----
-import ThemeControls from 'myst-awesome/components/ThemeControls.astro';
----
-
-<ThemeControls 
-  showThemeSelector={true}
-  showColorSchemeSelector={true}
-  size="small"
-/>
-```
-
-## 🧪 Examples and Demos
-
-- **[Component Override Test](/component-override-test)** - Live demo showcasing custom components
-- **[Documentation Example](/docs-example)** - Full documentation layout
-- **[Blog Example](/blog-example)** - Content/blog layout showcase
-
-## 🏗️ Architecture
-
-The theme uses a **dual build system**:
-
-- **Astro** for theme components and layouts (`src/`)
-- **MyST** for content compilation (`docs/`)
-
-Key architectural decisions:
-
-- **Slot-Based Layouts**: Web Awesome's page component pattern with named slots
-- **Component Hydration**: Web Awesome components imported in `<script>` blocks
-- **Theme System**: CSS classes (`wa-theme-{name}`) and custom properties
-- **Override System**: Resolver components for flexible customization
-
-See [Copilot Instructions](./.github/copilot-instructions.md) for detailed development patterns.
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -202,6 +117,8 @@ See [Copilot Instructions](./.github/copilot-instructions.md) for detailed devel
 - Maintain accessibility standards (WCAG 2.1 AA)
 - Test on multiple screen sizes and themes
 
+See the [Architecture Overview](./docs/components/architecture.md) and [Component Overrides](./docs/components/overrides.md) documentation for detailed development patterns.
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -217,7 +134,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <!-- - [Live Demo](https://myst-awesome.netlify.app) -->
 - [Documentation](./docs/)
-- [Component Override Guide](./docs/COMPONENT_OVERRIDES.md)
+- [Component Overrides](./docs/components/overrides.md)
+- [Architecture Overview](./docs/components/architecture.md)
+- [Theming Guide](./docs/customization/themes.md)
 - [Web Awesome Docs](https://webawesome.com/docs/)
 - [Astro Docs](https://docs.astro.build/)
 - [MyST Docs](https://mystmd.org/guide/)
