@@ -12,12 +12,12 @@
 
 ## Critical Workflows
 - From repo root:
-  - `pnpm dev` – Theme dev server (:4321)
-  - `pnpm dev-docs` – Starts MyST (:3100) and Astro for docs
+  - `pnpm dev` – Theme dev server (:4322)
+  - `pnpm dev-docs` – Starts MyST (:3100) and Astro for docs (:4321)
   - `pnpm start-myst` – MyST headless server only
-  - `pnpm build` – Build collections + theme
+  - `pnpm build` – Build collections + theme + docs (sequential)
   - `pnpm build-collections` – Build `myst-astro-collections` only
-  - `pnpm test` – Playwright tests (requires :4321 and :3100)
+  - `pnpm test` – All Playwright tests (requires :4322 and :3100)
 - Ignore older Deno task docs; this repo uses pnpm.
 
 ## Content Collections (MyST → Astro)
@@ -31,6 +31,26 @@
   ```
   - For search index generation, set `server.generateSearchIndex: true`.
 - Usage in Astro: `await getCollection('pages')`, `(await getCollection('projectFrontmatter'))[0]`.
+- **BaseDir support**: Set `site.options.base_dir` in `myst.yml` for subdirectory deployment. Collections loader auto-copies files to `public/${baseDir}/`.
+
+## Resolver Pattern (Component Overrides)
+- Every major component has a `*Resolver.astro` that enables customization:
+  ```astro
+  <DocsLayout 
+    frontmatterComponent={CustomFrontmatter}
+    frontmatterComponents={{ authors: CustomAuthors }}
+    frontmatter={frontmatter}
+  />
+  ```
+- See `packages/myst-awesome/src/components/FRONTMATTER_RESOLVERS.md` for patterns.
+- Default components in `frontmatter/` directory; resolvers check for custom overrides first.
+
+## Image & Asset Handling
+- **Logos**: `import.meta.glob` searches multiple directories from `logoPath` in project config.
+- **Thumbnails**: Auto-processed from HTTP URLs in frontmatter; saved to `public/${baseDir}/thumbnails/`.
+  - DocsLayout displays thumbnails (96px height) left of description using Astro Image.
+  - Collection loader (`processThumbnails`) downloads HTTP images during build.
+- **Assets**: Use Astro Image component for optimization; avoid direct public/ references in src.
 
 ## Astro + Web Awesome Conventions
 - Import Web Awesome CSS once in `BasePage.astro` for bundling:
@@ -97,5 +117,5 @@
   - Increase `webServer.timeout` or `use.baseURL` as needed per config.
 
 ## Versions
-- pnpm 9.x, Astro 5.x (TS strict), Web Awesome 3.x beta, MyST 1.3.x
+- pnpm 10.x, Astro 5.x (TS strict), Web Awesome 3.x beta, MyST 1.3.x
 - Workspace deps: `docs` consumes `myst-awesome` via `workspace:*`
