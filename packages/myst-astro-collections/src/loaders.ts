@@ -108,14 +108,12 @@ export interface MystServerConfig {
   timeout?: number;
   /** Generate a public/fuse.json search index from myst.xref.json (default: true) */
   generateSearchIndex?: boolean;
-  /** Concurrency for fetching page JSON when generating fuse.json (default: 16) */
-  fuseConcurrency?: number;
+  /** Concurrency for fetching page data (used for both fuse.json generation and page loading) (default: 12) */
+  pageConcurrency?: number;
   /** Include frontmatter.keywords in fuse.json entries (default: false) */
   includeKeywords?: boolean;
   /** Base directory for public files (e.g. '/book') - will be read from myst.yml site.options.base_dir if not provided */
   baseDir?: string;
-  /** Concurrency for fetching page data in createPagesLoader (default: 8) */
-  pageFetchConcurrency?: number;
 }
 
 /**
@@ -136,7 +134,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
     baseUrl = "http://localhost:3100",
     timeout = 5000,
     generateSearchIndex,
-    fuseConcurrency = 16,
+    pageConcurrency = 12,
     includeKeywords = false,
     baseDir: configBaseDir,
   } = config;
@@ -240,7 +238,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
           });
 
           const queue = new PQueue({
-            concurrency: Math.max(1, Math.floor(fuseConcurrency || 1)),
+            concurrency: Math.max(1, Math.floor(pageConcurrency || 1)),
           });
           const fuseEntries = await queue.addAll(pageTasks);
           // Filter out entries missing essential fields (url and kind)
@@ -284,7 +282,7 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
     baseUrl = "http://localhost:3100",
     timeout = 5000,
     baseDir: configBaseDir,
-    pageFetchConcurrency = 8,
+    pageConcurrency = 12,
   } = config;
 
   return async () => {
@@ -314,7 +312,7 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
 
       // Use p-queue to control concurrency for page fetches
       const PQueue = (await import('p-queue')).default;
-      const queue = new PQueue({ concurrency: Math.max(1, Math.floor(pageFetchConcurrency)) });
+      const queue = new PQueue({ concurrency: Math.max(1, Math.floor(pageConcurrency)) });
 
       // Each task fetches and processes a page
       const pageTasks = pageReferences.map((ref) => async () => {
