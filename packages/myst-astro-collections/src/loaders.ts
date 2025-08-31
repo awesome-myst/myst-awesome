@@ -18,7 +18,7 @@ import { randomUUID } from "node:crypto";
  * Helper function to fetch and save HTTP thumbnails to public/thumbnails/
  * Exported for testing purposes
  */
-export async function processThumbnails(pageData: any, baseDir: string) {
+export async function processThumbnails(pageData: any, baseDir: string, baseUrl: string = "http://localhost:3100") {
   if (!pageData?.frontmatter) return;
 
   const frontmatter = pageData.frontmatter;
@@ -37,7 +37,7 @@ export async function processThumbnails(pageData: any, baseDir: string) {
       const targetPath = join(thumbnailsDir, filename);
 
       // Fetch the image
-      const response = await fetch(new URL(frontmatter.thumbnail, 'http://localhost:3100'));
+      const response = await fetch(new URL(frontmatter.thumbnail, baseUrl));
       if (response.ok) {
         const buffer = await response.arrayBuffer();
         writeFileSync(targetPath, new Uint8Array(buffer));
@@ -64,7 +64,7 @@ export async function processThumbnails(pageData: any, baseDir: string) {
       const targetPath = join(thumbnailsDir, filename);
 
       // Fetch the image
-      const response = await fetch(new URL(frontmatter.thumbnailOptimized, 'http://localhost:3100'));
+      const response = await fetch(new URL(frontmatter.thumbnailOptimized, baseUrl));
       if (response.ok) {
         const buffer = await response.arrayBuffer();
         writeFileSync(targetPath, new Uint8Array(buffer));
@@ -328,7 +328,7 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
           const pageData = await pageResponse.json();
 
           // Process HTTP thumbnails - fetch and save them locally
-          await processThumbnails(pageData, baseDir);
+          await processThumbnails(pageData, baseDir, baseUrl);
 
           // Persist this page JSON into public/[baseDir]/ at ref.url
           try {
