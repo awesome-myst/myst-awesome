@@ -114,6 +114,8 @@ export interface MystServerConfig {
   includeKeywords?: boolean;
   /** Base directory for public files (e.g. '/book') - will be read from myst.yml site.options.base_dir if not provided */
   baseDir?: string;
+  /** Concurrency for fetching page data in createPagesLoader (default: 8) */
+  pageFetchConcurrency?: number;
 }
 
 /**
@@ -278,7 +280,12 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
  * Custom loader for page references from myst.xref.json
  */
 export const createPagesLoader = (config: MystServerConfig = {}) => {
-  const { baseUrl = "http://localhost:3100", timeout = 5000, baseDir: configBaseDir } = config;
+  const {
+    baseUrl = "http://localhost:3100",
+    timeout = 5000,
+    baseDir: configBaseDir,
+    pageFetchConcurrency = 8,
+  } = config;
 
   return async () => {
     try {
@@ -305,8 +312,12 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
         (ref) => ref.kind === "page"
       );
 
-      // Fetch the actual page data for each reference
-      const pageDataPromises = pageReferences.map(async (ref) => {
+      // Use p-queue to control concurrency for page fetches
+      const PQueue = (await import('p-queue')).default;
+      const queue = new PQueue({ concurrency: Math.max(1, Math.floor(pageFetchConcurrency)) });
+
+      // Each task fetches and processes a page
+      const pageTasks = pageReferences.map((ref) => async () => {
         try {
           // Validate that ref has required properties
           if (!ref.url || !ref.data) {
@@ -333,11 +344,11 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
           // Persist this page JSON into public/[baseDir]/ at ref.url
           try {
             const publicDir = resolve(process.cwd(), "public");
-            const baseTargetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/, "")) : publicDir;
+            const baseTargetDir = baseDir ? join(publicDir, baseDir.replace(/^\/+/ , "")) : publicDir;
             if (!existsSync(baseTargetDir)) {
               mkdirSync(baseTargetDir, { recursive: true });
             }
-            const urlPath = String(ref.data).replace(/^\/+/, ""); // strip leading '/'
+            const urlPath = String(ref.data).replace(/^\/+/ , ""); // strip leading '/'
             const targetPath = join(baseTargetDir, urlPath);
             const targetDir = dirname(targetPath);
             if (!existsSync(targetDir)) {
@@ -387,8 +398,8 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
         }
       });
 
-      // Wait for all page data to be fetched
-      const pageDataResults = await Promise.all(pageDataPromises);
+      // Run all page tasks with concurrency
+      const pageDataResults = await queue.addAll(pageTasks);
 
       // Filter out any null results and return
       const validPages = pageDataResults.filter((data) => data !== null);
