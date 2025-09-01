@@ -10,7 +10,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
 ---
 
 <div class="search-launcher">
-  <wa-input class="nav-search" placeholder="Search" size="medium">
+  <wa-input class="nav-search" placeholder="Search" size="medium" type="text" appearance="outlined">
     <wa-icon slot="start" name="magnifying-glass"></wa-icon>
     <kbd slot="end" class="search-shortcut">/</kbd>
   </wa-input>
