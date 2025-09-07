@@ -2,13 +2,25 @@
 // SPDX-FileCopyrightText: 2025 Fideus Labs LLC
 
 import { LitElement, html, css, type PropertyValues } from 'lit';
-import { mystParse } from 'myst-parser';
-import { renderMystAst } from './render-myst-ast.js';
 import type { Root } from '@awesome-myst/myst-zod';
 
 // Import Web Awesome components
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import '@awesome.me/webawesome/dist/components/card/card.js';
+
+/**
+ * A MyST Markdown editor with live preview using Web Awesome components.
+ * 
+ * @element wa-myst-editor
+ * 
+ * @attr {string} value - The MyST markdown content
+ * @attr {string} placeholder - Placeholder text for the editor
+ * @attr {boolean} readonly - Whether the editor is read-only
+ * @attr {string} render-module-path - Path to the render module (default: '/render-myst-ast.mjs')
+ * 
+ * @fires change - Fired when the content changes
+ * @fires input - Fired on input events
+ */
 
 export class WaMystEditor extends LitElement {
   static styles = css`
@@ -149,15 +161,19 @@ export class WaMystEditor extends LitElement {
   static properties = {
     value: { type: String },
     placeholder: { type: String },
-    readonly: { type: Boolean }
+    readonly: { type: Boolean },
+    renderModulePath: { type: String, attribute: 'render-module-path' }
   };
 
   private _value = '';
   private _placeholder = 'Enter MyST markdown...';
   private _readonly = false;
+  private _renderModulePath = '/render-myst-ast.mjs';
   private _renderedHtml = '';
   private _error: string | null = null;
-  private _textarea?: HTMLElement;
+  private _textarea?: any;
+  private _renderModule: any = null;
+  private _renderModulePromise: Promise<any> | null = null;
 
   // Explicit getters/setters for reactive properties
   get value() { return this._value; }
@@ -179,6 +195,16 @@ export class WaMystEditor extends LitElement {
     const oldVal = this._readonly;
     this._readonly = val;
     this.requestUpdate('readonly', oldVal);
+  }
+
+  get renderModulePath() { return this._renderModulePath; }
+  set renderModulePath(val: string) {
+    const oldVal = this._renderModulePath;
+    this._renderModulePath = val;
+    // Reset the module cache when path changes
+    this._renderModule = null;
+    this._renderModulePromise = null;
+    this.requestUpdate('renderModulePath', oldVal);
   }
 
   constructor() {
@@ -205,6 +231,35 @@ export class WaMystEditor extends LitElement {
     this._textarea = this.shadowRoot?.querySelector('wa-textarea') || undefined;
   }
 
+  private async _loadRenderModule() {
+    if (this._renderModule) {
+      return this._renderModule;
+    }
+
+    if (this._renderModulePromise) {
+      return this._renderModulePromise;
+    }
+
+    // this._renderModulePromise = import(this._renderModulePath)
+    this._renderModulePromise = import("@awesome-myst/myst-awesome/lib/render-myst-ast.ts")
+      .then(module => {
+        this._renderModule = module;
+        return module;
+      })
+      .catch(error => {
+        console.error('Failed to load render module:', error);
+        // Fallback to basic rendering
+        this._renderModule = {
+          renderMystAst: (root: any) => {
+            return '<p><em>Render module failed to load. Basic preview unavailable.</em></p>';
+          }
+        };
+        return this._renderModule;
+      });
+
+    return this._renderModulePromise;
+  }
+
   private async _updatePreview() {
     if (!this.value.trim()) {
       this._renderedHtml = '<p><em>Enter some MyST markdown to see the preview...</em></p>';
@@ -214,14 +269,11 @@ export class WaMystEditor extends LitElement {
     }
 
     try {
-      // Parse MyST markdown using myst-parser
-      const tree = mystParse(this.value);
+      // Load the render module dynamically
+      const renderModule = await this._loadRenderModule();
       
-      // Apply basic transformations (simplified for now)
-      const transformedTree = await this._applyTransformations(tree);
-      
-      // Render to HTML using our render function
-      this._renderedHtml = renderMystAst(transformedTree as Root);
+      // Render to HTML using the dynamically loaded render function
+      this._renderedHtml = renderModule.mystParseAndRender(this.value);
       this._error = null;
     } catch (error) {
       console.error('MyST parsing error:', error);
@@ -229,18 +281,6 @@ export class WaMystEditor extends LitElement {
       this._renderedHtml = '<p><em>Error parsing MyST content</em></p>';
     }
     this.requestUpdate();
-  }
-
-  private async _applyTransformations(tree: any): Promise<any> {
-    try {
-      // For now, return the tree as-is since basic transformations require more setup
-      // In a full implementation, you would set up the unified processor with plugins
-      return tree;
-    } catch (error) {
-      console.warn('Error applying transformations:', error);
-      // Return original tree if transformations fail
-      return tree;
-    }
   }
 
   private _handleInput(event: Event) {
@@ -314,19 +354,8 @@ export class WaMystEditor extends LitElement {
   }
 
   /**
-   * Get the current MyST AST
-   */
-  getAst() {
-    try {
-      return mystParse(this.value);
-    } catch (error) {
-      console.error('Error parsing MyST:', error);
-      return null;
-    }
-  }
-
-  /**
    * Set the editor content
+   * @param content - The MyST markdown content to set
    */
   setValue(content: string) {
     this.value = content;
@@ -335,9 +364,26 @@ export class WaMystEditor extends LitElement {
 
   /**
    * Get the current editor content
+   * @returns The current MyST markdown content
    */
   getValue() {
     return this.value;
+  }
+
+  /**
+   * Set the render module path
+   * @param path - Path to the render module (relative, absolute, or external URL)
+   */
+  setRenderModulePath(path: string) {
+    this.renderModulePath = path;
+  }
+
+  /**
+   * Get the current render module path
+   * @returns The current render module path
+   */
+  getRenderModulePath() {
+    return this.renderModulePath;
   }
 }
 

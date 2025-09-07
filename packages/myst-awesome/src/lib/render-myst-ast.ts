@@ -10,6 +10,7 @@ import type {
   Myst,
 } from "@awesome-myst/myst-zod";
 import { basicTransformations } from "myst-transforms";
+import { mystParse } from "myst-parser";
 
 /** Function to render MyST content as HTML (simplified) */
 export function renderMystAst(root: Root): string {
@@ -103,4 +104,23 @@ export function renderMystAst(root: Root): string {
   };
 
   return root.children?.map(renderNode).join("\n") || "";
+}
+
+/**
+ * Parse MyST markdown and render it to HTML in one function
+ * @param mystContent - Raw MyST markdown string
+ * @returns Rendered HTML string
+ */
+export function mystParseAndRender(mystContent: string): string {
+  try {
+    // Parse the MyST content
+    const tree = mystParse(mystContent);
+    
+    // Render the parsed tree to HTML
+    return renderMystAst(tree as Root);
+  } catch (error) {
+    console.error('MyST parse and render error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return `<p><em>Error parsing MyST content: ${errorMessage}</em></p>`;
+  }
 }
