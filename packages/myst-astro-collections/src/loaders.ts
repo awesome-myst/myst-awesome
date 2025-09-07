@@ -15,6 +15,17 @@ import { parse as parseYaml } from "yaml";
 import { randomUUID } from "node:crypto";
 
 /**
+ * Helper function to build the correct URL for fetching page data
+ * If ref.data starts with 'http', use it as-is, otherwise prepend baseUrl
+ */
+function buildPageDataUrl(baseUrl: string, refData: string): string {
+  if (refData.startsWith('http')) {
+    return refData;
+  }
+  return `${baseUrl}${refData}`;
+}
+
+/**
  * Helper function to fetch and save HTTP thumbnails to public/thumbnails/
  * Exported for testing purposes
  */
@@ -213,7 +224,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
                   () => pageController.abort(),
                   timeout
                 );
-                const pageResp = await fetch(`${baseUrl}${(ref as any).data}`, {
+                const pageResp = await fetch(buildPageDataUrl(baseUrl, (ref as any).data), {
                   signal: pageController.signal,
                 });
                 clearTimeout(pageTimeout);
@@ -323,7 +334,7 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
             return null;
           }
 
-          const pageResponse = await fetch(`${baseUrl}${ref.data}`, {
+          const pageResponse = await fetch(buildPageDataUrl(baseUrl, ref.data), {
             signal: controller.signal,
           });
 
