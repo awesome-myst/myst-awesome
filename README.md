@@ -139,6 +139,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Component Overrides](./docs/components/overrides.md)
 - [Architecture Overview](./docs/components/architecture.md)
 - [Theming Guide](./docs/customization/themes.md)
+- [MyST Awesome List](https://github.com/awesome-myst/awesome-myst)
 - [Web Awesome Docs](https://webawesome.com/docs/)
 - [Astro Docs](https://docs.astro.build/)
 - [MyST Docs](https://mystmd.org/guide/)
