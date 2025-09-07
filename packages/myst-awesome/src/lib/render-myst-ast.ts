@@ -9,35 +9,13 @@ import type {
   Paragraph,
   Myst,
 } from "@awesome-myst/myst-zod";
-import { basicTransformations } from "myst-transforms";
+import { basicTransformations, type VFile } from "myst-transforms";
 import { mystParse } from "myst-parser";
 
 /** Function to render MyST content as HTML (simplified) */
 export function renderMystAst(root: Root): string {
   if (!root || !root.children) {
     return "<p>No content available</p>";
-  }
-
-  // Create a minimal VFile-like object for the transformations
-  const file = { 
-    path: 'rendered.md',
-    messages: [],
-    data: {},
-    history: [],
-    cwd: '/tmp',
-    value: '',
-    map: undefined,
-    fail: () => {},
-    info: () => {},
-    message: () => {},
-    warn: () => {},
-  };
-
-  // Apply basic MyST transformations to the root AST
-  try {
-    basicTransformations(root as any, file as any);
-  } catch (error) {
-    console.warn('Failed to apply basic transformations:', error);
   }
 
   const renderNode = (node: Node): string => {
@@ -116,6 +94,28 @@ export function mystParseAndRender(mystContent: string): string {
     // Parse the MyST content
     const tree = mystParse(mystContent);
     
+    // Create a minimal VFile-like object for the transformations
+    const file = { 
+      path: 'rendered.md',
+      messages: [],
+      data: {},
+      history: [],
+      cwd: '/tmp',
+      value: '',
+      map: undefined,
+      fail: () => {},
+      info: () => {},
+      message: () => {},
+      warn: () => {},
+    };
+
+    // Apply basic MyST transformations to the root AST
+    try {
+      basicTransformations(tree as Root, file as VFile);
+    } catch (error) {
+      console.warn('Failed to apply basic transformations:', error);
+    }
+
     // Render the parsed tree to HTML
     return renderMystAst(tree as Root);
   } catch (error) {
