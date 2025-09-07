@@ -243,13 +243,13 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       {showColorSchemeSelector && (
         <div class="color-scheme-toggle" role="group" aria-label="Color scheme">
           <wa-button class="color-btn" appearance="outlined" size="small" data-value="light" title="Light mode" aria-label="Light mode">
-            <wa-icon name="sun" variant="regular"></wa-icon>
+            <wa-icon name="sun" variant="regular" label="Light mode"></wa-icon>
           </wa-button>
           <wa-button class="color-btn" appearance="outlined" size="small" data-value="dark" title="Dark mode" aria-label="Dark mode">
-            <wa-icon name="moon" variant="regular"></wa-icon>
+            <wa-icon name="moon" variant="regular" label="Dark mode"></wa-icon>
           </wa-button>
           <wa-button class="color-btn" appearance="outlined" size="small" data-value="auto" title="System" aria-label="System">
-            <wa-icon name="display"></wa-icon>
+            <wa-icon name="display" label="System"></wa-icon>
           </wa-button>
         </div>
       )}
