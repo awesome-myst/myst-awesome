@@ -1,5 +1,7 @@
 # MyST Awesome
 
+[![CI](https://github.com/awesome-myst/myst-awesome/actions/workflows/ci.yml/badge.svg)](https://github.com/awesome-myst/myst-awesome/actions/workflows/ci.yml)
+
 ⚠️ **Alpha State**: This project is currently in alpha development. Features and APIs may change.
 
 A modern, responsive MyST-MD theme built with [Web Awesome](https://webawesome.com) components. Designed for scientific communication with excellent typography, accessibility, and user experience.
