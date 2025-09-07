@@ -15,8 +15,6 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "build:render-module": "node scripts/build-render-module.mjs",
-    "prebuild": "pnpm build:render-module",
     "preview": "astro preview",
     "astro": "astro",
     "test": "pnpm --filter=. exec playwright test --config=tests/playwright.config.ts",
@@ -38,7 +36,6 @@
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.1",
-    "esbuild": "^0.25.9"
+    "@playwright/test": "^1.54.1"
   }
 }

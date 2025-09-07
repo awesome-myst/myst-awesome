@@ -148,9 +148,6 @@ importers:
       '@playwright/test':
         specifier: ^1.54.1
         version: 1.54.1
-      esbuild:
-        specifier: ^0.25.9
-        version: 0.25.9
 
 packages:
 
