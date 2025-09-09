@@ -1,6 +1,6 @@
 {
   "name": "@awesome-myst/myst-astro-collections",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Astro content collections for MyST projects",
   "type": "module",
   "exports": {
