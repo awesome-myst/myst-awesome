@@ -322,7 +322,6 @@ export const createPagesLoader = (config: MystServerConfig = {}) => {
       );
 
       // Use p-queue to control concurrency for page fetches
-      const PQueue = (await import('p-queue')).default;
       const queue = new PQueue({ concurrency: Math.max(1, Math.floor(pageConcurrency)) });
 
       // Each task fetches and processes a page
