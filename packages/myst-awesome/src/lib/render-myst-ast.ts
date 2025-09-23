@@ -9,25 +9,31 @@ import type {
   Paragraph,
   Myst,
 } from "@awesome-myst/myst-zod";
-import { basicTransformations, type VFile } from "myst-transforms";
+import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
+import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
 
 /** Function to render MyST content as HTML (simplified) */
-export function renderMystAst(root: Root): string {
+export async function renderMystAst(root: Root): Promise<string> {
   if (!root || !root.children) {
     return "<p>No content available</p>";
   }
 
-  const renderNode = (node: Node): string => {
+  const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
-      case "paragraph":
-        return `<p>${
-          (node as Paragraph).children?.map(renderNode).join("") || ""
-        }</p>`;
+      case "paragraph": {
+        const children = await Promise.all(
+          (node as Paragraph).children?.map(renderNode) || []
+        );
+        return `<p>${children.join("")}</p>`;
+      }
       case "heading": {
         const headingNode = node as Heading;
         const level = Math.min(6, Math.max(1, headingNode.depth || 2));
-        const text = headingNode.children?.map(renderNode).join("") || "";
+        const children = await Promise.all(
+          headingNode.children?.map(renderNode) || []
+        );
+        const text = children.join("");
         const id = text
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
@@ -36,60 +42,94 @@ export function renderMystAst(root: Root): string {
       }
       case "text":
         return (node as any).value || "";
-      case "emphasis":
-        return `<em>${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</em>`;
-      case "strong":
-        return `<strong>${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</strong>`;
-      case "inlineCode":
-        return `<code>${(node as any).value || ""}</code>`;
+      case "emphasis": {
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<em>${children.join("")}</em>`;
+      }
+      case "strong": {
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<strong>${children.join("")}</strong>`;
+      }
+      case "inlineCode": {
+        const codeNode = node as any;
+        const code = codeNode.value || "";
+        const lang = codeNode.lang; // MyST might provide language for inline code
+        return await highlightInlineCode(code, lang);
+      }
       case "code": {
         const codeNode = node as any;
-        return `<pre><code class="language-${codeNode.lang || ""}">${
-          codeNode.value || ""
-        }</code></pre>`;
+        const code = codeNode.value || "";
+        const lang = codeNode.lang || codeNode.language || "text";
+        const highlighted = await highlightCode(code, lang);
+        return highlighted;
       }
       case "list": {
         const listNode = node as any;
         const tag = listNode.ordered ? "ol" : "ul";
-        return `<${tag}>${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</${tag}>`;
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<${tag}>${children.join("")}</${tag}>`;
       }
-      case "listItem":
-        return `<li>${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</li>`;
-      case "blockquote":
-        return `<blockquote>${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</blockquote>`;
+      case "listItem": {
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<li>${children.join("")}</li>`;
+      }
+      case "blockquote": {
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<blockquote>${children.join("")}</blockquote>`;
+      }
       case "link": {
         const linkNode = node as any;
-        return `<a href="${linkNode.url || "#"}">${
-          (node as Parent).children?.map(renderNode).join("") || ""
-        }</a>`;
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return `<a href="${linkNode.url || "#"}">${children.join("")}</a>`;
+      }
+      case "block": {
+        // Block nodes are container nodes that just pass through their children
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return children.join("");
+      }
+      case "inlineMath": {
+        const mathNode = node as any;
+        const math = mathNode.value || "";
+        return `<span class="math inline">$${math}$</span>`;
       }
       case "myst":
         return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
-        return (node as Parent).children?.map(renderNode).join("") || "";
+        // console.log('Unknown node structure:', JSON.stringify(node, null, 2));
+        const children = await Promise.all(
+          (node as Parent).children?.map(renderNode) || []
+        );
+        return children.join("");
     }
   };
 
-  return root.children?.map(renderNode).join("\n") || "";
+  const renderedChildren = await Promise.all(
+    root.children?.map(renderNode) || []
+  );
+  return renderedChildren.join("\n");
 }
 
 /**
  * Parse MyST markdown and render it to HTML in one function
  * @param mystContent - Raw MyST markdown string
- * @returns Rendered HTML string
+ * @returns Promise<string> - Rendered HTML string
  */
-export function mystParseAndRender(mystContent: string): string {
+export async function mystParseAndRender(mystContent: string): Promise<string> {
   try {
     // Parse the MyST content
     const tree = mystParse(mystContent);
@@ -111,13 +151,13 @@ export function mystParseAndRender(mystContent: string): string {
 
     // Apply basic MyST transformations to the root AST
     try {
-      basicTransformations(tree as Root, file as VFile);
+      basicTransformations(tree as Root, file as any);
     } catch (error) {
       console.warn('Failed to apply basic transformations:', error);
     }
 
     // Render the parsed tree to HTML
-    return renderMystAst(tree as Root);
+    return await renderMystAst(tree as Root);
   } catch (error) {
     console.error('MyST parse and render error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

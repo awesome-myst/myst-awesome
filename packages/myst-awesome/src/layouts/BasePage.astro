@@ -60,6 +60,7 @@ if (projectConfig?.data?.options?.favicon) {
 
 // Import Themes component for CSS management
 import Themes from '../components/Themes.astro';
+import ShikiStyles from '../components/ShikiStyles.astro';
 ---
 
 <!doctype html>
@@ -73,6 +74,9 @@ import Themes from '../components/Themes.astro';
     <!-- Import theme CSS -->
     <Themes themes={['default', 'awesome', 'shoelace']} />
 
+    <!-- Import Shiki syntax highlighting CSS -->
+    <ShikiStyles />
+
     <link rel="icon" type={faviconType} href={faviconPath} />
     <title>{title}</title>
 
@@ -81,7 +85,10 @@ import Themes from '../components/Themes.astro';
       // Set initial color scheme before page renders to prevent flashing
       const colorScheme = localStorage.getItem('color-scheme') || 'auto';
       const isDark = colorScheme === 'dark' || (colorScheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      // Apply correct theme class
       document.documentElement.classList.toggle('wa-dark', isDark);
+      document.documentElement.classList.toggle('wa-light', !isDark);
 
       // Set initial theme
       const savedTheme = localStorage.getItem('theme') || 'default';
@@ -261,7 +268,10 @@ import Themes from '../components/Themes.astro';
       function setColorScheme(scheme: 'light' | 'dark' | 'auto') {
         localStorage.setItem('color-scheme', scheme);
         const isDark = scheme === 'dark' || (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        // Apply correct theme classes
         document.documentElement.classList.toggle('wa-dark', isDark);
+        document.documentElement.classList.toggle('wa-light', !isDark);
         document.body.setAttribute('data-theme', scheme);
       }
 

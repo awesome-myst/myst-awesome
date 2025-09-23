@@ -62,8 +62,8 @@ importers:
         specifier: ^1.5.2
         version: 1.5.15
       mystmd:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.1
+        version: 1.6.1
       sharp:
         specifier: ^0.34.3
         version: 0.34.3
@@ -138,6 +138,9 @@ importers:
       sharp:
         specifier: ^0.34.3
         version: 0.34.3
+      shiki:
+        specifier: ^3.13.0
+        version: 3.13.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1806,8 +1809,8 @@ packages:
   myst-transforms@1.3.38:
     resolution: {integrity: sha512-JFT08hd48XAK3sj4KJEcfKWPocIfOyctLbjd3yxBQjygKmL3vM7oedRrajOfkvvOw1d+2pViNb2oyPHkYwRscQ==}
 
-  mystmd@1.6.0:
-    resolution: {integrity: sha512-rG0bb2hieQmfTg+0UVrUBivTS+b9r2V2WPCl7nOWz+z67s0k/QgbTtpmgdV4bMPG/pYeF5QNw7EnJ3MRN42odA==}
+  mystmd@1.6.1:
+    resolution: {integrity: sha512-jrqXTYtKAfy3wtnXwoPSEFO9POHTe2QYI16lZAhNw1FvfWkdTmpDys8vNfXDsTWFRmRdKeDg30MdebDcnhSKxQ==}
     hasBin: true
 
   nanoid@3.3.11:
@@ -4753,7 +4756,7 @@ snapshots:
       vfile: 5.3.7
       vfile-message: 3.1.4
 
-  mystmd@1.6.0: {}
+  mystmd@1.6.1: {}
 
   nanoid@3.3.11: {}
 
