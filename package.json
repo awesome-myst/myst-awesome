@@ -14,7 +14,7 @@
     "dev-docs": "pnpm --filter=myst-awesome-docs dev",
     "install-all": "pnpm install"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.17.1",
   "pnpm": {
     "overrides": {
       "@awesome-myst/myst-zod": "^0.6.0",
