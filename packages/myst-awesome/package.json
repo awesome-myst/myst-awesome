@@ -25,7 +25,7 @@
     "@awesome-myst/myst-astro-collections": "workspace:*",
     "@awesome-myst/myst-zod": "^0.6.0",
     "@awesome.me/webawesome": "^3.0.0-beta.4",
-    "astro": "5.12.8",
+    "astro": "5.13.10",
     "fuse.js": "^7.1.0",
     "lit": "^3.3.1",
     "myst-parser": "^1.5.15",
