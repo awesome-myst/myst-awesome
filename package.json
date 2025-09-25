@@ -17,7 +17,7 @@
   "packageManager": "pnpm@10.17.1",
   "pnpm": {
     "overrides": {
-      "@awesome-myst/myst-zod": "^0.6.0",
+      "@awesome-myst/myst-zod": "^0.6.1",
       "astro": "5.13.11",
       "@awesome.me/webawesome": "^3.0.0-beta.6"
     }

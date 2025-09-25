@@ -8,7 +8,11 @@ import type {
   Heading,
   Paragraph,
   Myst,
+  DefinitionList,
+  DefinitionTerm,
+  DefinitionDescription,
 } from "@awesome-myst/myst-zod";
+
 import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
@@ -81,6 +85,24 @@ export async function renderMystAst(root: Root): Promise<string> {
         );
         return `<li>${children.join("")}</li>`;
       }
+      case "definitionList": {
+        const children = await Promise.all(
+          (node as DefinitionList).children?.map(renderNode) || []
+        );
+        return `<dl>${children.join("")}</dl>`;
+      }
+      case "definitionTerm": {
+        const children = await Promise.all(
+          (node as DefinitionTerm).children?.map(renderNode) || []
+        );
+        return `<dt>${children.join("")}</dt>`;
+      }
+      case "definitionDescription": {
+        const children = await Promise.all(
+          (node as DefinitionDescription).children?.map(renderNode) || []
+        );
+        return `<dd>${children.join("")}</dd>`;
+      }
       case "blockquote": {
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
@@ -110,7 +132,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
-        // console.log('Unknown node structure:', JSON.stringify(node, null, 2));
+        console.log('Unknown node structure:', JSON.stringify(node, null, 2));
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
         );
