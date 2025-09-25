@@ -11,6 +11,7 @@ import type {
   DefinitionList,
   DefinitionTerm,
   DefinitionDescription,
+  Underline,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -57,6 +58,12 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Parent).children?.map(renderNode) || []
         );
         return `<strong>${children.join("")}</strong>`;
+      }
+      case "underline": {
+        const children = await Promise.all(
+          (node as Underline).children?.map(renderNode) || []
+        );
+        return `<u>${children.join("")}</u>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
