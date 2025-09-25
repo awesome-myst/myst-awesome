@@ -13,6 +13,7 @@ import type {
   DefinitionDescription,
   Underline,
   Delete,
+  Smallcaps,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -71,6 +72,12 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Delete).children?.map(renderNode) || []
         );
         return `<del>${children.join("")}</del>`;
+      }
+      case "smallcaps": {
+        const children = await Promise.all(
+          (node as Smallcaps).children?.map(renderNode) || []
+        );
+        return `<span style="font-variant: small-caps;">${children.join("")}</span>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
