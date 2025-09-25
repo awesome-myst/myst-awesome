@@ -1,0 +1,180 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+/**
+ * Shiki CSS component - provides syntax highlighting styles
+ * This component includes the necessary CSS for Shiki syntax highlighting
+ * with support for both light and dark themes
+ */
+
+interface Props {
+  /**
+   * Whether to include inline code styles
+   */
+  includeInline?: boolean;
+}
+
+const {
+  includeInline = true
+} = Astro.props;
+---
+
+<style is:global>
+/* Shiki syntax highlighting styles */
+
+/* Base Shiki styles with dual theme support */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+/* Dark theme support via media query */
+@media (prefers-color-scheme: dark) {
+  .shiki,
+  .shiki span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
+}
+
+/* Explicit dark theme class support */
+.wa-dark .shiki,
+.wa-dark .shiki span,
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+/* Light theme when explicitly set */
+.wa-light .shiki,
+.wa-light .shiki span,
+.light .shiki,
+.light .shiki span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+/* Code block specific styles */
+.shiki {
+  padding: 1rem;
+  border-radius: var(--wa-border-radius-medium, 0.375rem);
+  overflow-x: auto;
+  font-family: var(--wa-font-mono, 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 1rem 0;
+  border: 1px solid var(--wa-color-neutral-200);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.wa-dark .shiki,
+.dark .shiki {
+  border-color: var(--wa-color-neutral-700);
+}
+
+.shiki code {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none !important;
+  color: inherit !important;
+}
+
+/* Inline code styles */
+.shiki.inline {
+  background-color: var(--wa-color-neutral-100);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--wa-border-radius-small, 0.25rem);
+  font-size: 0.875em;
+  display: inline;
+  margin: 0;
+  border: 1px solid var(--wa-color-neutral-200);
+  font-family: var(--wa-font-mono, 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace);
+}
+
+.wa-dark .shiki.inline,
+.dark .shiki.inline {
+  background-color: var(--wa-color-neutral-800);
+  border-color: var(--wa-color-neutral-600);
+}
+
+/* Ensure inline code doesn't break layout */
+code.shiki.inline {
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* Line highlighting support */
+.shiki .line.highlighted {
+  background-color: var(--shiki-light-bg-highlighted, rgba(101, 117, 133, 0.16));
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.wa-dark .shiki .line.highlighted,
+.dark .shiki .line.highlighted {
+  background-color: var(--shiki-dark-bg-highlighted, rgba(101, 117, 133, 0.16));
+}
+
+/* Word highlighting support */
+.shiki .highlighted-word {
+  background-color: var(--shiki-light-bg-highlighted, rgba(101, 117, 133, 0.16));
+  border-radius: var(--wa-border-radius-small, 0.25rem);
+  padding: 0.125rem 0.25rem;
+  margin: -0.125rem -0.25rem;
+}
+
+.wa-dark .shiki .highlighted-word,
+.dark .shiki .highlighted-word {
+  background-color: var(--shiki-dark-bg-highlighted, rgba(101, 117, 133, 0.16));
+}
+
+/* Focus and hover states for accessibility */
+.shiki:focus-within {
+  outline: 2px solid var(--wa-color-primary-600);
+  outline-offset: 2px;
+}
+
+/* Ensure proper font rendering for code */
+.shiki,
+.shiki code,
+.shiki.inline {
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .shiki {
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    font-size: 0.8125rem;
+  }
+  
+  .shiki.inline {
+    padding: 0.0625rem 0.25rem;
+    font-size: 0.8125em;
+  }
+}
+
+/* Print styles */
+@media print {
+  .shiki {
+    border: 1px solid #d1d5db;
+    background: white !important;
+    color: black !important;
+  }
+  
+  .shiki * {
+    background: transparent !important;
+    color: black !important;
+  }
+}
+</style>
