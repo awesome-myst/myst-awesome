@@ -15,6 +15,7 @@ import type {
   Delete,
   Smallcaps,
   Break,
+  Abbreviation,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -26,6 +27,9 @@ export async function renderMystAst(root: Root): Promise<string> {
   if (!root || !root.children) {
     return "<p>No content available</p>";
   }
+
+  // Counter for generating unique IDs
+  let abbreviationCounter = 0;
 
   const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
@@ -81,6 +85,21 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Smallcaps).children?.map(renderNode) || []
         );
         return `<span style="font-variant: small-caps;">${children.join("")}</span>`;
+      }
+      case "abbreviation": {
+        const abbrevNode = node as Abbreviation;
+        const children = await Promise.all(
+          abbrevNode.children?.map(renderNode) || []
+        );
+        const content = children.join("");
+        
+        if (abbrevNode.title) {
+          const uniqueId = `abbr-${++abbreviationCounter}`;
+          return `<abbr id="${uniqueId}" style="text-decoration: underline dotted; cursor: help;">${content}</abbr><wa-tooltip for="${uniqueId}">${abbrevNode.title}</wa-tooltip>`;
+        } else {
+          // Fallback to standard abbr without tooltip if no title
+          return `<abbr style="text-decoration: underline dotted;">${content}</abbr>`;
+        }
       }
       case "inlineCode": {
         const codeNode = node as any;
