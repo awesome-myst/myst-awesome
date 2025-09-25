@@ -14,6 +14,7 @@ import type {
   Underline,
   Delete,
   Smallcaps,
+  Break,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -49,6 +50,8 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "text":
         return (node as any).value || "";
+      case "break":
+        return "<br />";
       case "emphasis": {
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
