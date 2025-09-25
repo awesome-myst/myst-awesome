@@ -12,6 +12,7 @@ import type {
   DefinitionTerm,
   DefinitionDescription,
   Underline,
+  Delete,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -64,6 +65,12 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Underline).children?.map(renderNode) || []
         );
         return `<u>${children.join("")}</u>`;
+      }
+      case "delete": {
+        const children = await Promise.all(
+          (node as Delete).children?.map(renderNode) || []
+        );
+        return `<del>${children.join("")}</del>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
