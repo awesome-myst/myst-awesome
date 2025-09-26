@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@awesome-myst/myst-zod': ^0.6.0
-  astro: 5.13.10
-  '@awesome.me/webawesome': ^3.0.0-beta.4
+  '@awesome-myst/myst-zod': ^0.6.1
+  astro: 5.13.11
+  '@awesome.me/webawesome': ^3.0.0-beta.6
 
 importers:
 
@@ -26,11 +26,11 @@ importers:
         specifier: workspace:*
         version: link:../packages/myst-awesome
       '@awesome.me/webawesome':
-        specifier: ^3.0.0-beta.4
-        version: 3.0.0-beta.4(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
+        specifier: ^3.0.0-beta.6
+        version: 3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
       astro:
-        specifier: 5.13.10
-        version: 5.13.10(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
+        specifier: 5.13.11
+        version: 5.13.11(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
       myst-common:
         specifier: ^1.5.2
         version: 1.8.1
@@ -84,14 +84,14 @@ importers:
   packages/myst-astro-collections:
     dependencies:
       '@awesome-myst/myst-zod':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.1
+        version: 0.6.1
       '@types/node':
         specifier: ^24.2.0
         version: 24.2.0
       astro:
-        specifier: 5.13.10
-        version: 5.13.10(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
+        specifier: 5.13.11
+        version: 5.13.11(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
       p-queue:
         specifier: ^8.1.0
         version: 8.1.0
@@ -112,14 +112,14 @@ importers:
         specifier: workspace:*
         version: link:../myst-astro-collections
       '@awesome-myst/myst-zod':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.1
+        version: 0.6.1
       '@awesome.me/webawesome':
-        specifier: ^3.0.0-beta.4
-        version: 3.0.0-beta.4(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
+        specifier: ^3.0.0-beta.6
+        version: 3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
       astro:
-        specifier: 5.13.10
-        version: 5.13.10(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
+        specifier: 5.13.11
+        version: 5.13.11(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
@@ -192,11 +192,11 @@ packages:
   '@astrojs/yaml2ts@0.2.2':
     resolution: {integrity: sha512-GOfvSr5Nqy2z5XiwqTouBBpy5FyI6DEe+/g/Mk5am9SjILN1S5fOEvYK0GuWHg98yS/dobP4m8qyqw/URW35fQ==}
 
-  '@awesome-myst/myst-zod@0.6.0':
-    resolution: {integrity: sha512-mwpXyxlTqNtZduCeOE09sIJPdfl4/nQYTKLy0McjOnU0r0SP2Gd8ofNarI3hQhw5chwkBxpiFQI0I7F9OjeBWg==}
+  '@awesome-myst/myst-zod@0.6.1':
+    resolution: {integrity: sha512-uhSy0SgY6miUdtRWURj2EUSEAgVm2xavrvv3ZyCuraRESz8o8AYHYbzx9dTBR8H4YrYxuRmyrmucrLhdT7o2vA==}
 
-  '@awesome.me/webawesome@3.0.0-beta.4':
-    resolution: {integrity: sha512-CTqy016SZQvGsyYTeQCE6t4JrnL26bugaNXkY1y+nXHfVtcxS+gXze36Y89t82Z2MJ8d30IZHdoTq1Ac2jOZYw==}
+  '@awesome.me/webawesome@3.0.0-beta.6':
+    resolution: {integrity: sha512-u/HiUE71Lrp99cYycrinumH4QX9Hb3OxlOH0Y3jh+Yybz/uNfALm0GIhYXpOr0L9kTuS9Fdwy4XuLHaHV6m1Xw==}
     engines: {node: '>=14.17.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -846,8 +846,8 @@ packages:
   array-iterate@2.0.1:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
 
-  astro@5.13.10:
-    resolution: {integrity: sha512-PgIrIYvrR7fCoSPPt1sGlpoYK/FNil1BwKazND1DyaZC7SbWLi9hdIHM3ApdrL2SWK7oiADRPw7cTn80UyDWqA==}
+  astro@5.13.11:
+    resolution: {integrity: sha512-qKB+95GtyJSwVn5TDi31FTIcsohzA/nLhyATWn5VWqok1VLzZvm/1KHCk4tNElSrAQ5BisxUIMZWTh+B4X2JvQ==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -2184,9 +2184,6 @@ packages:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
     engines: {node: '>=6'}
 
-  style-observer@0.0.7:
-    resolution: {integrity: sha512-t75H3CRy+vd5q3yqyrf/De4tkz33hPQTiCcfh0NTesI5G7kJnZ227LEYTwqjKTtaFOCJvqZcYFHpJlF8bsk3bQ==}
-
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
@@ -2765,7 +2762,7 @@ snapshots:
     dependencies:
       yaml: 2.8.0
 
-  '@awesome-myst/myst-zod@0.6.0':
+  '@awesome-myst/myst-zod@0.6.1':
     dependencies:
       credit-roles: 2.1.0
       doi-utils: 2.0.6
@@ -2774,7 +2771,7 @@ snapshots:
       spdx-correct: 3.2.0
       zod: 3.25.76
 
-  '@awesome.me/webawesome@3.0.0-beta.4(@floating-ui/utils@0.2.10)(@types/react@19.1.9)':
+  '@awesome.me/webawesome@3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       '@floating-ui/dom': 1.7.3
@@ -2785,7 +2782,6 @@ snapshots:
       lit: 3.3.1
       nanoid: 5.1.5
       qr-creator: 1.0.0
-      style-observer: 0.0.7
     transitivePeerDependencies:
       - '@floating-ui/utils'
       - '@types/react'
@@ -3309,7 +3305,7 @@ snapshots:
 
   array-iterate@2.0.1: {}
 
-  astro@5.13.10(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1):
+  astro@5.13.11(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1):
     dependencies:
       '@astrojs/compiler': 2.12.2
       '@astrojs/internal-helpers': 0.7.3
@@ -5221,8 +5217,6 @@ snapshots:
       ansi-regex: 6.1.0
 
   strip-final-newline@2.0.0: {}
-
-  style-observer@0.0.7: {}
 
   supports-color@7.2.0:
     dependencies:

@@ -8,7 +8,16 @@ import type {
   Heading,
   Paragraph,
   Myst,
+  DefinitionList,
+  DefinitionTerm,
+  DefinitionDescription,
+  Underline,
+  Delete,
+  Smallcaps,
+  Break,
+  Abbreviation,
 } from "@awesome-myst/myst-zod";
+
 import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
@@ -18,6 +27,9 @@ export async function renderMystAst(root: Root): Promise<string> {
   if (!root || !root.children) {
     return "<p>No content available</p>";
   }
+
+  // Counter for generating unique IDs
+  let abbreviationCounter = 0;
 
   const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
@@ -42,6 +54,8 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "text":
         return (node as any).value || "";
+      case "break":
+        return "<br />";
       case "emphasis": {
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
@@ -53,6 +67,39 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Parent).children?.map(renderNode) || []
         );
         return `<strong>${children.join("")}</strong>`;
+      }
+      case "underline": {
+        const children = await Promise.all(
+          (node as Underline).children?.map(renderNode) || []
+        );
+        return `<u>${children.join("")}</u>`;
+      }
+      case "delete": {
+        const children = await Promise.all(
+          (node as Delete).children?.map(renderNode) || []
+        );
+        return `<del>${children.join("")}</del>`;
+      }
+      case "smallcaps": {
+        const children = await Promise.all(
+          (node as Smallcaps).children?.map(renderNode) || []
+        );
+        return `<span style="font-variant: small-caps;">${children.join("")}</span>`;
+      }
+      case "abbreviation": {
+        const abbrevNode = node as Abbreviation;
+        const children = await Promise.all(
+          abbrevNode.children?.map(renderNode) || []
+        );
+        const content = children.join("");
+        
+        if (abbrevNode.title) {
+          const uniqueId = `abbr-${++abbreviationCounter}`;
+          return `<abbr id="${uniqueId}" style="text-decoration: underline dotted; cursor: help;">${content}</abbr><wa-tooltip for="${uniqueId}">${abbrevNode.title}</wa-tooltip>`;
+        } else {
+          // Fallback to standard abbr without tooltip if no title
+          return `<abbr style="text-decoration: underline dotted;">${content}</abbr>`;
+        }
       }
       case "inlineCode": {
         const codeNode = node as any;
@@ -80,6 +127,24 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Parent).children?.map(renderNode) || []
         );
         return `<li>${children.join("")}</li>`;
+      }
+      case "definitionList": {
+        const children = await Promise.all(
+          (node as DefinitionList).children?.map(renderNode) || []
+        );
+        return `<dl>${children.join("")}</dl>`;
+      }
+      case "definitionTerm": {
+        const children = await Promise.all(
+          (node as DefinitionTerm).children?.map(renderNode) || []
+        );
+        return `<dt>${children.join("")}</dt>`;
+      }
+      case "definitionDescription": {
+        const children = await Promise.all(
+          (node as DefinitionDescription).children?.map(renderNode) || []
+        );
+        return `<dd>${children.join("")}</dd>`;
       }
       case "blockquote": {
         const children = await Promise.all(
@@ -110,7 +175,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
-        // console.log('Unknown node structure:', JSON.stringify(node, null, 2));
+        console.log('Unknown node structure:', JSON.stringify(node, null, 2));
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
         );
