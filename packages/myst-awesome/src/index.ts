@@ -11,12 +11,14 @@ export { default as ThemeControls } from "./components/ThemeControls.astro";
 export { default as Footer } from "./components/Footer.astro";
 export { default as Themes } from "./components/Themes.astro";
 export { default as ThemesResolver } from "./components/ThemesResolver.astro";
+export { default as KaTeXStyles } from "./components/KaTeXStyles.astro";
 
 // Export utilities
 export * from "./lib/get-component.ts";
 export * from "./lib/generate-page-url.ts";
 export * from "./lib/generate-page-toc.ts";
 export * from "./lib/render-myst-ast.ts";
+export * from "./lib/katex-renderer.ts";
 
 // Export web components
 export { WaMystEditor } from "./lib/wa-myst-editor.ts";

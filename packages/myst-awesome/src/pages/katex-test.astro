@@ -1,0 +1,66 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+import Layout from '../layouts/Layout.astro';
+import { mystParseAndRender } from '../lib/render-myst-ast.js';
+
+const mystContent = `# Math Rendering Test
+
+This is a test page to verify that KaTeX math rendering is working properly.
+
+## Inline Math
+
+Here is some inline math: $E = mc^2$. And here's another equation: $\\sum_{i=1}^{n} x_i$.
+
+## Display Math
+
+Here's a display math equation:
+
+$$\\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\\right) = f(x)$$
+
+And another one:
+
+$$\\begin{align}
+\\nabla \\times \\vec{\\mathbf{B}} -\\, \\frac1c\\, \\frac{\\partial\\vec{\\mathbf{E}}}{\\partial t} & = \\frac{4\\pi}{c}\\vec{\\mathbf{j}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{E}} & = 4 \\pi \\rho \\\\
+\\nabla \\times \\vec{\\mathbf{E}}\\, +\\, \\frac1c\\, \\frac{\\partial\\vec{\\mathbf{B}}}{\\partial t} & = \\vec{\\mathbf{0}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{B}} & = 0
+\\end{align}$$
+
+## Some Text
+
+This is just some regular text to ensure the layout looks good.
+`;
+
+const renderedContent = await mystParseAndRender(mystContent);
+---
+
+<Layout title="KaTeX Math Test">
+  <main class="container">
+    <div class="content" set:html={renderedContent} />
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.6;
+  }
+
+  .content {
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Add some KaTeX styling if needed */
+  :global(.katex) {
+    font-size: 1em;
+  }
+
+  :global(.katex-display) {
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+</style>

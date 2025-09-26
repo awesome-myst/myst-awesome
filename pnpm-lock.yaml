@@ -123,6 +123,9 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
+      katex:
+        specifier: ^0.16.22
+        version: 0.16.22
       lit:
         specifier: ^3.3.1
         version: 3.3.1
@@ -1464,6 +1467,10 @@ packages:
 
   katex@0.15.6:
     resolution: {integrity: sha512-UpzJy4yrnqnhXvRPhjEuLA4lcPn6eRngixW7Q3TJErjg3Aw2PuLFBzTkdUb89UtumxjhHTqL3a5GDGETMSwgJA==}
+    hasBin: true
+
+  katex@0.16.22:
+    resolution: {integrity: sha512-XCHRdUw4lf3SKBaJe4EvgqIuWwkPSo9XoeO8GjQW94Bp7TWv9hNhzZjZ+OH9yf1UmLygb7DIT5GSFQiyt16zYg==}
     hasBin: true
 
   kleur@3.0.3:
@@ -4113,6 +4120,10 @@ snapshots:
   jsonc-parser@3.3.1: {}
 
   katex@0.15.6:
+    dependencies:
+      commander: 8.3.0
+
+  katex@0.16.22:
     dependencies:
       commander: 8.3.0
 

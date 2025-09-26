@@ -1,0 +1,42 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+// Import KaTeX CSS for proper math rendering
+import 'katex/dist/katex.min.css';
+---
+
+<style is:global>
+  /* Additional KaTeX styling */
+  .katex {
+    font-size: 1em;
+  }
+  
+  .katex-display {
+    display: block;
+    margin: 1em 0;
+    text-align: center;
+  }
+  
+  .katex-error {
+    border: 1px solid #cc0000;
+    background-color: #ffeeee;
+    color: #cc0000;
+    padding: 0.25em;
+    border-radius: 0.25em;
+    font-family: monospace;
+    font-size: 0.875em;
+  }
+
+  /* Responsive math scaling */
+  @media (max-width: 768px) {
+    .katex {
+      font-size: 0.95em;
+    }
+    
+    .katex-display {
+      margin: 0.8em 0;
+      overflow-x: auto;
+    }
+  }
+</style>
