@@ -16,11 +16,14 @@ import type {
   Smallcaps,
   Break,
   Abbreviation,
+  Math,
+  InlineMath,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
+import { renderInlineMath, renderDisplayMath } from "./katex-renderer.js";
 
 /** Function to render MyST content as HTML (simplified) */
 export async function renderMystAst(root: Root): Promise<string> {
@@ -84,7 +87,9 @@ export async function renderMystAst(root: Root): Promise<string> {
         const children = await Promise.all(
           (node as Smallcaps).children?.map(renderNode) || []
         );
-        return `<span style="font-variant: small-caps;">${children.join("")}</span>`;
+        return `<span style="font-variant: small-caps;">${children.join(
+          ""
+        )}</span>`;
       }
       case "abbreviation": {
         const abbrevNode = node as Abbreviation;
@@ -92,7 +97,7 @@ export async function renderMystAst(root: Root): Promise<string> {
           abbrevNode.children?.map(renderNode) || []
         );
         const content = children.join("");
-        
+
         if (abbrevNode.title) {
           const uniqueId = `abbr-${++abbreviationCounter}`;
           return `<abbr id="${uniqueId}" style="text-decoration: underline dotted; cursor: help;">${content}</abbr><wa-tooltip for="${uniqueId}">${abbrevNode.title}</wa-tooltip>`;
@@ -167,15 +172,20 @@ export async function renderMystAst(root: Root): Promise<string> {
         return children.join("");
       }
       case "inlineMath": {
-        const mathNode = node as any;
+        const mathNode = node as InlineMath;
         const math = mathNode.value || "";
-        return `<span class="math inline">$${math}$</span>`;
+        return renderInlineMath(math);
+      }
+      case "math": {
+        const mathNode = node as Math;
+        const math = mathNode.value || "";
+        return renderDisplayMath(math);
       }
       case "myst":
-        return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`
+        return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`;
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
-        console.log('Unknown node structure:', JSON.stringify(node, null, 2));
+        console.log("Unknown node structure:", JSON.stringify(node, null, 2));
         const children = await Promise.all(
           (node as Parent).children?.map(renderNode) || []
         );
@@ -198,15 +208,15 @@ export async function mystParseAndRender(mystContent: string): Promise<string> {
   try {
     // Parse the MyST content
     const tree = mystParse(mystContent);
-    
+
     // Create a minimal VFile-like object for the transformations
-    const file = { 
-      path: 'rendered.md',
+    const file = {
+      path: "rendered.md",
       messages: [],
       data: {},
       history: [],
-      cwd: '/tmp',
-      value: '',
+      cwd: "/tmp",
+      value: "",
       map: undefined,
       fail: () => {},
       info: () => {},
@@ -218,14 +228,15 @@ export async function mystParseAndRender(mystContent: string): Promise<string> {
     try {
       basicTransformations(tree as Root, file as any);
     } catch (error) {
-      console.warn('Failed to apply basic transformations:', error);
+      console.warn("Failed to apply basic transformations:", error);
     }
 
     // Render the parsed tree to HTML
     return await renderMystAst(tree as Root);
   } catch (error) {
-    console.error('MyST parse and render error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error("MyST parse and render error:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return `<p><em>Error parsing MyST content: ${errorMessage}</em></p>`;
   }
 }

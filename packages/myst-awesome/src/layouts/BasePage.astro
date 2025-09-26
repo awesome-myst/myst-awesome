@@ -61,6 +61,7 @@ if (projectConfig?.data?.options?.favicon) {
 // Import Themes component for CSS management
 import Themes from '../components/Themes.astro';
 import ShikiStyles from '../components/ShikiStyles.astro';
+import KaTeXStyles from '../components/KaTeXStyles.astro';
 ---
 
 <!doctype html>
@@ -76,6 +77,9 @@ import ShikiStyles from '../components/ShikiStyles.astro';
 
     <!-- Import Shiki syntax highlighting CSS -->
     <ShikiStyles />
+
+    <!-- Import KaTeX math rendering CSS -->
+    <KaTeXStyles />
 
     <link rel="icon" type={faviconType} href={faviconPath} />
     <title>{title}</title>
