@@ -100,29 +100,3 @@ function escapeHtml(text: string): string {
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
-
-/**
- * Get CSS for KaTeX support
- * This should be included in the page head for proper math rendering
- */
-export function getKaTeXCSS(): string {
-  return `
-    /* KaTeX math rendering styles */
-    .katex {
-      font-size: 1em;
-    }
-    
-    .katex-display {
-      display: block;
-      margin: 1em 0;
-      text-align: center;
-    }
-    
-    .katex-error {
-      border: 1px solid #cc0000;
-      background-color: #ffeeee;
-      padding: 0.25em;
-      border-radius: 0.25em;
-    }
-  `;
-}
