@@ -19,6 +19,8 @@ import type {
   Math as MystMath,
   InlineMath,
   Keyboard,
+  Superscript,
+  Subscript,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -91,6 +93,18 @@ export async function renderMystAst(root: Root): Promise<string> {
         return `<span style="font-variant: small-caps;">${children.join(
           ""
         )}</span>`;
+      }
+      case "superscript": {
+        const children = await Promise.all(
+          (node as Superscript).children?.map(renderNode) || []
+        );
+        return `<sup>${children.join("")}</sup>`;
+      }
+      case "subscript": {
+        const children = await Promise.all(
+          (node as Subscript).children?.map(renderNode) || []
+        );
+        return `<sub>${children.join("")}</sub>`;
       }
       case "abbreviation": {
         const abbrevNode = node as Abbreviation;
