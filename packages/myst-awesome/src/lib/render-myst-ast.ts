@@ -16,8 +16,11 @@ import type {
   Smallcaps,
   Break,
   Abbreviation,
-  Math,
+  Math as MystMath,
   InlineMath,
+  Keyboard,
+  Superscript,
+  Subscript,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -91,6 +94,18 @@ export async function renderMystAst(root: Root): Promise<string> {
           ""
         )}</span>`;
       }
+      case "superscript": {
+        const children = await Promise.all(
+          (node as Superscript).children?.map(renderNode) || []
+        );
+        return `<sup>${children.join("")}</sup>`;
+      }
+      case "subscript": {
+        const children = await Promise.all(
+          (node as Subscript).children?.map(renderNode) || []
+        );
+        return `<sub>${children.join("")}</sub>`;
+      }
       case "abbreviation": {
         const abbrevNode = node as Abbreviation;
         const children = await Promise.all(
@@ -105,6 +120,15 @@ export async function renderMystAst(root: Root): Promise<string> {
           // Fallback to standard abbr without tooltip if no title
           return `<abbr style="text-decoration: underline dotted;">${content}</abbr>`;
         }
+      }
+      case "keyboard": {
+        const keyboardNode = node as Keyboard;
+        const children = await Promise.all(
+          keyboardNode.children?.map(renderNode) || []
+        );
+        const content = children.join("");
+        // Style keyboard input using Web Awesome design tokens, matching SearchDialog.astro styling
+        return `<kbd style="font-family: var(--wa-font-family-code); padding: var(--wa-space-3xs) var(--wa-space-2xs); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet);">${content}</kbd>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
@@ -177,7 +201,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         return renderInlineMath(math);
       }
       case "math": {
-        const mathNode = node as Math;
+        const mathNode = node as MystMath;
         const math = mathNode.value || "";
         return renderDisplayMath(math);
       }
