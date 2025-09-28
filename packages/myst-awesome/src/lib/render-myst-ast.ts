@@ -39,6 +39,65 @@ export async function renderMystAst(root: Root): Promise<string> {
   // Counter for generating unique IDs
   let abbreviationCounter = 0;
 
+  // Footnote numbering system
+  const footnoteMap = new Map<string, number>(); // identifier -> display number
+  const footnoteReferences: string[] = []; // order of appearance
+  const footnoteDefinitions = new Set<string>(); // available definitions
+
+  // First pass: collect all footnotes to determine numbering
+  const collectFootnotes = (node: Node) => {
+    if (node.type === "footnoteReference") {
+      const refNode = node as FootnoteReference;
+      const identifier = refNode.identifier || refNode.label || "1";
+      if (!footnoteReferences.includes(identifier)) {
+        footnoteReferences.push(identifier);
+      }
+    } else if (node.type === "footnoteDefinition") {
+      const defNode = node as FootnoteDefinition;
+      const identifier = defNode.identifier || defNode.label || "1";
+      footnoteDefinitions.add(identifier);
+    }
+
+    // Recursively collect from children
+    if ((node as Parent).children) {
+      for (const child of (node as Parent).children) {
+        collectFootnotes(child);
+      }
+    }
+  };
+
+  // Collect all footnotes
+  for (const child of root.children) {
+    collectFootnotes(child);
+  }
+
+  // Assign display numbers: manually numbered footnotes keep their numbers,
+  // non-numeric footnotes get auto-numbered in order of appearance
+  let autoNumber = 1;
+  const usedNumbers = new Set<number>();
+
+  // First, identify manually numbered footnotes
+  for (const identifier of footnoteReferences) {
+    if (/^\d+$/.test(identifier)) {
+      const num = parseInt(identifier, 10);
+      footnoteMap.set(identifier, num);
+      usedNumbers.add(num);
+    }
+  }
+
+  // Then assign auto-numbers to non-numeric footnotes
+  for (const identifier of footnoteReferences) {
+    if (!/^\d+$/.test(identifier) && footnoteDefinitions.has(identifier)) {
+      // Find next available auto-number
+      while (usedNumbers.has(autoNumber)) {
+        autoNumber++;
+      }
+      footnoteMap.set(identifier, autoNumber);
+      usedNumbers.add(autoNumber);
+      autoNumber++;
+    }
+  }
+
   const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
       case "paragraph": {
@@ -135,10 +194,10 @@ export async function renderMystAst(root: Root): Promise<string> {
       case "footnoteReference": {
         const refNode = node as FootnoteReference;
         const identifier = refNode.identifier || refNode.label || "1";
-        const label = refNode.label || identifier;
+        const displayNumber = footnoteMap.get(identifier) || identifier;
         // Create a clickable superscript link to the footnote definition
         // Uses Web Awesome color tokens for consistent theming
-        return `<a href="#footnote-${identifier}" id="footnote-ref-${identifier}" style="text-decoration: none; color: var(--wa-color-primary-600);"><sup style="font-size: 0.75em; line-height: 0; vertical-align: super;">[${label}]</sup></a>`;
+        return `<a href="#footnote-${identifier}" id="footnote-ref-${identifier}" style="text-decoration: none; color: var(--wa-color-primary-600);"><sup style="font-size: 0.75em; line-height: 0; vertical-align: super;">[${displayNumber}]</sup></a>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
@@ -188,7 +247,7 @@ export async function renderMystAst(root: Root): Promise<string> {
       case "footnoteDefinition": {
         const defNode = node as FootnoteDefinition;
         const identifier = defNode.identifier || defNode.label || "1";
-        const label = defNode.label || identifier;
+        const displayNumber = footnoteMap.get(identifier) || identifier;
         const children = await Promise.all(
           defNode.children?.map(renderNode) || []
         );
@@ -198,7 +257,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         // Uses Web Awesome spacing and color tokens for consistent styling
         return `<div id="footnote-${identifier}" style="margin-top: var(--wa-space-m); padding: var(--wa-space-s); border-left: 2px solid var(--wa-color-neutral-border-normal); background: var(--wa-color-neutral-fill-quiet); font-size: 0.9em;">
   <div style="display: flex; align-items: flex-start; gap: var(--wa-space-xs);">
-    <sup style="font-size: 0.75em; line-height: 0; vertical-align: super; font-weight: bold; color: var(--wa-color-primary-600);">[${label}]</sup>
+    <sup style="font-size: 0.75em; line-height: 0; vertical-align: super; font-weight: bold; color: var(--wa-color-primary-600);">[${displayNumber}]</sup>
     <div style="flex: 1;">${content}</div>
     <a href="#footnote-ref-${identifier}" style="text-decoration: none; color: var(--wa-color-neutral-500); font-size: 0.8em;" title="Back to reference">↵</a>
   </div>
