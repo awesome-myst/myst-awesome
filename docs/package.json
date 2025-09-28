@@ -27,7 +27,7 @@
     "myst-ext-tabs": "^1.0.9",
     "myst-parser": "^1.5.2",
     "myst-roles": "^1.5.2",
-    "mystmd": "^1.6.1",
+    "mystmd": "^1.6.2",
     "sharp": "^0.34.3",
     "typescript": "^5.8.3",
     "unist-builder": "^4.0.0"
