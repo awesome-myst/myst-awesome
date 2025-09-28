@@ -21,6 +21,8 @@ import type {
   Keyboard,
   Superscript,
   Subscript,
+  FootnoteDefinition,
+  FootnoteReference,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -130,6 +132,14 @@ export async function renderMystAst(root: Root): Promise<string> {
         // Style keyboard input using Web Awesome design tokens, matching SearchDialog.astro styling
         return `<kbd style="font-family: var(--wa-font-family-code); padding: var(--wa-space-3xs) var(--wa-space-2xs); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet);">${content}</kbd>`;
       }
+      case "footnoteReference": {
+        const refNode = node as FootnoteReference;
+        const identifier = refNode.identifier || refNode.label || "1";
+        const label = refNode.label || identifier;
+        // Create a clickable superscript link to the footnote definition
+        // Uses Web Awesome color tokens for consistent theming
+        return `<a href="#footnote-${identifier}" id="footnote-ref-${identifier}" style="text-decoration: none; color: var(--wa-color-primary-600);"><sup style="font-size: 0.75em; line-height: 0; vertical-align: super;">[${label}]</sup></a>`;
+      }
       case "inlineCode": {
         const codeNode = node as any;
         const code = codeNode.value || "";
@@ -174,6 +184,25 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as DefinitionDescription).children?.map(renderNode) || []
         );
         return `<dd>${children.join("")}</dd>`;
+      }
+      case "footnoteDefinition": {
+        const defNode = node as FootnoteDefinition;
+        const identifier = defNode.identifier || defNode.label || "1";
+        const label = defNode.label || identifier;
+        const children = await Promise.all(
+          defNode.children?.map(renderNode) || []
+        );
+        const content = children.join("");
+
+        // Create footnote definition with backlink to reference
+        // Uses Web Awesome spacing and color tokens for consistent styling
+        return `<div id="footnote-${identifier}" style="margin-top: var(--wa-space-m); padding: var(--wa-space-s); border-left: 2px solid var(--wa-color-neutral-border-normal); background: var(--wa-color-neutral-fill-quiet); font-size: 0.9em;">
+  <div style="display: flex; align-items: flex-start; gap: var(--wa-space-xs);">
+    <sup style="font-size: 0.75em; line-height: 0; vertical-align: super; font-weight: bold; color: var(--wa-color-primary-600);">[${label}]</sup>
+    <div style="flex: 1;">${content}</div>
+    <a href="#footnote-ref-${identifier}" style="text-decoration: none; color: var(--wa-color-neutral-500); font-size: 0.8em;" title="Back to reference">↵</a>
+  </div>
+</div>`;
       }
       case "blockquote": {
         const children = await Promise.all(
