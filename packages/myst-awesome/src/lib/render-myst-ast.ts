@@ -18,7 +18,6 @@ import type {
   Abbreviation,
   Math as MystMath,
   InlineMath,
-  Keyboard,
   Superscript,
   Subscript,
   FootnoteDefinition,
@@ -31,7 +30,10 @@ import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
 import { renderInlineMath, renderDisplayMath } from "./katex-renderer.js";
 
 /** Function to render MyST content as HTML (simplified) */
-export async function renderMystAst(root: Root): Promise<string> {
+export async function renderMystAst(
+  root: Root,
+  options: { excludeFootnotes?: boolean } = {}
+): Promise<string> {
   if (!root || !root.children) {
     return "<p>No content available</p>";
   }
@@ -44,57 +46,117 @@ export async function renderMystAst(root: Root): Promise<string> {
   const footnoteReferences: string[] = []; // order of appearance
   const footnoteDefinitions = new Set<string>(); // available definitions
 
-  // First pass: collect all footnotes to determine numbering
-  const collectFootnotes = (node: Node) => {
-    if (node.type === "footnoteReference") {
-      const refNode = node as FootnoteReference;
-      const identifier = refNode.identifier || refNode.label || "1";
-      if (!footnoteReferences.includes(identifier)) {
-        footnoteReferences.push(identifier);
+  // Collect all MyST editor content to identify footnotes that should be excluded
+  const mystEditorContent = new Set<string>();
+  const collectMystContent = (node: Node) => {
+    if (node.type === "myst") {
+      const mystNode = node as Myst;
+      if (mystNode.value) {
+        mystEditorContent.add(mystNode.value);
       }
-    } else if (node.type === "footnoteDefinition") {
-      const defNode = node as FootnoteDefinition;
-      const identifier = defNode.identifier || defNode.label || "1";
-      footnoteDefinitions.add(identifier);
+      return;
     }
 
     // Recursively collect from children
     if ((node as Parent).children) {
       for (const child of (node as Parent).children) {
-        collectFootnotes(child);
+        collectMystContent(child);
       }
     }
   };
 
-  // Collect all footnotes
+  // Collect all MyST editor content first
   for (const child of root.children) {
-    collectFootnotes(child);
+    collectMystContent(child);
   }
 
-  // Assign display numbers: manually numbered footnotes keep their numbers,
-  // non-numeric footnotes get auto-numbered in order of appearance
-  let autoNumber = 1;
-  const usedNumbers = new Set<number>();
+  // Helper function to check if a footnote identifier appears in MyST editor content
+  const isFootnoteInMystContent = (identifier: string): boolean => {
+    const refPattern = new RegExp(
+      `\\[\\^${identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\]`,
+      "g"
+    );
+    const defPattern = new RegExp(
+      `^\\[\\^${identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\]:`,
+      "gm"
+    );
 
-  // First, identify manually numbered footnotes
-  for (const identifier of footnoteReferences) {
-    if (/^\d+$/.test(identifier)) {
-      const num = parseInt(identifier, 10);
-      footnoteMap.set(identifier, num);
-      usedNumbers.add(num);
+    for (const content of mystEditorContent) {
+      if (refPattern.test(content) || defPattern.test(content)) {
+        return true;
+      }
     }
-  }
+    return false;
+  };
 
-  // Then assign auto-numbers to non-numeric footnotes
-  for (const identifier of footnoteReferences) {
-    if (!/^\d+$/.test(identifier) && footnoteDefinitions.has(identifier)) {
-      // Find next available auto-number
-      while (usedNumbers.has(autoNumber)) {
+  // Skip footnote processing if excluded
+  if (!options.excludeFootnotes) {
+    // First pass: collect all footnotes to determine numbering
+    const collectFootnotes = (node: Node) => {
+      // Skip collecting footnotes from within MyST editor nodes
+      if (node.type === "myst") {
+        return;
+      }
+
+      if (node.type === "footnoteReference") {
+        const refNode = node as FootnoteReference;
+        const identifier = refNode.identifier || refNode.label || "1";
+
+        // Skip if this footnote reference originates from MyST editor content
+        if (
+          !isFootnoteInMystContent(identifier) &&
+          !footnoteReferences.includes(identifier)
+        ) {
+          footnoteReferences.push(identifier);
+        }
+      } else if (node.type === "footnoteDefinition") {
+        const defNode = node as FootnoteDefinition;
+        const identifier = defNode.identifier || defNode.label || "1";
+
+        // Skip if this footnote definition originates from MyST editor content
+        if (!isFootnoteInMystContent(identifier)) {
+          footnoteDefinitions.add(identifier);
+        }
+      }
+
+      // Recursively collect from children
+      if ((node as Parent).children) {
+        for (const child of (node as Parent).children) {
+          collectFootnotes(child);
+        }
+      }
+    };
+
+    // Collect all footnotes
+    for (const child of root.children) {
+      collectFootnotes(child);
+    }
+
+    // Assign display numbers: manually numbered footnotes keep their numbers,
+    // non-numeric footnotes get auto-numbered in order of appearance
+    let autoNumber = 1;
+    const usedNumbers = new Set<number>();
+
+    // First, identify manually numbered footnotes
+    for (const identifier of footnoteReferences) {
+      if (/^\d+$/.test(identifier)) {
+        const num = parseInt(identifier, 10);
+        footnoteMap.set(identifier, num);
+        usedNumbers.add(num);
+      }
+    }
+
+    // Then assign auto-numbers to non-numeric footnotes
+    for (const identifier of footnoteReferences) {
+      if (!/^\d+$/.test(identifier) && footnoteDefinitions.has(identifier)) {
+        // Find next available auto-number
+        while (usedNumbers.has(autoNumber)) {
+          autoNumber++;
+        }
+        footnoteMap.set(identifier, autoNumber);
+        usedNumbers.add(autoNumber);
         autoNumber++;
       }
-      footnoteMap.set(identifier, autoNumber);
-      usedNumbers.add(autoNumber);
-      autoNumber++;
     }
   }
 
@@ -183,7 +245,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         }
       }
       case "keyboard": {
-        const keyboardNode = node as Keyboard;
+        const keyboardNode = node as Parent;
         const children = await Promise.all(
           keyboardNode.children?.map(renderNode) || []
         );
@@ -192,8 +254,21 @@ export async function renderMystAst(root: Root): Promise<string> {
         return `<kbd style="font-family: var(--wa-font-family-code); padding: var(--wa-space-3xs) var(--wa-space-2xs); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet);">${content}</kbd>`;
       }
       case "footnoteReference": {
+        if (options.excludeFootnotes) {
+          // When footnotes are excluded, render as plain text
+          const refNode = node as FootnoteReference;
+          const label = refNode.label || refNode.identifier || "1";
+          return `[^${label}]`;
+        }
+
         const refNode = node as FootnoteReference;
         const identifier = refNode.identifier || refNode.label || "1";
+
+        // Skip rendering if this footnote originates from MyST editor content
+        if (isFootnoteInMystContent(identifier)) {
+          return "";
+        }
+
         const displayNumber = footnoteMap.get(identifier) || identifier;
         // Create a clickable superscript link to the footnote definition
         // Uses Web Awesome color tokens for consistent theming
@@ -245,8 +320,19 @@ export async function renderMystAst(root: Root): Promise<string> {
         return `<dd>${children.join("")}</dd>`;
       }
       case "footnoteDefinition": {
+        if (options.excludeFootnotes) {
+          // When footnotes are excluded, skip rendering footnote definitions entirely
+          return "";
+        }
+
         const defNode = node as FootnoteDefinition;
         const identifier = defNode.identifier || defNode.label || "1";
+
+        // Skip rendering if this footnote originates from MyST editor content
+        if (isFootnoteInMystContent(identifier)) {
+          return "";
+        }
+
         const displayNumber = footnoteMap.get(identifier) || identifier;
         const children = await Promise.all(
           defNode.children?.map(renderNode) || []
@@ -293,8 +379,12 @@ export async function renderMystAst(root: Root): Promise<string> {
         const math = mathNode.value || "";
         return renderDisplayMath(math);
       }
-      case "myst":
-        return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`;
+      case "myst": {
+        // MyST editor content should not contribute footnotes to the page
+        // The value contains raw MyST markdown that will be editable
+        const mystNode = node as Myst;
+        return `<wa-myst-editor>${mystNode.value || ""}</wa-myst-editor>`;
+      }
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
         console.log("Unknown node structure:", JSON.stringify(node, null, 2));
@@ -309,6 +399,50 @@ export async function renderMystAst(root: Root): Promise<string> {
     root.children?.map(renderNode) || []
   );
   return renderedChildren.join("\n");
+}
+
+/**
+ * Parse MyST markdown and render it to HTML for editor content (excludes footnotes)
+ * @param mystContent - Raw MyST markdown string
+ * @returns Promise<string> - Rendered HTML string without interactive footnotes
+ */
+export async function mystParseAndRenderForEditor(
+  mystContent: string
+): Promise<string> {
+  try {
+    // Parse the MyST content
+    const tree = mystParse(mystContent);
+
+    // Create a minimal VFile-like object for the transformations
+    const file = {
+      path: "rendered.md",
+      messages: [],
+      data: {},
+      history: [],
+      cwd: "/tmp",
+      value: "",
+      map: undefined,
+      fail: () => {},
+      info: () => {},
+      message: () => {},
+      warn: () => {},
+    };
+
+    // Apply basic MyST transformations to the root AST
+    try {
+      basicTransformations(tree as Root, file as any);
+    } catch (error) {
+      console.warn("Failed to apply basic transformations:", error);
+    }
+
+    // Render the parsed tree to HTML with footnotes excluded
+    return await renderMystAst(tree as Root, { excludeFootnotes: true });
+  } catch (error) {
+    console.error("MyST parse and render error:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return `<p><em>Error parsing MyST content: ${errorMessage}</em></p>`;
+  }
 }
 
 /**
