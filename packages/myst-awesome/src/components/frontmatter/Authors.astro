@@ -18,8 +18,27 @@ interface Props {
 
 const { authors, affiliations } = Astro.props;
 
+// Helper function to get author name as string
+function getAuthorName(author: any): string {
+  if (!author.name) return 'Unknown Author';
+  // If name is a string, return it directly
+  if (typeof author.name === 'string') return author.name;
+  // If name is an object, use the literal property
+  if (typeof author.name === 'object' && author.name.literal) {
+    return author.name.literal;
+  }
+  // Fallback: try to construct name from parts
+  if (typeof author.name === 'object') {
+    const parts = [];
+    if (author.name.given) parts.push(author.name.given);
+    if (author.name.family) parts.push(author.name.family);
+    if (parts.length > 0) return parts.join(' ');
+  }
+  return 'Unknown Author';
+}
+
 // Helper function to render affiliation by ID
-function getAffiliationName(affiliationId: string, affiliations: any[]) {
+function getAffiliationName(affiliationId: string, affiliations: any[] | undefined) {
   if (!affiliations) return affiliationId;
   const affiliationsLookup = Object.fromEntries(
     affiliations.map(({ id, ...rest }: any) => [id, rest])
@@ -35,13 +54,13 @@ function getAffiliationName(affiliationId: string, affiliations: any[]) {
     <div style="display: flex; flex-direction: column; gap: var(--wa-space-s);">
       {authors.map((author: any) => (
         <div style="display: flex; align-items: flex-start; gap: var(--wa-space-s);">
-          <span style="font-weight: var(--wa-font-weight-semibold); font-size: var(--wa-font-size-small);">{author.name}</span>
+          <span style="font-weight: var(--wa-font-weight-semibold); font-size: var(--wa-font-size-small);">{getAuthorName(author)}</span>
           <div style="display: flex; align-items: center; gap: var(--wa-space-xs);">
             {author.orcid && (
-              <a 
-                href={`https://orcid.org/${author.orcid.replace(/(https?:\/\/)?orcid\.org\//, '')}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={`https://orcid.org/${author.orcid.replace(/(https?:\/\/)?orcid\.org\//, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 title="ORCID"
                 style="color: var(--wa-color-neutral-500); transition: color 0.2s;"
                 onmouseover="this.style.color='var(--wa-color-success-600)'"
@@ -51,8 +70,8 @@ function getAffiliationName(affiliationId: string, affiliations: any[]) {
               </a>
             )}
             {author.email && (
-              <a 
-                href={`mailto:${author.email}`} 
+              <a
+                href={`mailto:${author.email}`}
                 title="Email"
                 style="color: var(--wa-color-neutral-500); transition: color 0.2s;"
                 onmouseover="this.style.color='var(--wa-color-primary-600)'"
