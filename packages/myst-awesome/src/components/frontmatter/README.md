@@ -85,7 +85,7 @@ Displays launch options for Jupyter/Binder environments.
 All components use the `wa-scienceicons` library for scientific icons:
 
 - **ORCID**: `orcid` - Author identification
-- **Email**: `email` - Contact information  
+- **Email**: `email` - Contact information
 - **ROR**: `ror` - Research organization registry
 - **GitHub**: `github` - Source code repositories
 - **Jupyter**: `jupyter` - Jupyter environments
@@ -179,7 +179,7 @@ See `/frontmatter-demo` for a complete demonstration of all components with samp
 ## Dependencies
 
 - **Astro** - Component framework
-- **WebAwesome** - UI component library  
+- **WebAwesome** - UI component library
 - **wa-scienceicons** - Science icon library
 - **Tailwind CSS** - Styling (optional, components work without it)
 

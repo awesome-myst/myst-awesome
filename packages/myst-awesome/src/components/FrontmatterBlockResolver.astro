@@ -4,19 +4,19 @@
 
 /**
  * Configurable FrontmatterBlock component that supports overrides
- * 
+ *
  * Usage:
  * 1. Direct usage (default component):
  *    <FrontmatterBlockResolver frontmatter={frontmatter} />
- * 
+ *
  * 2. With custom component:
  *    import CustomFrontmatter from './custom/MyFrontmatterBlock.astro';
  *    <FrontmatterBlockResolver component={CustomFrontmatter} frontmatter={frontmatter} />
- * 
+ *
  * 3. With custom sub-components:
  *    import CustomAuthors from './custom/MyAuthors.astro';
- *    <FrontmatterBlockResolver 
- *      frontmatter={frontmatter} 
+ *    <FrontmatterBlockResolver
+ *      frontmatter={frontmatter}
  *      components={{ authors: CustomAuthors }}
  *    />
  */
@@ -38,10 +38,10 @@ interface Props {
   };
 }
 
-const { 
-  component: CustomComponent, 
+const {
+  component: CustomComponent,
   components,
-  ...frontmatterProps 
+  ...frontmatterProps
 } = Astro.props;
 ---
 
