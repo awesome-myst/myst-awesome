@@ -48,9 +48,9 @@ function formatDoi(doi: string) {
     <!-- DOI -->
     {frontmatter.doi && (
       <div>
-        <a 
-          href={`https://doi.org/${formatDoi(frontmatter.doi)}`} 
-          target="_blank" 
+        <a
+          href={`https://doi.org/${formatDoi(frontmatter.doi)}`}
+          target="_blank"
           rel="noopener noreferrer"
           style="color: var(--wa-color-primary-600); font-size: var(--wa-font-size-small); text-decoration: none;"
           onmouseover="this.style.color='var(--wa-color-primary-800)'"
@@ -60,27 +60,27 @@ function formatDoi(doi: string) {
         </a>
       </div>
     )}
-    
+
     <!-- Authors -->
     {frontmatter.authors && (
       <AuthorsComponent authors={frontmatter.authors} affiliations={frontmatter.affiliations} />
     )}
-    
+
     <!-- Affiliations (if not shown with authors) -->
     {frontmatter.affiliations && !frontmatter.authors && (
       <AffiliationsComponent affiliations={frontmatter.affiliations} />
     )}
-    
+
     <!-- License Badges -->
     {frontmatter.license && (
       <LicenseBadgesComponent iconOnly={true} license={frontmatter.license} />
     )}
-    
+
     <!-- Downloads -->
     {frontmatter.downloads && (
       <DownloadsComponent downloads={frontmatter.downloads} />
     )}
-    
+
     <!-- Launch Button (for Jupyter/Binder) -->
     {frontmatter.thebe && (
       <LaunchButtonComponent thebe={frontmatter.thebe} />
@@ -92,10 +92,10 @@ function formatDoi(doi: string) {
   // Import Web Awesome components
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
-  
+
   // Import and register scienceicons
   import { registerScienceIconsLibrary } from '../../lib/wa-scienceicons.ts';
-  
+
   // Register scienceicons library if running in browser
   if (typeof window !== 'undefined') {
     // Get baseUrl from the component props (passed via data attribute)
