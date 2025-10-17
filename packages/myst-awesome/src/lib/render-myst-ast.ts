@@ -27,6 +27,7 @@ import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
 import { renderInlineMath, renderDisplayMath } from "./katex-renderer.js";
+import { escapeHtml } from "./html-escape.js";
 
 /** Function to render MyST content as HTML (simplified) */
 export async function renderMystAst(root: Root): Promise<string> {
@@ -207,6 +208,12 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "myst":
         return `<wa-myst-editor>${(node as Myst).value}</wa-myst-editor>`;
+      case "html": {
+        const htmlNode = node as any;
+        const htmlContent = htmlNode.value || "";
+        // Escape HTML to prevent XSS
+        return escapeHtml(htmlContent);
+      }
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
         console.log("Unknown node structure:", JSON.stringify(node, null, 2));
