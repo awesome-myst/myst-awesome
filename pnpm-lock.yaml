@@ -7,7 +7,7 @@ settings:
 overrides:
   '@awesome-myst/myst-zod': ^0.6.1
   astro: 5.14.1
-  '@awesome.me/webawesome': ^3.0.0-beta.6
+  '@awesome.me/webawesome': ^3.1.0
 
 importers:
 
@@ -26,8 +26,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/myst-awesome
       '@awesome.me/webawesome':
-        specifier: ^3.0.0-beta.6
-        version: 3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
+        specifier: ^3.1.0
+        version: 3.1.0(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
       astro:
         specifier: 5.14.1
         version: 5.14.1(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
@@ -115,8 +115,8 @@ importers:
         specifier: ^0.6.1
         version: 0.6.1
       '@awesome.me/webawesome':
-        specifier: ^3.0.0-beta.6
-        version: 3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
+        specifier: ^3.1.0
+        version: 3.1.0(@floating-ui/utils@0.2.10)(@types/react@19.1.9)
       astro:
         specifier: 5.14.1
         version: 5.14.1(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
@@ -198,8 +198,8 @@ packages:
   '@awesome-myst/myst-zod@0.6.1':
     resolution: {integrity: sha512-uhSy0SgY6miUdtRWURj2EUSEAgVm2xavrvv3ZyCuraRESz8o8AYHYbzx9dTBR8H4YrYxuRmyrmucrLhdT7o2vA==}
 
-  '@awesome.me/webawesome@3.0.0-beta.6':
-    resolution: {integrity: sha512-u/HiUE71Lrp99cYycrinumH4QX9Hb3OxlOH0Y3jh+Yybz/uNfALm0GIhYXpOr0L9kTuS9Fdwy4XuLHaHV6m1Xw==}
+  '@awesome.me/webawesome@3.1.0':
+    resolution: {integrity: sha512-9XgTxL/6/8Ynb4KvQBjK33RjnsRyqIJO8zYQODu8MDbS/2ecjah+cUOek6DkK0opg1DC6N7X6GStjcrjAuMMyQ==}
     engines: {node: '>=14.17.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -2778,7 +2778,7 @@ snapshots:
       spdx-correct: 3.2.0
       zod: 3.25.76
 
-  '@awesome.me/webawesome@3.0.0-beta.6(@floating-ui/utils@0.2.10)(@types/react@19.1.9)':
+  '@awesome.me/webawesome@3.1.0(@floating-ui/utils@0.2.10)(@types/react@19.1.9)':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       '@floating-ui/dom': 1.7.3
