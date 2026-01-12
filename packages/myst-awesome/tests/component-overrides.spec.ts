@@ -11,10 +11,10 @@ test.describe("Component Override System", () => {
     await page.goto("http://localhost:4322/working-demo", {
       waitUntil: "domcontentloaded",
     });
-    // Avoid networkidle due to dev server HMR websockets; wait for key UI instead
+    // Wait for main content to be visible (avoid matching elements in closed drawers/dialogs)
     await page.waitForSelector(
-      ".custom-navigation-menu, .custom-table-of-contents, h1,h2",
-      { timeout: 15000 }
+      ".page-main h1, .page-main h2, main h1, main h2",
+      { timeout: 15000, state: "visible" }
     );
   });
 
@@ -22,9 +22,10 @@ test.describe("Component Override System", () => {
     // Check that the page loads with the correct title
     await expect(page).toHaveTitle(/Working Demo/);
 
-    // Check that the main heading is present (the custom navigation title)
-    await expect(page.locator("h1, h2").first()).toContainText(
-      "Custom Navigation"
+    // Check that the main heading is present (the page title)
+    // Use a more specific selector to avoid matching h2 elements inside closed dialogs/drawers
+    await expect(page.locator(".page-main h1, .page-main h2, main h1, main h2").first()).toContainText(
+      "Working Demo"
     );
   });
 
