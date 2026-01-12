@@ -9,6 +9,8 @@ overrides:
   astro: 5.14.1
   '@awesome.me/webawesome': ^3.1.0
   '@playwright/test': ^1.57.0
+  mystmd: ^1.7.1
+  myst-common: ^1.9.3
 
 importers:
 
@@ -33,8 +35,8 @@ importers:
         specifier: 5.14.1
         version: 5.14.1(@types/node@24.2.0)(rollup@4.46.2)(typescript@5.8.3)(yaml@2.8.1)
       myst-common:
-        specifier: ^1.5.2
-        version: 1.8.1
+        specifier: ^1.9.3
+        version: 1.9.3
       myst-directives:
         specifier: ^1.5.2
         version: 1.5.15
@@ -63,8 +65,8 @@ importers:
         specifier: ^1.5.2
         version: 1.5.15
       mystmd:
-        specifier: ^1.6.3
-        version: 1.6.3
+        specifier: ^1.7.1
+        version: 1.7.1
       sharp:
         specifier: ^0.34.3
         version: 0.34.3
@@ -1769,8 +1771,8 @@ packages:
   myst-cli-utils@1.0.0:
     resolution: {integrity: sha512-6pHTGOgY63WyfYWY0tz7HhdBBOISrZ08QaAbCuk7tKHNrQnIsEhgXZwy0+gVEH8eVXehOyrEC/BmeNkhufblTA==}
 
-  myst-common@1.8.1:
-    resolution: {integrity: sha512-0KcwBb5R112Ys0fFkUC7P8TluzwW0w1bg3qlowwYHKuY7mZMdEShrEcmGOxDarYzBvUO7vuy7npEz8VfTS4IAg==}
+  myst-common@1.9.3:
+    resolution: {integrity: sha512-hhe7U8dVWJ73DxGvqfRe6mpBFHPv4TWxZrzm/O3+173UbT3t2pFYnzPy5ObG3wbQvqUUswnXovChsPlwsHZE3w==}
 
   myst-directives@1.5.15:
     resolution: {integrity: sha512-NzZodTvktmoRH5x4pqVpXsF8+c1X4ByceyPf1HA12O3z9L5r2blfbS1KLknFfAhSW49GDQKmJpHDRt1nzLPUzA==}
@@ -1796,6 +1798,9 @@ packages:
   myst-frontmatter@1.8.1:
     resolution: {integrity: sha512-+Zj/CDNDm/V30gda7uTTJRAIbHiuF9ezP57lbbwcan/BxpbOgeweBaRXlOXCUJ0NPw7hVyFxrfmvc5bPkzqxWA==}
 
+  myst-frontmatter@1.9.3:
+    resolution: {integrity: sha512-WNKq5hexK7Om3fWpAEQNzmLwSB5iHetjmYoCcqNJJswLUbTrpq/WdZRCkpI52gEbGou7qh0C8sjwl8gSZgyqvQ==}
+
   myst-parser@1.5.15:
     resolution: {integrity: sha512-VBmJKaTCfv8mJuXa81jZX3DXzETy9OpxubqXLQN3NVB8fJoCPA2ugqRniKR8PWNq/1hEPDEMxNpM8cdkHYbjIA==}
 
@@ -1814,11 +1819,14 @@ packages:
   myst-toc@0.1.3:
     resolution: {integrity: sha512-X5MrAeR+jlanAd7xNsDeC+A8GDQRjhj5u9lmwtsIMzHuxzZ5ttt/91ZJKCh0MfeQUgtHPzp1ZAeeEHMLjXAsUQ==}
 
+  myst-toc@0.1.4:
+    resolution: {integrity: sha512-/SVB4GDv3A+pdkliYEdJv6cUj5RnDX+Qb7zuzNs3COUhGUaUK/T8bX/tDFqOquxFBX/RVoOstQVHOkVu6ui6nQ==}
+
   myst-transforms@1.3.38:
     resolution: {integrity: sha512-JFT08hd48XAK3sj4KJEcfKWPocIfOyctLbjd3yxBQjygKmL3vM7oedRrajOfkvvOw1d+2pViNb2oyPHkYwRscQ==}
 
-  mystmd@1.6.3:
-    resolution: {integrity: sha512-tBkZq6wl8QbNULWDT1pQqY1UcEcZqtVi8NWIhd4Q6/363vGiG9RQvw5eHmupaxiW8x61mCZdJUqleoPWprNoAw==}
+  mystmd@1.7.1:
+    resolution: {integrity: sha512-U/hUKxBBno7aJ3A04ius15lvtiHPq521NQoqScRlLJpVDQymLI+b9K49UvPnrbVLTx2q1Tbm5bZ3yAV8B+vStg==}
     hasBin: true
 
   nanoid@3.3.11:
@@ -1833,6 +1841,11 @@ packages:
 
   nanoid@5.1.5:
     resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -4619,12 +4632,12 @@ snapshots:
       chalk: 4.1.2
       pretty-hrtime: 1.0.3
 
-  myst-common@1.8.1:
+  myst-common@1.9.3:
     dependencies:
       mdast: 3.0.0
-      myst-frontmatter: 1.8.1
+      myst-frontmatter: 1.9.3
       myst-spec: 0.0.5
-      nanoid: 4.0.2
+      nanoid: 5.1.6
       unified: 10.1.2
       unist-util-remove: 3.1.1
       unist-util-select: 4.0.3
@@ -4637,7 +4650,7 @@ snapshots:
       classnames: 2.5.1
       csv-parse: 5.6.0
       js-yaml: 4.1.0
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-spec-ext: 1.8.1
       nanoid: 4.0.2
       unist-util-select: 4.0.3
@@ -4645,35 +4658,44 @@ snapshots:
 
   myst-ext-button@0.0.1:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-spec-ext: 1.8.1
 
   myst-ext-card@1.0.9:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
 
   myst-ext-exercise@1.0.9:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
 
   myst-ext-grid@1.0.9:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
 
   myst-ext-proof@1.0.12:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-spec: 0.0.5
 
   myst-ext-tabs@1.0.9:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
 
   myst-frontmatter@1.8.1:
     dependencies:
       credit-roles: 2.1.0
       doi-utils: 2.0.6
       myst-toc: 0.1.3
+      orcid: 1.0.0
+      simple-validators: 1.1.1
+      spdx-correct: 3.2.0
+
+  myst-frontmatter@1.9.3:
+    dependencies:
+      credit-roles: 2.1.0
+      doi-utils: 2.0.6
+      myst-toc: 0.1.4
       orcid: 1.0.0
       simple-validators: 1.1.1
       spdx-correct: 3.2.0
@@ -4690,7 +4712,7 @@ snapshots:
       markdown-it-myst: 1.0.11
       markdown-it-myst-extras: 0.3.0(markdown-it@12.3.2)
       markdown-it-task-lists: 2.1.1
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-directives: 1.5.15
       myst-roles: 1.5.15
       myst-spec: 0.0.5
@@ -4703,7 +4725,7 @@ snapshots:
 
   myst-roles@1.5.15:
     dependencies:
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-spec-ext: 1.8.1
 
   myst-spec-ext@1.8.1:
@@ -4721,7 +4743,7 @@ snapshots:
       mdast: 3.0.0
       mdast-util-find-and-replace: 2.2.2
       mdast-util-to-hast: 12.3.0
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       rehype-format: 4.0.1
       rehype-parse: 8.0.5
       rehype-remark: 9.1.2
@@ -4737,6 +4759,10 @@ snapshots:
     dependencies:
       simple-validators: 1.1.1
 
+  myst-toc@0.1.4:
+    dependencies:
+      simple-validators: 1.1.1
+
   myst-transforms@1.3.38:
     dependencies:
       doi-utils: 2.0.6
@@ -4746,7 +4772,7 @@ snapshots:
       js-yaml: 4.1.0
       katex: 0.15.6
       mdast-util-find-and-replace: 2.2.2
-      myst-common: 1.8.1
+      myst-common: 1.9.3
       myst-frontmatter: 1.8.1
       myst-spec: 0.0.5
       myst-spec-ext: 1.8.1
@@ -4764,13 +4790,15 @@ snapshots:
       vfile: 5.3.7
       vfile-message: 3.1.4
 
-  mystmd@1.6.3: {}
+  mystmd@1.7.1: {}
 
   nanoid@3.3.11: {}
 
   nanoid@4.0.2: {}
 
   nanoid@5.1.5: {}
+
+  nanoid@5.1.6: {}
 
   neotraverse@0.6.18: {}
 
