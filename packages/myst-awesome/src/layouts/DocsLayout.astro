@@ -4,7 +4,7 @@
 
 import BasePage from './BasePage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
-import SearchDialog from '../components/SearchDialog.astro';
+import SearchLauncher from '../components/SearchLauncher.astro';
 import Footer from '../components/Footer.astro';
 import FrontmatterBlockResolver from '../components/FrontmatterBlockResolver.astro';
 import { getCollection } from 'astro:content';
@@ -218,6 +218,8 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
   theme={theme}
   colorScheme={colorScheme}
   mobileBreakpoint="920px"
+  searchBaseDir={baseDir}
+  searchFoldersOption={foldersOption}
   {...rest}
 >
   <!-- Header with branding and controls -->
@@ -228,6 +230,11 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         <span class="brand-text">{projectTitle}</span>
       </a>
       {section && <wa-badge variant="neutral" class="section-badge">{section}</wa-badge>}
+    </div>
+
+    <!-- Search launcher in header (always visible regardless of navigation state) -->
+    <div class="header-search">
+      <SearchLauncher />
     </div>
 
     <div class="docs-controls">
@@ -282,10 +289,6 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         />
       </div>
     )}
-    <!-- Desktop search (hidden on mobile) -->
-    <div class="desktop-search-container">
-      <SearchDialog baseDir={baseDir} foldersOption={foldersOption} />
-    </div>
   </div>
 
   <nav slot="navigation" class="docs-navigat | 'shoelace'ion">
@@ -528,18 +531,6 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
 <style>
   /* Documentation-specific styles */
 
-  .desktop-search-container {
-    display: block;
-    width: 100%;
-  }
-
-  /* Show mobile search and hide desktop search on mobile */
-  @media (max-width: 920px) {
-    .desktop-search-container {
-      display: none;
-    }
-  }
-
   /* Header */
   .docs-header {
     display: flex;
@@ -550,10 +541,29 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
     flex-wrap: wrap;
   }
 
+  /* Header search - always visible */
+  .header-search {
+    flex: 1;
+    max-width: 400px;
+    min-width: 150px;
+  }
+
   @media (max-width: 920px) {
     .docs-header {
       flex-wrap: nowrap;
       gap: var(--wa-space-s);
+    }
+
+    .header-search {
+      flex: 1;
+      max-width: 250px;
+      min-width: 100px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-search {
+      display: none;
     }
   }
 

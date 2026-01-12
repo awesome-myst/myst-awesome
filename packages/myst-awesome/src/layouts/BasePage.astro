@@ -11,9 +11,15 @@ interface Props {
   disableSticky?: string[];
   showNav?: boolean;
   navOpen?: boolean;
+  /** Base directory for search URLs (e.g., "/book") */
+  searchBaseDir?: string;
+  /** Whether folders option is enabled for URL transformation */
+  searchFoldersOption?: boolean;
 }
 
 import { getCollection } from 'astro:content';
+import SearchDialog from '../components/SearchDialog.astro';
+import SearchLauncher from '../components/SearchLauncher.astro';
 
 // Simple try-catch to avoid warnings if projectFrontmatter collection doesn't exist
 let projectConfig: any = null;
@@ -34,7 +40,9 @@ const {
   mobileBreakpoint = '768px',
   disableSticky = [],
   navOpen = false,
-  showNav = showNavDefault
+  showNav = showNavDefault,
+  searchBaseDir = '',
+  searchFoldersOption = false,
 } = Astro.props;
 
 // Determine favicon path and type
@@ -103,6 +111,9 @@ import KaTeXStyles from '../components/KaTeXStyles.astro';
   </head>
 
   <body data-theme={colorScheme}>
+    <!-- Search dialog (always present in DOM for consistent behavior) -->
+    <SearchDialog baseDir={searchBaseDir} foldersOption={searchFoldersOption} />
+
     <!-- Skip to content link for accessibility -->
     <div class="skip-links">
       <a href="#main-content" class="skip-link wa-visually-hidden">

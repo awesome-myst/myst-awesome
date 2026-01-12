@@ -12,6 +12,8 @@ export { default as Footer } from "./components/Footer.astro";
 export { default as Themes } from "./components/Themes.astro";
 export { default as ThemesResolver } from "./components/ThemesResolver.astro";
 export { default as KaTeXStyles } from "./components/KaTeXStyles.astro";
+export { default as SearchDialog } from "./components/SearchDialog.astro";
+export { default as SearchLauncher } from "./components/SearchLauncher.astro";
 
 // Export utilities
 export * from "./lib/get-component.ts";

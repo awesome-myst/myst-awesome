@@ -1,6 +1,10 @@
 ---
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+// SearchDialog - The search dialog component (dialog only)
+// The launcher/trigger element is now in SearchLauncher.astro
+// Place this component once in the layout (e.g., BasePage or DocsLayout)
+// and place SearchLauncher wherever you want the search trigger to appear.
 
 interface Props {
   baseDir?: string;
@@ -9,13 +13,7 @@ interface Props {
 const { baseDir = '', foldersOption = false } = Astro.props as Props;
 ---
 
-<div class="search-launcher">
-  <wa-input class="nav-search" placeholder="Search" size="medium" type="text" appearance="outlined">
-    <wa-icon slot="start" name="magnifying-glass"></wa-icon>
-    <kbd slot="end" class="search-shortcut">/</kbd>
-  </wa-input>
-
-  <wa-dialog class="search-dialog" label="Search" no-header data-base-dir={baseDir} data-folders-option={foldersOption}>
+<wa-dialog class="search-dialog" label="Search" no-header data-base-dir={baseDir} data-folders-option={foldersOption}>
     <div class="search-container">
       <div class="search-left">
         <div class="search-top">
@@ -40,7 +38,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       </div>
     </div>
   </wa-dialog>
-</div>
 
 <script>
   // @ts-nocheck
@@ -50,8 +47,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
   import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
   import Fuse from 'fuse.js'
 
-  /** @type {HTMLInputElement | null} */
-  let launcherInput;
   /** @type {HTMLElement | null} */
   let dialog;
   /** @type {HTMLInputElement | null} */
@@ -342,20 +337,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
     .replace(/'/g, '&#039;');
 
   document.addEventListener('DOMContentLoaded', () => {
-    launcherInput = document.querySelector('.search-launcher .nav-search');
-
-  // Open dialog from launcher; guard against click-through just after a close
-  if (launcherInput) {
-    // Block pointerdown during the closing window to avoid click-through
-    launcherInput.addEventListener('pointerdown', (e) => {
-      if (closing) { e.preventDefault(); e.stopPropagation(); }
-    }, { capture: true });
-    launcherInput.addEventListener('click', (e) => {
-      if (closing) { e.preventDefault(); e.stopPropagation(); return; }
-      openDialog();
-    });
-  }
-
   // Global '/' shortcut to open search when not typing in an input/textarea
     /** @param {KeyboardEvent} e */
     const onGlobalKey = (e) => {
@@ -447,8 +428,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
         searchInput.removeEventListener('sl-input', boundSearchInputHandler);
         boundSearchInputHandler = null;
       }
-      // Return focus to launcher for good keyboard UX
-      launcherInput?.focus?.();
       // @ts-ignore
       (window as any).__searchOpened = false;
       dialog = null;
@@ -528,12 +507,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
 </script>
 
 <style>
-  /* Avoid force-showing the dialog; rely on the component's lifecycle */
-
-  .search-launcher { width: 100%; }
-  .nav-search { width: 100%; }
-  .search-shortcut { font-family: var(--wa-font-family-code); font-size: var(--wa-font-size-xs); padding: var(--wa-space-3xs) var(--wa-space-2xs); background-color: var(--wa-color-neutral-fill-quiet); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); }
-
+  /* Search dialog styles */
   .search-container { display: grid; grid-template-columns: 1fr; grid-template-rows: 1.62fr 1fr; gap: var(--wa-space-m); width: min(100%, 1100px); min-height: 70vh; --preview-scale: 0.5; position: relative; }
   .search-left { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; overflow: visible; position: relative; z-index: 1; }
   .search-right { display: flex; flex-direction: column; gap: var(--wa-space-s); min-height: 0; }
