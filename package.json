@@ -19,7 +19,10 @@
     "overrides": {
       "@awesome-myst/myst-zod": "^0.6.1",
       "astro": "5.14.1",
-      "@awesome.me/webawesome": "^3.0.0-beta.6"
+      "@awesome.me/webawesome": "^3.1.0",
+      "@playwright/test": "^1.57.0",
+      "mystmd": "^1.7.1",
+      "myst-common": "^1.9.3"
     },
     "onlyBuiltDependencies": [
       "esbuild"

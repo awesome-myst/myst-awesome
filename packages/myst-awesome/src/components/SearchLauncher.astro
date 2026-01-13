@@ -1,0 +1,91 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+// SearchLauncher - Trigger element for opening the search dialog
+// This component should be placed in an always-visible location (e.g., header)
+// so search is accessible regardless of navigation sidebar state.
+
+interface Props {
+  /** Optional placeholder text for the search input */
+  placeholder?: string;
+  /** CSS class to apply to the launcher container */
+  class?: string;
+}
+
+const { placeholder = 'Search', class: className = '' } = Astro.props;
+---
+
+<div class:list={['search-launcher', className]}>
+  <wa-input 
+    class="search-launcher-input" 
+    placeholder={placeholder} 
+    size="medium" 
+    type="text" 
+    appearance="outlined"
+    readonly
+  >
+    <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+    <kbd slot="end" class="search-shortcut">/</kbd>
+  </wa-input>
+</div>
+
+<script>
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+
+  // Initialize launcher click handler
+  document.addEventListener('DOMContentLoaded', () => {
+    const launcher = document.querySelector('.search-launcher-input');
+    if (launcher) {
+      // Prevent the input from actually receiving focus (it's just a trigger)
+      launcher.addEventListener('focus', (e) => {
+        (e.target as HTMLElement)?.blur?.();
+      });
+
+      // Open search dialog on click
+      launcher.addEventListener('click', () => {
+        // Trigger the search dialog open via the global hook
+        if (typeof (window as any).__searchOpen === 'function') {
+          (window as any).__searchOpen();
+        }
+      });
+
+      // Also handle Enter key on the input
+      launcher.addEventListener('keydown', (e) => {
+        const evt = e as KeyboardEvent;
+        if (evt.key === 'Enter') {
+          evt.preventDefault();
+          if (typeof (window as any).__searchOpen === 'function') {
+            (window as any).__searchOpen();
+          }
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .search-launcher {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .search-launcher-input {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  /* Make it clear this is clickable, not a real input */
+  .search-launcher-input::part(base) {
+    cursor: pointer;
+  }
+
+  .search-shortcut {
+    font-family: var(--wa-font-family-code);
+    font-size: var(--wa-font-size-xs);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    background-color: var(--wa-color-neutral-fill-quiet);
+    border: 1px solid var(--wa-color-neutral-border-normal);
+    border-radius: var(--wa-border-radius-s);
+  }
+</style>

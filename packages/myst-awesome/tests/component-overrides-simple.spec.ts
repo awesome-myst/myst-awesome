@@ -11,9 +11,10 @@ test.describe("Component Override System", () => {
     await page.goto("http://localhost:4322/working-demo", {
       waitUntil: "domcontentloaded",
     });
+    // Wait for main content to be visible (avoid matching elements in closed drawers/dialogs)
     await page.waitForSelector(
-      ".custom-navigation-menu, .custom-table-of-contents, h1,h2",
-      { timeout: 15000 }
+      ".page-main h1, .page-main h2, main h1, main h2",
+      { timeout: 15000, state: "visible" }
     );
   });
 

@@ -51,9 +51,10 @@ test.describe("Basic Functionality", () => {
     });
     await page.click('a[href="/working-demo"]');
     await page.waitForLoadState("domcontentloaded");
+    // Wait for main content to be visible (avoid matching elements in closed drawers/dialogs)
     await page.waitForSelector(
-      "h1, h2, .custom-navigation-menu, .custom-table-of-contents",
-      { timeout: 15000 }
+      ".page-main h1, .page-main h2, main h1, main h2",
+      { timeout: 15000, state: "visible" }
     );
     await expect(page).toHaveTitle(/Working Demo/);
     await expect(page.locator("h1").first()).toContainText("Working Demo");
