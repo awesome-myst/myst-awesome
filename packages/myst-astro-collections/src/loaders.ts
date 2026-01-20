@@ -125,6 +125,12 @@ export interface MystServerConfig {
   includeKeywords?: boolean;
   /** Base directory for public files (e.g. '/book') - will be read from myst.yml site.options.base_dir if not provided */
   baseDir?: string;
+  /**
+   * Optional async function to load page data from a local cache.
+   * Called with the reference identifier (e.g., "dpid-390").
+   * Should return the page data object if found, or null/undefined if not cached.
+   */
+  cacheLoader?: (identifier: string) => Promise<any | null> | any | null;
 }
 
 /**
@@ -148,6 +154,7 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
     pageConcurrency = 12,
     includeKeywords = false,
     baseDir: configBaseDir,
+    cacheLoader,
   } = config;
   const shouldGenerateIndex =
     typeof generateSearchIndex === "boolean" ? generateSearchIndex : true;
@@ -209,6 +216,10 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
             return Object.keys(out).length ? out : undefined;
           };
 
+          // Track cache statistics for summary
+          let cacheHits = 0;
+          let cacheMisses = 0;
+
           // Build queue tasks so we can control concurrency with p-queue
           const pageTasks = references.map((ref) => async () => {
             try {
@@ -217,22 +228,40 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
                 kind: (ref as any)?.kind as string | undefined,
                 identifier: (ref as any)?.identifier as string | undefined,
               };
-              if (base.kind === "page" && (ref as any)?.data && base.url) {
-                // Fetch the page data JSON to extract frontmatter
-                const pageController = new AbortController();
-                const pageTimeout = setTimeout(
-                  () => pageController.abort(),
-                  timeout
-                );
-                const pageResp = await fetch(buildPageDataUrl(baseUrl, (ref as any).data), {
-                  signal: pageController.signal,
-                });
-                clearTimeout(pageTimeout);
-                if (pageResp.ok) {
-                  const pageJson = await pageResp.json();
+              
+              if (base.kind === "page" && base.url) {
+                let pageJson: any = null;
+
+                // Try cache first if cacheLoader is provided
+                if (cacheLoader && base.identifier) {
+                  pageJson = await cacheLoader(base.identifier);
+                  if (pageJson) {
+                    cacheHits++;
+                  }
+                }
+
+                // Fall back to network if not in cache
+                if (!pageJson && (ref as any)?.data) {
+                  cacheMisses++;
+                  const pageController = new AbortController();
+                  const pageTimeout = setTimeout(
+                    () => pageController.abort(),
+                    timeout
+                  );
+                  const pageResp = await fetch(buildPageDataUrl(baseUrl, (ref as any).data), {
+                    signal: pageController.signal,
+                  });
+                  clearTimeout(pageTimeout);
+                  if (pageResp.ok) {
+                    pageJson = await pageResp.json();
+                  }
+                }
+
+                if (pageJson) {
                   const fm = pickFrontmatter(pageJson?.frontmatter);
                   return fm ? { ...base, frontmatter: fm } : base;
                 }
+
                 // If fetch fails, return without frontmatter
                 return base;
               }
@@ -266,6 +295,11 @@ export const createMystXrefLoader = (config: MystServerConfig = {}) => {
           writeFileSync(fusePath, JSON.stringify(fuseFiltered, null), "utf-8");
           const displayPath = baseDir ? `${baseDir}/fuse.json` : "fuse.json";
           console.log(`✓ Saved fuse.json to public/${displayPath} (${fusePath})`);
+          
+          // Log cache summary if cacheLoader was provided
+          if (cacheLoader) {
+            console.log(`  Cache: ${cacheHits} hits, ${cacheMisses} misses`);
+          }
         } catch (fuseErr) {
           console.warn("Failed to generate fuse.json:", fuseErr);
         }
