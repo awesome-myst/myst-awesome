@@ -18,7 +18,6 @@ import type {
   Abbreviation,
   Math as MystMath,
   InlineMath,
-  Keyboard,
   Superscript,
   Subscript,
   FootnoteReference,
@@ -126,7 +125,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         }
       }
       case "keyboard": {
-        const keyboardNode = node as Keyboard;
+        const keyboardNode = node as any;
         const children = await Promise.all(
           keyboardNode.children?.map(renderNode) || []
         );
@@ -229,6 +228,34 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Parent).children?.map(renderNode) || []
         );
         return `<a href="${linkNode.url || "#"}">${children.join("")}</a>`;
+      }
+      case "image": {
+        const imageNode = node as any;
+        const url = imageNode.url || "";
+        const alt = imageNode.alt || "";
+        const title = imageNode.title;
+        const width = imageNode.width;
+        const align = imageNode.align;
+
+        // Build style attribute for width and alignment
+        const styles: string[] = [];
+        if (width) {
+          styles.push(`width: ${width}`);
+        }
+        if (align) {
+          if (align === "center") {
+            styles.push("display: block", "margin-left: auto", "margin-right: auto");
+          } else if (align === "left") {
+            styles.push("float: left", "margin-right: var(--wa-space-m)");
+          } else if (align === "right") {
+            styles.push("float: right", "margin-left: var(--wa-space-m)");
+          }
+        }
+
+        const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
+        const titleAttr = title ? ` title="${title}"` : "";
+
+        return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
       }
       case "block": {
         // Block nodes are container nodes that just pass through their children

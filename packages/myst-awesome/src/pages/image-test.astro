@@ -1,0 +1,100 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+import Layout from '../layouts/Layout.astro';
+import { mystParseAndRender } from '../lib/render-myst-ast.js';
+
+const mystContent = `# Image Rendering Test
+
+This is a test page to verify that MyST image node rendering is working properly.
+
+## Simple Image
+
+Here's a simple image using Markdown syntax:
+
+![A beautiful landscape](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop)
+
+## Image with Title
+
+This image has a title attribute that shows on hover:
+
+![Mountain sunset](https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=800&h=600&fit=crop "Beautiful sunset over mountains")
+
+## Aligned Images
+
+### Left-aligned Image
+
+\`\`\`{image} https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop
+:alt: Forest path
+:align: left
+:width: 300px
+\`\`\`
+
+This text wraps around the left-aligned image. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+
+### Center-aligned Image
+
+\`\`\`{image} https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop
+:alt: Nature landscape
+:align: center
+:width: 500px
+\`\`\`
+
+### Right-aligned Image
+
+\`\`\`{image} https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&h=300&fit=crop
+:alt: Mountain view
+:align: right
+:width: 300px
+\`\`\`
+
+This text wraps around the right-aligned image. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+
+## Image with Custom Width
+
+\`\`\`{image} https://images.unsplash.com/photo-1470770903676-69b98201ea06?w=800&h=400&fit=crop
+:alt: Landscape with custom width
+:width: 700px
+\`\`\`
+
+## Image with Alt Text Only
+
+![Ocean waves](https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&h=600&fit=crop)
+`;
+
+const renderedContent = await mystParseAndRender(mystContent);
+---
+
+<Layout title="Image Rendering Test">
+  <main class="container">
+    <div class="content" set:html={renderedContent} />
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.6;
+  }
+
+  .content {
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Image styling */
+  :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--wa-border-radius-m, 8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Clear floats for aligned images */
+  :global(h2), :global(h3) {
+    clear: both;
+    padding-top: var(--wa-space-m, 1rem);
+  }
+</style>
