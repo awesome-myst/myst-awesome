@@ -239,9 +239,12 @@ export async function renderMystAst(root: Root): Promise<string> {
 
         // Build style attribute for width and alignment
         const styles: string[] = [];
+        const classes: string[] = [];
+        
         if (width) {
           styles.push(`width: ${width}`);
         }
+        
         if (align) {
           if (align === "center") {
             styles.push("display: block", "margin-left: auto", "margin-right: auto");
@@ -254,8 +257,9 @@ export async function renderMystAst(root: Root): Promise<string> {
 
         const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
         const titleAttr = title ? ` title="${title}"` : "";
+        const classAttr = classes.length > 0 ? ` class="${classes.join(" ")}"` : "";
 
-        return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
+        return `<img src="${url}" alt="${alt}"${titleAttr}${classAttr}${styleAttr} />`;
       }
       case "block": {
         // Block nodes are container nodes that just pass through their children
@@ -315,7 +319,7 @@ export async function renderMystAst(root: Root): Promise<string> {
       const numB = parseInt(b.match(/data-num="(\d+)"/)?.[1] || "0", 10);
       return numA - numB;
     });
-    result += `\n<hr style="margin-top: var(--wa-space-xl);" />\n<section class="footnotes" style="font-size: 0.9em;">\n${footnotes.join("\n")}\n</section>`;
+    result += `\n<hr style="margin-top: var(--wa-space-xl);" />\n<style>.footnotes img { max-width: 400px; max-height: 300px; width: auto; height: auto; }</style>\n<section class="footnotes" style="font-size: 0.9em;">\n${footnotes.join("\n")}\n</section>`;
   }
   return result;
 }
