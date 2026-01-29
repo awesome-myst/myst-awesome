@@ -21,6 +21,8 @@ import type {
   Keyboard,
   Superscript,
   Subscript,
+  FootnoteReference,
+  FootnoteDefinition,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -36,6 +38,8 @@ export async function renderMystAst(root: Root): Promise<string> {
 
   // Counter for generating unique IDs
   let abbreviationCounter = 0;
+  let footnoteCounter = 0;
+  const footnoteNumberMap = new Map<string, number>(); // Maps identifier → display number
 
   const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
@@ -129,6 +133,44 @@ export async function renderMystAst(root: Root): Promise<string> {
         const content = children.join("");
         // Style keyboard input using Web Awesome design tokens, matching SearchDialog.astro styling
         return `<kbd style="font-family: var(--wa-font-family-code); padding: var(--wa-space-3xs) var(--wa-space-2xs); border: 1px solid var(--wa-color-neutral-border-normal); border-radius: var(--wa-border-radius-s); background: var(--wa-color-neutral-fill-quiet);">${content}</kbd>`;
+      }
+      case "footnoteDefinition": {
+        const fnDef = node as FootnoteDefinition;
+        const identifier = fnDef.identifier || fnDef.label || "";
+        // Determine display number: use label if numeric, otherwise auto-number
+        let displayNum: number;
+        const numericLabel = parseInt(fnDef.label || "", 10);
+        if (!isNaN(numericLabel)) {
+          displayNum = numericLabel;
+        } else {
+          if (!footnoteNumberMap.has(identifier)) {
+            footnoteNumberMap.set(identifier, ++footnoteCounter);
+          }
+          displayNum = footnoteNumberMap.get(identifier)!;
+        }
+        const children = await Promise.all(fnDef.children?.map(renderNode) || []);
+        const content = children.join("").replace(/^<p>|<\/p>$/g, "");
+        const defId = `fndef-${identifier}`;
+        const refId = `fnref-${identifier}`;
+        return `<div class="footnote-definition" id="${defId}" data-num="${displayNum}"><span class="footnote-number">[${displayNum}]</span> ${content} <a href="#${refId}" class="footnote-backref" style="text-decoration: none;">↩</a></div>`;
+      }
+      case "footnoteReference": {
+        const fnRef = node as FootnoteReference;
+        const identifier = fnRef.identifier || fnRef.label || "";
+        // Determine display number: use label if numeric, otherwise auto-number
+        let displayNum: number;
+        const numericLabel = parseInt(fnRef.label || "", 10);
+        if (!isNaN(numericLabel)) {
+          displayNum = numericLabel;
+        } else {
+          if (!footnoteNumberMap.has(identifier)) {
+            footnoteNumberMap.set(identifier, ++footnoteCounter);
+          }
+          displayNum = footnoteNumberMap.get(identifier)!;
+        }
+        const refId = `fnref-${identifier}`;
+        const defId = `fndef-${identifier}`;
+        return `<sup id="${refId}"><a href="#${defId}" class="footnote-ref" style="text-decoration: none;">[${displayNum}]</a></sup>`;
       }
       case "inlineCode": {
         const codeNode = node as any;
@@ -225,7 +267,30 @@ export async function renderMystAst(root: Root): Promise<string> {
   const renderedChildren = await Promise.all(
     root.children?.map(renderNode) || []
   );
-  return renderedChildren.join("\n");
+
+  // Separate footnote definitions from main content
+  const footnotes: string[] = [];
+  const content: string[] = [];
+  for (const child of renderedChildren) {
+    if (child.includes('class="footnote-definition"')) {
+      footnotes.push(child);
+    } else {
+      content.push(child);
+    }
+  }
+
+  // Build final output with footnotes at bottom
+  let result = content.join("\n");
+  if (footnotes.length > 0) {
+    // Sort footnotes by their display number
+    footnotes.sort((a, b) => {
+      const numA = parseInt(a.match(/data-num="(\d+)"/)?.[1] || "0", 10);
+      const numB = parseInt(b.match(/data-num="(\d+)"/)?.[1] || "0", 10);
+      return numA - numB;
+    });
+    result += `\n<hr style="margin-top: var(--wa-space-xl);" />\n<section class="footnotes" style="font-size: 0.9em;">\n${footnotes.join("\n")}\n</section>`;
+  }
+  return result;
 }
 
 /**
