@@ -310,8 +310,12 @@ export async function renderMystAst(root: Root): Promise<string> {
     }
   }
 
-  // Build final output with footnotes at bottom
-  let result = content.join("\n");
+  // Build final output with footnotes at bottom and add CSS for images in special contexts
+  let result = `<style>
+/* Constrain images in footnotes and definition lists */
+.footnotes img, dd img { max-width: 400px; max-height: 300px; width: auto; height: auto; }
+</style>\n` + content.join("\n");
+  
   if (footnotes.length > 0) {
     // Sort footnotes by their display number
     footnotes.sort((a, b) => {
@@ -319,7 +323,7 @@ export async function renderMystAst(root: Root): Promise<string> {
       const numB = parseInt(b.match(/data-num="(\d+)"/)?.[1] || "0", 10);
       return numA - numB;
     });
-    result += `\n<hr style="margin-top: var(--wa-space-xl);" />\n<style>.footnotes img { max-width: 400px; max-height: 300px; width: auto; height: auto; }</style>\n<section class="footnotes" style="font-size: 0.9em;">\n${footnotes.join("\n")}\n</section>`;
+    result += `\n<hr style="margin-top: var(--wa-space-xl);" />\n<section class="footnotes" style="font-size: 0.9em;">\n${footnotes.join("\n")}\n</section>`;
   }
   return result;
 }
