@@ -30,11 +30,11 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find image with specific alt text
-    const landscapeImage = page.locator('img[alt="A beautiful landscape"]');
-    await expect(landscapeImage).toBeVisible();
+    const blueImage = page.locator('img[alt="Blue placeholder image"]');
+    await expect(blueImage).toBeVisible();
 
-    const mountainImage = page.locator('img[alt="Mountain sunset"]');
-    await expect(mountainImage).toBeVisible();
+    const orangeImage = page.locator('img[alt="Orange placeholder image"]');
+    await expect(orangeImage).toBeVisible();
   });
 
   test("renders image title attribute correctly", async ({ page }) => {
@@ -57,7 +57,7 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find left-aligned image
-    const leftImage = page.locator('img[alt="Forest path"]');
+    const leftImage = page.locator('img[alt="Green placeholder image"]');
     await expect(leftImage).toBeVisible();
 
     // Check style attribute contains float: left
@@ -73,7 +73,7 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find center-aligned image
-    const centerImage = page.locator('img[alt="Nature landscape"]');
+    const centerImage = page.locator('img[alt="Purple placeholder image"]');
     await expect(centerImage).toBeVisible();
 
     // Check style attribute contains centering styles
@@ -90,7 +90,7 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find right-aligned image
-    const rightImage = page.locator('img[alt="Mountain view"]');
+    const rightImage = page.locator('img[alt="Red placeholder image"]');
     await expect(rightImage).toBeVisible();
 
     // Check style attribute contains float: right
@@ -105,7 +105,7 @@ test.describe("Image Node Rendering", () => {
 
     // Find image with custom width
     const customWidthImage = page.locator(
-      'img[alt="Landscape with custom width"]'
+      'img[alt="Teal placeholder image"]'
     );
     await expect(customWidthImage).toBeVisible();
 
@@ -160,7 +160,7 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find image with both width and alignment (left-aligned with 300px width)
-    const imageWithBoth = page.locator('img[alt="Forest path"]');
+    const imageWithBoth = page.locator('img[alt="Green placeholder image"]');
     await expect(imageWithBoth).toBeVisible();
 
     const style = await imageWithBoth.getAttribute("style");
@@ -174,12 +174,12 @@ test.describe("Image Node Rendering", () => {
     await page.waitForLoadState("networkidle");
 
     // Find image with only alt text (no title, width, or align)
-    const simpleImage = page.locator('img[alt="Ocean waves"]');
+    const simpleImage = page.locator('img[alt="Yellow placeholder image"]');
     await expect(simpleImage).toBeVisible();
 
     // Should have src and alt, but no title or style
     await expect(simpleImage).toHaveAttribute("src");
-    await expect(simpleImage).toHaveAttribute("alt", "Ocean waves");
+    await expect(simpleImage).toHaveAttribute("alt", "Yellow placeholder image");
 
     // Title should not be present (or empty)
     const title = await simpleImage.getAttribute("title");
