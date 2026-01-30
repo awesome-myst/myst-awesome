@@ -243,7 +243,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         
         if (width) {
           // Escape width value for use in style attribute
-          styles.push(`width: ${escapeHtml(width)}`);
+          styles.push(`width: ${escapeHtml(String(width))}`);
         }
         
         if (align) {
@@ -257,7 +257,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         }
 
         const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
-        const titleAttr = title ? ` title="${escapeHtml(title)}"` : "";
+        const titleAttr = title ? ` title="${escapeHtml(String(title))}"` : "";
 
         return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
       }
