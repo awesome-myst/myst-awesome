@@ -18,7 +18,6 @@ import type {
   Abbreviation,
   Math as MystMath,
   InlineMath,
-  Keyboard,
   Superscript,
   Subscript,
   FootnoteReference,
@@ -29,6 +28,7 @@ import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
 import { renderInlineMath, renderDisplayMath } from "./katex-renderer.js";
+import { escapeHtml } from "./html-escape.js";
 
 /** Function to render MyST content as HTML (simplified) */
 export async function renderMystAst(root: Root): Promise<string> {
@@ -126,7 +126,7 @@ export async function renderMystAst(root: Root): Promise<string> {
         }
       }
       case "keyboard": {
-        const keyboardNode = node as Keyboard;
+        const keyboardNode = node as any;
         const children = await Promise.all(
           keyboardNode.children?.map(renderNode) || []
         );
@@ -230,6 +230,37 @@ export async function renderMystAst(root: Root): Promise<string> {
         );
         return `<a href="${linkNode.url || "#"}">${children.join("")}</a>`;
       }
+      case "image": {
+        const imageNode = node as any;
+        const url = escapeHtml(imageNode.url || "");
+        const alt = escapeHtml(imageNode.alt || "");
+        const title = imageNode.title;
+        const width = imageNode.width;
+        const align = imageNode.align;
+
+        // Build style attribute for width and alignment
+        const styles: string[] = [];
+        
+        if (width) {
+          // Escape width value for use in style attribute
+          styles.push(`width: ${escapeHtml(String(width))}`);
+        }
+        
+        if (align) {
+          if (align === "center") {
+            styles.push("display: block", "margin-left: auto", "margin-right: auto");
+          } else if (align === "left") {
+            styles.push("float: left", "margin-right: var(--wa-space-m)");
+          } else if (align === "right") {
+            styles.push("float: right", "margin-left: var(--wa-space-m)");
+          }
+        }
+
+        const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
+        const titleAttr = title ? ` title="${escapeHtml(String(title))}"` : "";
+
+        return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
+      }
       case "block": {
         // Block nodes are container nodes that just pass through their children
         const children = await Promise.all(
@@ -281,6 +312,7 @@ export async function renderMystAst(root: Root): Promise<string> {
 
   // Build final output with footnotes at bottom
   let result = content.join("\n");
+  
   if (footnotes.length > 0) {
     // Sort footnotes by their display number
     footnotes.sort((a, b) => {
