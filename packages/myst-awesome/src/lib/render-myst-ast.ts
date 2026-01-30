@@ -28,6 +28,7 @@ import { basicTransformations } from "myst-transforms";
 import { mystParse } from "myst-parser";
 import { highlightCode, highlightInlineCode } from "./shiki-highlighter.js";
 import { renderInlineMath, renderDisplayMath } from "./katex-renderer.js";
+import { escapeHtml } from "./html-escape.js";
 
 /** Function to render MyST content as HTML (simplified) */
 export async function renderMystAst(root: Root): Promise<string> {
@@ -231,18 +232,18 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "image": {
         const imageNode = node as any;
-        const url = imageNode.url || "";
-        const alt = imageNode.alt || "";
+        const url = escapeHtml(imageNode.url || "");
+        const alt = escapeHtml(imageNode.alt || "");
         const title = imageNode.title;
         const width = imageNode.width;
         const align = imageNode.align;
 
         // Build style attribute for width and alignment
         const styles: string[] = [];
-        const classes: string[] = [];
         
         if (width) {
-          styles.push(`width: ${width}`);
+          // Escape width value for use in style attribute
+          styles.push(`width: ${escapeHtml(width)}`);
         }
         
         if (align) {
@@ -256,10 +257,9 @@ export async function renderMystAst(root: Root): Promise<string> {
         }
 
         const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
-        const titleAttr = title ? ` title="${title}"` : "";
-        const classAttr = classes.length > 0 ? ` class="${classes.join(" ")}"` : "";
+        const titleAttr = title ? ` title="${escapeHtml(title)}"` : "";
 
-        return `<img src="${url}" alt="${alt}"${titleAttr}${classAttr}${styleAttr} />`;
+        return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
       }
       case "block": {
         // Block nodes are container nodes that just pass through their children
@@ -310,11 +310,8 @@ export async function renderMystAst(root: Root): Promise<string> {
     }
   }
 
-  // Build final output with footnotes at bottom and add CSS for images in special contexts
-  let result = `<style>
-/* Constrain images in footnotes and definition lists */
-.footnotes img, dd img { max-width: 400px; max-height: 300px; width: auto; height: auto; }
-</style>\n` + content.join("\n");
+  // Build final output with footnotes at bottom
+  let result = content.join("\n");
   
   if (footnotes.length > 0) {
     // Sort footnotes by their display number
