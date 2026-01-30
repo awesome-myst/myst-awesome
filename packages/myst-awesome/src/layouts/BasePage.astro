@@ -805,6 +805,15 @@ import KaTeXStyles from '../components/KaTeXStyles.astro';
     outline: var(--wa-focus-ring);
     outline-offset: var(--wa-focus-ring-offset);
   }
+
+  /* MyST content: Constrain images in special contexts */
+  .footnotes img,
+  dd img {
+    max-width: 400px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+  }
 </style>
 
 <!-- Web Awesome component definitions -->
