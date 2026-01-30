@@ -17,6 +17,7 @@
 - **Naming**: camelCase variables, PascalCase components, kebab-case CSS classes
 - **Error Handling**: Try-catch for optional collections, silent failures for missing MyST data
 - **Web Components**: Import once in BasePage.astro, use `noExternal: ["@awesome.me/webawesome"]`
+- **Commits**: Do not use Conventional Commit conventions
 
 ## Key Dependencies & Patterns
 - Astro 5.x + TypeScript strict, Web Awesome 3.x beta, MyST 1.3.x, pnpm workspaces
