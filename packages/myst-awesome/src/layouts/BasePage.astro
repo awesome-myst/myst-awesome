@@ -70,6 +70,7 @@ if (projectConfig?.data?.options?.favicon) {
 import Themes from '../components/Themes.astro';
 import ShikiStyles from '../components/ShikiStyles.astro';
 import KaTeXStyles from '../components/KaTeXStyles.astro';
+import MystContentStyles from '../components/MystContentStyles.astro';
 ---
 
 <!doctype html>
@@ -88,6 +89,9 @@ import KaTeXStyles from '../components/KaTeXStyles.astro';
 
     <!-- Import KaTeX math rendering CSS -->
     <KaTeXStyles />
+
+    <!-- Import MyST content styles (figures, captions, etc.) -->
+    <MystContentStyles />
 
     <link rel="icon" type={faviconType} href={faviconPath} />
     <title>{title}</title>

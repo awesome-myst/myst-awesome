@@ -60,10 +60,14 @@ test.describe("Image Node Rendering", () => {
     const leftImage = page.locator('img[alt="Green placeholder image"]');
     await expect(leftImage).toBeVisible();
 
-    // Check style attribute contains float: left
-    const style = await leftImage.getAttribute("style");
-    expect(style).toContain("float: left");
-    expect(style).toContain("margin-right");
+    // Check class attribute contains align-left (CSS class-based alignment)
+    await expect(leftImage).toHaveClass(/align-left/);
+
+    // Verify CSS applies float: left
+    const float = await leftImage.evaluate(
+      (el) => window.getComputedStyle(el).float
+    );
+    expect(float).toBe("left");
   });
 
   test("renders center-aligned images with correct styling", async ({
@@ -76,11 +80,14 @@ test.describe("Image Node Rendering", () => {
     const centerImage = page.locator('img[alt="Purple placeholder image"]');
     await expect(centerImage).toBeVisible();
 
-    // Check style attribute contains centering styles
-    const style = await centerImage.getAttribute("style");
-    expect(style).toContain("display: block");
-    expect(style).toContain("margin-left: auto");
-    expect(style).toContain("margin-right: auto");
+    // Check class attribute contains align-center (CSS class-based alignment)
+    await expect(centerImage).toHaveClass(/align-center/);
+
+    // Verify CSS applies centering styles
+    const display = await centerImage.evaluate(
+      (el) => window.getComputedStyle(el).display
+    );
+    expect(display).toBe("block");
   });
 
   test("renders right-aligned images with correct styling", async ({
@@ -93,10 +100,14 @@ test.describe("Image Node Rendering", () => {
     const rightImage = page.locator('img[alt="Red placeholder image"]');
     await expect(rightImage).toBeVisible();
 
-    // Check style attribute contains float: right
-    const style = await rightImage.getAttribute("style");
-    expect(style).toContain("float: right");
-    expect(style).toContain("margin-left");
+    // Check class attribute contains align-right (CSS class-based alignment)
+    await expect(rightImage).toHaveClass(/align-right/);
+
+    // Verify CSS applies float: right
+    const float = await rightImage.evaluate(
+      (el) => window.getComputedStyle(el).float
+    );
+    expect(float).toBe("right");
   });
 
   test("renders images with custom width", async ({ page }) => {
@@ -177,10 +188,12 @@ test.describe("Image Node Rendering", () => {
     const imageWithBoth = page.locator('img[alt="Green placeholder image"]');
     await expect(imageWithBoth).toBeVisible();
 
+    // Width should be in style attribute
     const style = await imageWithBoth.getAttribute("style");
-    // Should have both width and alignment styles
     expect(style).toContain("width: 300px");
-    expect(style).toContain("float: left");
+
+    // Alignment should be via CSS class
+    await expect(imageWithBoth).toHaveClass(/align-left/);
   });
 
   test("handles images without optional attributes", async ({ page }) => {
