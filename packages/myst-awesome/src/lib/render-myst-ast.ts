@@ -22,6 +22,9 @@ import type {
   Subscript,
   FootnoteReference,
   FootnoteDefinition,
+  Caption,
+  Container,
+  Legend,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -236,30 +239,37 @@ export async function renderMystAst(root: Root): Promise<string> {
         const alt = escapeHtml(imageNode.alt || "");
         const title = imageNode.title;
         const width = imageNode.width;
+        const height = imageNode.height;
         const align = imageNode.align;
 
-        // Build style attribute for width and alignment
+        // Build class list (matching myst-to-html pattern)
+        // Alignment is now handled by CSS classes instead of inline styles
+        const classes: string[] = [];
+        if (align) {
+          classes.push(`align-${align}`);
+        }
+        if (imageNode.class) {
+          classes.push(imageNode.class);
+        }
+
+        // Build style for dimensions only (alignment handled by CSS classes)
         const styles: string[] = [];
-        
         if (width) {
-          // Escape width value for use in style attribute
           styles.push(`width: ${escapeHtml(String(width))}`);
         }
-        
-        if (align) {
-          if (align === "center") {
-            styles.push("display: block", "margin-left: auto", "margin-right: auto");
-          } else if (align === "left") {
-            styles.push("float: left", "margin-right: var(--wa-space-m)");
-          } else if (align === "right") {
-            styles.push("float: right", "margin-left: var(--wa-space-m)");
-          }
+        if (height) {
+          styles.push(`height: ${escapeHtml(String(height))}`);
         }
 
-        const styleAttr = styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
-        const titleAttr = title ? ` title="${escapeHtml(String(title))}"` : "";
+        const classAttr =
+          classes.length > 0 ? ` class="${classes.join(" ")}"` : "";
+        const styleAttr =
+          styles.length > 0 ? ` style="${styles.join("; ")}"` : "";
+        const titleAttr = title
+          ? ` title="${escapeHtml(String(title))}"`
+          : "";
 
-        return `<img src="${url}" alt="${alt}"${titleAttr}${styleAttr} />`;
+        return `<img src="${url}" alt="${alt}"${titleAttr}${classAttr}${styleAttr} />`;
       }
       case "block": {
         // Block nodes are container nodes that just pass through their children
@@ -267,6 +277,60 @@ export async function renderMystAst(root: Root): Promise<string> {
           (node as Parent).children?.map(renderNode) || []
         );
         return children.join("");
+      }
+      case "container": {
+        // Container wraps figures and tables with captions
+        // Following myst-to-html reference implementation
+        const containerNode = node as Container;
+        const children = await Promise.all(
+          containerNode.children?.map(renderNode) || []
+        );
+
+        // Build class list: "numbered" when enumerated !== false, plus custom class
+        const classes: string[] = [];
+        if (containerNode.enumerated !== false) {
+          classes.push("numbered");
+        }
+        if (containerNode.class) {
+          classes.push(containerNode.class);
+        }
+
+        // ID from identifier or label
+        const id =
+          (containerNode as any).identifier ||
+          (containerNode as any).label ||
+          undefined;
+        const idAttr = id ? ` id="${escapeHtml(id)}"` : "";
+        const classAttr =
+          classes.length > 0 ? ` class="${classes.join(" ")}"` : "";
+
+        return `<figure${idAttr}${classAttr}>${children.join("")}</figure>`;
+      }
+      case "caption": {
+        // Caption renders as figcaption element
+        const captionNode = node as Caption;
+        const children = await Promise.all(
+          captionNode.children?.map(renderNode) || []
+        );
+        return `<figcaption>${children.join("")}</figcaption>`;
+      }
+      case "captionNumber": {
+        // CaptionNumber renders the "Figure 1" / "Table 1" prefix
+        // Type is from myst-spec-ext, use generic type
+        const captionNumNode = node as any;
+        const kind = captionNumNode.kind || "figure";
+        const capitalizedKind = kind.charAt(0).toUpperCase() + kind.slice(1);
+        const value =
+          captionNumNode.enumerator || captionNumNode.value || "";
+        return `<span class="caption-number">${escapeHtml(capitalizedKind)} ${escapeHtml(String(value))}</span>`;
+      }
+      case "legend": {
+        // Legend provides additional descriptive text below caption
+        const legendNode = node as Legend;
+        const children = await Promise.all(
+          legendNode.children?.map(renderNode) || []
+        );
+        return `<div class="legend">${children.join("")}</div>`;
       }
       case "inlineMath": {
         const mathNode = node as InlineMath;

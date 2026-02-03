@@ -1,0 +1,296 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+import Layout from "../layouts/Layout.astro";
+import { renderMystAst } from "../lib/render-myst-ast.js";
+
+// Test data URIs for images (100x100 colored squares)
+const blueImage =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAABN0lEQVR4nO3UMQ0AIBDAwLD/nh/JAYYkJ+BedrbuHQH/2eoA/GYIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEE8gVwqQFprdFR6QAAAABJRU5ErkJggg==";
+const greenImage =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAABN0lEQVR4nO3UwQ0AIAwDwPL/02MBJCrigN7dLOIR21X3AAAA4F+ePgB4YQjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEIghEEMghkAMgRgCMQRiCMQQiCEQQyCGQAyBGAIxBGIIxBCIIRBDIIZADIEYAjEEYgjEEMgLfYkBaT4X3j8AAAAASUVORK5CYII=";
+
+// Construct AST nodes directly to test the rendering
+const testAst = {
+  type: "root",
+  children: [
+    {
+      type: "heading",
+      depth: 1,
+      children: [{ type: "text", value: "Caption and Figure Rendering Test" }],
+    },
+    {
+      type: "paragraph",
+      children: [
+        {
+          type: "text",
+          value:
+            "This page tests the rendering of MyST figures, captions, caption numbers, and legends.",
+        },
+      ],
+    },
+
+    // Section: Simple Figure
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Simple Figure with Caption" }],
+    },
+    {
+      type: "container",
+      kind: "figure",
+      identifier: "fig-simple",
+      enumerated: true,
+      children: [
+        {
+          type: "image",
+          url: blueImage,
+          alt: "Blue test image",
+        },
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "captionNumber", kind: "figure", enumerator: "1" },
+                {
+                  type: "text",
+                  value:
+                    " A simple figure demonstrating basic caption rendering.",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // Section: Figure with Legend
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Figure with Caption and Legend" }],
+    },
+    {
+      type: "container",
+      kind: "figure",
+      identifier: "fig-legend",
+      enumerated: true,
+      children: [
+        {
+          type: "image",
+          url: greenImage,
+          alt: "Green test image",
+        },
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "captionNumber", kind: "figure", enumerator: "2" },
+                { type: "text", value: " A figure with both caption and legend." },
+              ],
+            },
+          ],
+        },
+        {
+          type: "legend",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                {
+                  type: "text",
+                  value:
+                    "This is the legend providing additional context about the figure. Legends appear below the caption and contain supplementary descriptive text.",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // Section: Table Caption
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Table Container" }],
+    },
+    {
+      type: "paragraph",
+      children: [
+        {
+          type: "text",
+          value:
+            "Per MyST spec, table captions appear above the table content:",
+        },
+      ],
+    },
+    {
+      type: "container",
+      kind: "table",
+      identifier: "tbl-example",
+      enumerated: true,
+      class: "table-container",
+      children: [
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "captionNumber", kind: "table", enumerator: "1" },
+                { type: "text", value: " Sample data table with caption above." },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // Section: Non-enumerated Figure
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Non-enumerated Figure" }],
+    },
+    {
+      type: "container",
+      kind: "figure",
+      identifier: "fig-no-number",
+      enumerated: false,
+      children: [
+        {
+          type: "image",
+          url: blueImage,
+          alt: "Blue test image without number",
+        },
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                {
+                  type: "text",
+                  value:
+                    "This figure has enumerated=false, so it should not have the 'numbered' class.",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // Section: Custom Class
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Figure with Custom Class" }],
+    },
+    {
+      type: "container",
+      kind: "figure",
+      identifier: "fig-custom",
+      enumerated: true,
+      class: "my-custom-figure",
+      children: [
+        {
+          type: "image",
+          url: greenImage,
+          alt: "Green test image with custom class",
+        },
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "captionNumber", kind: "figure", enumerator: "3" },
+                {
+                  type: "text",
+                  value: " Figure with custom class 'my-custom-figure'.",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // Section: Rich Caption Content
+    {
+      type: "heading",
+      depth: 2,
+      children: [{ type: "text", value: "Figure with Rich Caption Content" }],
+    },
+    {
+      type: "container",
+      kind: "figure",
+      identifier: "fig-rich",
+      enumerated: true,
+      children: [
+        {
+          type: "image",
+          url: blueImage,
+          alt: "Blue test image with rich caption",
+        },
+        {
+          type: "caption",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                { type: "captionNumber", kind: "figure", enumerator: "4" },
+                { type: "text", value: " A caption with " },
+                {
+                  type: "strong",
+                  children: [{ type: "text", value: "bold text" }],
+                },
+                { type: "text", value: " and " },
+                {
+                  type: "emphasis",
+                  children: [{ type: "text", value: "italic text" }],
+                },
+                { type: "text", value: " formatting." },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const renderedContent = await renderMystAst(testAst as any);
+---
+
+<Layout title="Caption Rendering Test">
+  <main class="container">
+    <div class="content" set:html={renderedContent} />
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .content {
+    line-height: 1.6;
+  }
+
+  /* Custom class example styling */
+  :global(.my-custom-figure) {
+    border: 2px dashed var(--wa-color-brand-fill-loud, #6366f1);
+    padding: var(--wa-space-m, 1rem);
+    border-radius: var(--wa-border-radius-m, 0.5rem);
+  }
+</style>

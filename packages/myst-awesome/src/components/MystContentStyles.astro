@@ -1,0 +1,218 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+/**
+ * MyST Content CSS component - provides styles for figures, captions, legends,
+ * and image alignment following the myst-to-html reference implementation.
+ *
+ * CSS class conventions from myst-to-html:
+ * - figure.numbered - enumerated figures/tables
+ * - figcaption - caption element
+ * - .caption-number - "Figure 1" / "Table 1" prefix
+ * - .legend - additional descriptive text
+ * - img.align-{left|center|right} - image alignment
+ */
+---
+
+<style is:global>
+  /* ==========================================================================
+   Figure and Container Styles
+   ========================================================================== */
+
+  figure {
+    margin: var(--wa-space-l) 0;
+    padding: 0;
+    display: block;
+  }
+
+  figure.numbered {
+    /* Numbered figures - styling hook for custom numbering display */
+    counter-increment: figure;
+  }
+
+  /* Figure content (images, tables, etc.) */
+  figure > img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  figure > table {
+    margin: 0 auto;
+    width: auto;
+  }
+
+  /* ==========================================================================
+   Figcaption Styles
+   ========================================================================== */
+
+  figcaption {
+    text-align: center;
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
+    margin-top: var(--wa-space-s);
+    line-height: var(--wa-line-height-relaxed);
+    padding: 0 var(--wa-space-m);
+  }
+
+  figcaption p {
+    margin: 0;
+  }
+
+  /* Caption number (e.g., "Figure 1", "Table 2") */
+  .caption-number {
+    font-weight: var(--wa-font-weight-semibold);
+    color: var(--wa-color-text-normal);
+    margin-right: var(--wa-space-2xs);
+  }
+
+  /* ==========================================================================
+   Legend Styles (additional descriptive text below caption)
+   ========================================================================== */
+
+  .legend {
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
+    margin-top: var(--wa-space-xs);
+    text-align: center;
+    padding: 0 var(--wa-space-m);
+  }
+
+  .legend p {
+    margin: 0;
+  }
+
+  /* ==========================================================================
+   Table Container Styles
+   Per MyST spec: caption appears ABOVE tables, BELOW figures
+   ========================================================================== */
+
+  figure:has(> table) {
+    /* Table containers */
+  }
+
+  figure:has(> table) > figcaption {
+    /* Caption above table: reset margin-top, add margin-bottom */
+    margin-top: 0;
+    margin-bottom: var(--wa-space-s);
+    /* Ensure caption appears first via order (if using flexbox) */
+    order: -1;
+  }
+
+  /* Fallback for browsers without :has() - use explicit class */
+  figure.table-container > figcaption {
+    margin-top: 0;
+    margin-bottom: var(--wa-space-s);
+  }
+
+  /* ==========================================================================
+   Image Alignment Classes (matching myst-to-html)
+   ========================================================================== */
+
+  img.align-left {
+    float: left;
+    margin-right: var(--wa-space-m);
+    margin-bottom: var(--wa-space-s);
+    margin-top: var(--wa-space-xs);
+  }
+
+  img.align-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  img.align-right {
+    float: right;
+    margin-left: var(--wa-space-m);
+    margin-bottom: var(--wa-space-s);
+    margin-top: var(--wa-space-xs);
+  }
+
+  /* Clear floats after figures with aligned images */
+  figure::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  /* ==========================================================================
+   Dark Theme Adjustments
+   ========================================================================== */
+
+  .wa-dark figcaption,
+  .dark figcaption {
+    color: var(--wa-color-text-quiet);
+  }
+
+  .wa-dark .caption-number,
+  .dark .caption-number {
+    color: var(--wa-color-text-normal);
+  }
+
+  .wa-dark .legend,
+  .dark .legend {
+    color: var(--wa-color-text-quiet);
+  }
+
+  /* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+  @media (max-width: 640px) {
+    figure {
+      margin: var(--wa-space-m) 0;
+    }
+
+    figcaption {
+      font-size: var(--wa-font-size-xs);
+      padding: 0 var(--wa-space-s);
+    }
+
+    .legend {
+      font-size: var(--wa-font-size-xs);
+      padding: 0 var(--wa-space-s);
+    }
+
+    /* On mobile, don't float images - stack them */
+    img.align-left,
+    img.align-right {
+      float: none;
+      display: block;
+      margin: var(--wa-space-s) auto;
+    }
+  }
+
+  /* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+  @media print {
+    figure {
+      page-break-inside: avoid;
+      margin: 1rem 0;
+    }
+
+    figcaption {
+      color: #666;
+    }
+
+    .caption-number {
+      color: #000;
+      font-weight: bold;
+    }
+
+    .legend {
+      color: #666;
+    }
+
+    img.align-left,
+    img.align-right {
+      float: none;
+      display: block;
+      margin: 0.5rem auto;
+    }
+  }
+</style>
