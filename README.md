@@ -106,7 +106,7 @@ pnpm test                  # Playwright tests (requires both servers)
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes following the coding conventions
 4. Test your changes: `pnpm test`
-5. Commit your changes: `git commit -m 'Add amazing feature'`
+5. Commit your changes using Conventional Commits: `git commit -m 'feat(theme): add amazing feature'`
 6. Push to the branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request
 

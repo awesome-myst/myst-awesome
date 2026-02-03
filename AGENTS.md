@@ -294,16 +294,27 @@ try {
 
 ### Commits
 
-- **Do NOT use Conventional Commit conventions** (no `feat:`, `fix:`, `chore:`, etc.)
-- Write clear, descriptive messages focusing on **"why"** not **"what"**
-- Keep messages concise (1-2 sentences)
+- **USE Conventional Commit conventions** for consistency and automated tooling
+- Format: `<type>(<scope>): <description>`
+- Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+- Keep messages concise but descriptive
+- Optional body for additional context
 
 ```bash
-# ❌ Wrong - Conventional Commit format
-git commit -m "feat: add dark mode toggle"
+# ✅ Correct - Conventional Commit format
+git commit -m "feat(theme): add dark mode toggle"
+git commit -m "fix(navigation): resolve mobile menu overflow issue"
+git commit -m "docs(readme): update installation instructions"
 
-# ✅ Correct - Clear descriptive message
-git commit -m "Add dark mode toggle to theme controls for user preference"
+# With optional scope and body
+git commit -m "feat(search): add fuzzy search with Fuse.js
+
+Implements client-side search functionality using Fuse.js for
+fast, fuzzy matching across page titles and descriptions."
+
+# ❌ Wrong - Non-descriptive or missing type
+git commit -m "added stuff"
+git commit -m "fix bug"
 ```
 
 ---
@@ -1664,7 +1675,7 @@ pnpm --filter=<pkg> <cmd>  # Package-specific command
 - ❌ Missing `noExternal: ["@awesome.me/webawesome"]` in Vite config
 - ❌ Forgetting `baseDir` prefix in URL construction
 - ❌ Wrong build order (breaks dependencies)
-- ❌ Using Conventional Commit format (use descriptive messages)
+- ❌ Not using Conventional Commit format (use `type(scope): description`)
 - ❌ Globally hiding aside with `display: none` in BasePage (use grid collapse)
 
 ### File Locations Quick Map
