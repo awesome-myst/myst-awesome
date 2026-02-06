@@ -93,6 +93,9 @@ import MystContentStyles from '../components/MystContentStyles.astro';
     <!-- Import MyST content styles (figures, captions, etc.) -->
     <MystContentStyles />
 
+    <!-- Import admonition styles -->
+    <link rel="stylesheet" href={new URL('../styles/admonitions.css', import.meta.url).href} />
+
     <link rel="icon" type={faviconType} href={faviconPath} />
     <title>{title}</title>
 
@@ -828,4 +831,6 @@ import MystContentStyles from '../components/MystContentStyles.astro';
 
   // renderMystAst
   import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/details/details.js';
 </script>
