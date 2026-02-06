@@ -1,0 +1,145 @@
+/* SPDX-License-Identifier: MIT */
+/* SPDX-FileCopyrightText: 2025 Fideus Labs LLC */
+
+/**
+ * Admonition Styles
+ * 
+ * Styles for MyST admonitions rendered using Web Awesome components:
+ * - wa-callout for standard admonitions
+ * - wa-details for dropdown admonitions
+ */
+
+/* Base admonition spacing */
+.admonition {
+  margin-block: var(--wa-space-m);
+}
+
+.admonition:first-child {
+  margin-block-start: 0;
+}
+
+.admonition:last-child {
+  margin-block-end: 0;
+}
+
+/* Callout admonitions */
+wa-callout.admonition {
+  display: block;
+}
+
+wa-callout.admonition strong:first-child {
+  display: block;
+  margin-bottom: var(--wa-space-2xs);
+  font-size: var(--wa-font-size-m);
+}
+
+wa-callout.admonition .admonition-content > *:first-child {
+  margin-top: 0;
+}
+
+wa-callout.admonition .admonition-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Details (dropdown) admonitions */
+wa-details.admonition {
+  border: 1px solid var(--wa-color-neutral-border-normal);
+  border-radius: var(--wa-border-radius-m);
+  padding: var(--wa-space-s);
+}
+
+wa-details.admonition [slot="summary"] {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-2xs);
+  font-weight: var(--wa-font-weight-semibold);
+  cursor: pointer;
+}
+
+wa-details.admonition [slot="summary"] wa-icon {
+  flex-shrink: 0;
+}
+
+wa-details.admonition .admonition-content {
+  padding-top: var(--wa-space-xs);
+}
+
+wa-details.admonition .admonition-content > *:first-child {
+  margin-top: 0;
+}
+
+wa-details.admonition .admonition-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Variant-specific border colors for dropdowns */
+wa-details.admonition-brand {
+  border-color: var(--wa-color-brand-border-normal);
+}
+
+wa-details.admonition-success {
+  border-color: var(--wa-color-success-border-normal);
+}
+
+wa-details.admonition-warning {
+  border-color: var(--wa-color-warning-border-normal);
+}
+
+wa-details.admonition-danger {
+  border-color: var(--wa-color-danger-border-normal);
+}
+
+/* Icon sizing */
+wa-callout.admonition wa-icon[slot="icon"] {
+  font-size: 1.25em;
+}
+
+wa-details.admonition wa-icon {
+  font-size: 1.1em;
+}
+
+/* Nested content spacing */
+.admonition-content p {
+  margin-block: var(--wa-space-xs);
+}
+
+.admonition-content ul,
+.admonition-content ol {
+  margin-block: var(--wa-space-xs);
+  padding-inline-start: var(--wa-space-l);
+}
+
+.admonition-content pre,
+.admonition-content .code-block {
+  margin-block: var(--wa-space-xs);
+}
+
+/* Nested admonitions */
+.admonition-content .admonition {
+  margin-block: var(--wa-space-s);
+}
+
+/* Ensure proper spacing in admonition content */
+.admonition-content > p:first-of-type {
+  margin-top: var(--wa-space-2xs);
+}
+
+/* Code blocks in admonitions */
+.admonition-content pre {
+  overflow-x: auto;
+}
+
+/* Lists in admonitions */
+.admonition-content li {
+  margin-block: var(--wa-space-3xs);
+}
+
+/* Tables in admonitions */
+.admonition-content table {
+  margin-block: var(--wa-space-xs);
+}
+
+/* Math in admonitions */
+.admonition-content .katex-display {
+  margin-block: var(--wa-space-xs);
+}

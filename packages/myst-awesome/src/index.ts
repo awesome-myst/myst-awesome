@@ -14,6 +14,8 @@ export { default as ThemesResolver } from "./components/ThemesResolver.astro";
 export { default as KaTeXStyles } from "./components/KaTeXStyles.astro";
 export { default as SearchDialog } from "./components/SearchDialog.astro";
 export { default as SearchLauncher } from "./components/SearchLauncher.astro";
+export { default as Admonition } from "./components/Admonition.astro";
+export { default as AdmonitionResolver } from "./components/AdmonitionResolver.astro";
 
 // Export utilities
 export * from "./lib/get-component.ts";

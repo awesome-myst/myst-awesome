@@ -1,0 +1,43 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+/**
+ * Configurable Admonition component that supports overrides
+ * 
+ * Usage:
+ * 1. Direct usage (default component):
+ *    <AdmonitionResolver kind="note" title="My Note">Content</AdmonitionResolver>
+ * 
+ * 2. With custom component:
+ *    import CustomAdmonition from './custom/MyAdmonition.astro';
+ *    <AdmonitionResolver component={CustomAdmonition} kind="warning">
+ *      Content
+ *    </AdmonitionResolver>
+ */
+import DefaultAdmonition from './Admonition.astro';
+
+interface Props {
+  component?: any;
+  kind?: "note" | "info" | "important" | "tip" | "hint" | "seealso" | 
+         "attention" | "caution" | "warning" | "danger" | "error";
+  title?: string;
+  showIcon?: boolean;
+  isDropdown?: boolean;
+  isOpen?: boolean;
+  isSimple?: boolean;
+  class?: string;
+}
+
+const { component: CustomComponent, ...admonitionProps } = Astro.props;
+---
+
+{CustomComponent ? (
+  <CustomComponent {...admonitionProps}>
+    <slot />
+  </CustomComponent>
+) : (
+  <DefaultAdmonition {...admonitionProps}>
+    <slot />
+  </DefaultAdmonition>
+)}

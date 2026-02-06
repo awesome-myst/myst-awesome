@@ -1,0 +1,113 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+/**
+ * Admonition component for manual use in Astro templates
+ * 
+ * For MyST-rendered admonitions, see render-myst-ast.ts which generates
+ * the HTML directly from the AST.
+ * 
+ * Usage:
+ * <Admonition kind="note" title="My Note">
+ *   Content goes here
+ * </Admonition>
+ * 
+ * <Admonition kind="warning" isDropdown={true} isOpen={false}>
+ *   This is a collapsible warning
+ * </Admonition>
+ */
+
+interface Props {
+  kind?: "note" | "info" | "important" | "tip" | "hint" | "seealso" | 
+         "attention" | "caution" | "warning" | "danger" | "error";
+  title?: string;
+  showIcon?: boolean;
+  isDropdown?: boolean;
+  isOpen?: boolean;
+  isSimple?: boolean;
+  class?: string;
+}
+
+const {
+  kind = "note",
+  title,
+  showIcon = true,
+  isDropdown = false,
+  isOpen = false,
+  isSimple = false,
+  class: className = "",
+} = Astro.props;
+
+// Variant mapping (MyST kind → Web Awesome variant)
+const variantMap: Record<string, string> = {
+  note: "brand",
+  info: "brand",
+  important: "brand",
+  tip: "success",
+  hint: "success",
+  seealso: "success",
+  attention: "warning",
+  caution: "warning",
+  warning: "warning",
+  danger: "danger",
+  error: "danger",
+};
+
+// Icon mapping (MyST kind → Font Awesome icon)
+const iconMap: Record<string, { name: string; variant: string }> = {
+  note: { name: "circle-info", variant: "regular" },
+  info: { name: "circle-info", variant: "regular" },
+  important: { name: "circle-exclamation", variant: "solid" },
+  tip: { name: "lightbulb", variant: "regular" },
+  hint: { name: "lightbulb", variant: "regular" },
+  seealso: { name: "arrow-up-right-from-square", variant: "regular" },
+  attention: { name: "triangle-exclamation", variant: "solid" },
+  caution: { name: "hand", variant: "regular" },
+  warning: { name: "triangle-exclamation", variant: "solid" },
+  danger: { name: "circle-exclamation", variant: "solid" },
+  error: { name: "xmark-circle", variant: "solid" },
+};
+
+const variant = variantMap[kind] || "brand";
+const icon = iconMap[kind] || iconMap.note;
+const appearance = isSimple ? "plain" : undefined;
+
+// Format default title
+const defaultTitle = kind === "seealso" ? "See Also" : 
+                     kind.charAt(0).toUpperCase() + kind.slice(1);
+const displayTitle = title || defaultTitle;
+
+const cssClasses = `admonition admonition-${kind} admonition-${variant} ${className}`.trim();
+---
+
+{isDropdown ? (
+  <wa-details open={isOpen} class={cssClasses} data-admonition-kind={kind}>
+    <span slot="summary">
+      {showIcon && <wa-icon name={icon.name} variant={icon.variant}></wa-icon>}
+      <strong set:html={displayTitle} />
+    </span>
+    <div class="admonition-content">
+      <slot />
+    </div>
+  </wa-details>
+) : (
+  <wa-callout 
+    variant={variant} 
+    appearance={appearance}
+    class={cssClasses}
+    data-admonition-kind={kind}
+  >
+    {showIcon && <wa-icon slot="icon" name={icon.name} variant={icon.variant}></wa-icon>}
+    <strong set:html={displayTitle} />
+    <div class="admonition-content">
+      <slot />
+    </div>
+  </wa-callout>
+)}
+
+<script>
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/details/details.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>

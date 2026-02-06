@@ -447,8 +447,8 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
   <Footer slot="footer" lastModified={lastModified} />
 </BasePage>
 
+<!-- Web Awesome component imports (separate module to isolate from runtime logic) -->
 <script>
-  // Import Web Awesome components used in this page
   import '@awesome.me/webawesome/dist/components/select/select.js';
   import '@awesome.me/webawesome/dist/components/option/option.js';
   import '@awesome.me/webawesome/dist/components/divider/divider.js';
@@ -457,7 +457,10 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/input/input.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
+</script>
 
+<!-- DocsLayout runtime logic (isolated so WA import errors don't block execution) -->
+<script>
   // Add responsive class for 920px breakpoint aside collapsing
   document.addEventListener('DOMContentLoaded', () => {
     const pageBody = document.querySelector('.page-body');
@@ -467,7 +470,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
 
     // Theme switching functionality
     const themeSelector = document.querySelector('.theme-selector') as any;
-  const colorSchemeToggle = document.querySelector('.color-scheme-toggle') as HTMLElement | null;
+    const colorSchemeToggle = document.querySelector('.color-scheme-toggle') as HTMLElement | null;
 
     if (themeSelector) {
       // Set initial value from localStorage
