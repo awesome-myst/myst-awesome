@@ -1,0 +1,106 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+import Layout from '../layouts/Layout.astro';
+import { renderMystAst } from '../lib/render-myst-ast.js';
+
+const testAst = {
+  type: 'root',
+  children: [
+    {
+      type: 'heading',
+      depth: 1,
+      children: [{ type: 'text', value: 'Admonition Rendering Test' }],
+    },
+    {
+      type: 'paragraph',
+      children: [
+        {
+          type: 'text',
+          value: 'This page validates MyST admonition rendering with titles.',
+        },
+      ],
+    },
+    {
+      type: 'admonition',
+      kind: 'note',
+      children: [
+        {
+          type: 'admonitionTitle',
+          children: [{ type: 'text', value: 'Custom Note Title' }],
+        },
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'text',
+              value: 'This is a note admonition with a custom title.',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'admonition',
+      kind: 'warning',
+      children: [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'text',
+              value: 'This warning has no explicit title node.',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'admonition',
+      kind: 'danger',
+      class: ['simple'],
+      children: [
+        {
+          type: 'admonitionTitle',
+          children: [{ type: 'text', value: 'Simple Danger' }],
+        },
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'text',
+              value: 'This simple admonition renders without an icon slot.',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const renderedContent = await renderMystAst(testAst as any);
+---
+
+<Layout title="Admonition Rendering Test">
+  <main class="container">
+    <div class="content" set:html={renderedContent} />
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .content :global(wa-callout) {
+    margin-bottom: var(--wa-space-m, 1rem);
+  }
+
+  :global(.admonition-title) {
+    display: block;
+    margin-bottom: var(--wa-space-2xs, 0.25rem);
+  }
+</style>

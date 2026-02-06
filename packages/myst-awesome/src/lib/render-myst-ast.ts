@@ -46,6 +46,141 @@ export async function renderMystAst(root: Root): Promise<string> {
 
   const renderNode = async (node: Node): Promise<string> => {
     switch (node.type) {
+      case "admonition": {
+        const admonitionNode = node as any;
+        const kind = (admonitionNode.kind || admonitionNode.name || "").toLowerCase();
+        const classList = Array.isArray(admonitionNode.class)
+          ? admonitionNode.class
+          : admonitionNode.class
+          ? [admonitionNode.class]
+          : [];
+        const isSimple = classList.includes("simple");
+        const isDropdown = classList.includes("dropdown");
+        const iconEnabled = admonitionNode.icon !== false;
+
+        const renderAdmonitionTitle = async (): Promise<string> => {
+          if (admonitionNode.title) {
+            return String(admonitionNode.title);
+          }
+
+          const children = Array.isArray(admonitionNode.children)
+            ? admonitionNode.children
+            : [];
+          const titleNode = children.find(
+            (child: any) => child?.type === "admonitionTitle"
+          );
+          if (titleNode) {
+            const titleChildren = await Promise.all(
+              (titleNode.children || []).map(renderNode)
+            );
+            return titleChildren.join("");
+          }
+
+          const firstNode = children[0];
+          if (firstNode?.type === "heading") {
+            const headingChildren = await Promise.all(
+              (firstNode.children || []).map(renderNode)
+            );
+            return headingChildren.join("");
+          }
+
+          if (firstNode?.type === "paragraph") {
+            const paragraphChildren = Array.isArray(firstNode.children)
+              ? firstNode.children
+              : [];
+            if (
+              paragraphChildren.length === 1 &&
+              paragraphChildren[0]?.type === "strong"
+            ) {
+              const strongChildren = await Promise.all(
+                (paragraphChildren[0].children || []).map(renderNode)
+              );
+              return strongChildren.join("");
+            }
+          }
+
+          if (kind) {
+            return kind.replace(/(^|\s)([a-z])/g, (_, space, letter) => {
+              return `${space}${letter.toUpperCase()}`;
+            });
+          }
+
+          return "Note";
+        };
+
+        const renderIcon = (): string => {
+          if (!iconEnabled || isSimple) {
+            return "";
+          }
+
+          const iconMap: Record<string, string> = {
+            note: "circle-info",
+            info: "circle-info",
+            important: "circle-info",
+            seealso: "circle-info",
+            tip: "lightbulb",
+            hint: "lightbulb",
+            success: "circle-check",
+            warning: "triangle-exclamation",
+            caution: "triangle-exclamation",
+            attention: "triangle-exclamation",
+            danger: "circle-exclamation",
+            error: "circle-exclamation",
+          };
+
+          const iconName = iconMap[kind] || "circle-info";
+          return `<wa-icon slot="icon" name="${iconName}" variant="regular"></wa-icon>`;
+        };
+
+        const renderBody = async (): Promise<string> => {
+          const children = Array.isArray(admonitionNode.children)
+            ? admonitionNode.children
+            : [];
+          const bodyNodes = children.filter(
+            (child: any) => child?.type !== "admonitionTitle"
+          );
+          const body = await Promise.all(bodyNodes.map(renderNode));
+          return body.join("");
+        };
+
+        const titleHtml = await renderAdmonitionTitle();
+        const bodyHtml = await renderBody();
+        const iconHtml = renderIcon();
+
+        const variantMap: Record<string, string> = {
+          note: "brand",
+          info: "brand",
+          important: "brand",
+          seealso: "brand",
+          tip: "success",
+          hint: "success",
+          success: "success",
+          warning: "warning",
+          caution: "warning",
+          attention: "warning",
+          danger: "danger",
+          error: "danger",
+        };
+        const variant = variantMap[kind] || "neutral";
+
+        const titleBlock = titleHtml
+          ? `<div class="admonition-title"><strong>${titleHtml}</strong></div>`
+          : "";
+
+        if (isDropdown) {
+          const openAttr = admonitionNode.open ? " open" : "";
+          return `<details class="admonition-dropdown"${openAttr}><summary>${titleBlock || "<strong>Details</strong>"}</summary><wa-callout variant="${variant}">${iconHtml}${bodyHtml}</wa-callout></details>`;
+        }
+
+        return `<wa-callout variant="${variant}">${iconHtml}${titleBlock}${bodyHtml}</wa-callout>`;
+      }
+      case "admonitionTitle": {
+        const titleNode = node as any;
+        const children = await Promise.all(
+          (titleNode.children || []).map(renderNode)
+        );
+        return `<span class="admonition-title">${children.join("")}</span>`;
+      }
       case "paragraph": {
         const children = await Promise.all(
           (node as Paragraph).children?.map(renderNode) || []
