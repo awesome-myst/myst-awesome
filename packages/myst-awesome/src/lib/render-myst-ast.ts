@@ -69,6 +69,12 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "text":
         return (node as any).value || "";
+      case "comment": {
+        const commentNode = node as any;
+        const commentValue = commentNode.value ?? commentNode.raw ?? "";
+        console.log("MyST comment:", commentValue || commentNode);
+        return "";
+      }
       case "break":
         return "<br />";
       case "emphasis": {
