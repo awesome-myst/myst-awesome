@@ -1,0 +1,371 @@
+---
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Fideus Labs LLC
+
+/**
+ * Comprehensive Admonition Test Page
+ * 
+ * Tests all admonition kinds, custom titles, icon control,
+ * dropdown functionality, simple appearance, and nested content.
+ */
+
+import BasePage from '../layouts/BasePage.astro';
+import { mystParseAndRender } from '../lib/render-myst-ast.ts';
+
+const title = "Admonition Rendering Test";
+const description = "Comprehensive test page for MyST admonition rendering";
+
+// MyST content with all admonition types and variations
+const mystContent = `
+# Admonition Rendering Test
+
+This page tests all MyST admonition types and features.
+
+## Basic Admonition Kinds
+
+### Note Admonition
+
+\`\`\`{note}
+This is a note admonition with the default title.
+\`\`\`
+
+### Important Admonition
+
+\`\`\`{important}
+This is an important admonition with emphasized information.
+\`\`\`
+
+### Tip Admonition
+
+\`\`\`{tip}
+This is a tip admonition with helpful advice.
+\`\`\`
+
+### Hint Admonition
+
+\`\`\`{hint}
+This is a hint admonition, similar to tip.
+\`\`\`
+
+### See Also Admonition
+
+\`\`\`{seealso}
+This is a seealso admonition for related content.
+\`\`\`
+
+### Attention Admonition
+
+\`\`\`{attention}
+This is an attention admonition that needs your focus.
+\`\`\`
+
+### Caution Admonition
+
+\`\`\`{caution}
+This is a caution admonition warning about potential issues.
+\`\`\`
+
+### Warning Admonition
+
+\`\`\`{warning}
+This is a warning admonition for important warnings.
+\`\`\`
+
+### Danger Admonition
+
+\`\`\`{danger}
+This is a danger admonition for critical warnings.
+\`\`\`
+
+### Error Admonition
+
+\`\`\`{error}
+This is an error admonition for error messages.
+\`\`\`
+
+## Custom Titles
+
+### Note with Custom Title
+
+\`\`\`{note} Custom Note Title
+This note has a custom title instead of the default "Note".
+\`\`\`
+
+### Warning with Emphasis in Title
+
+\`\`\`{warning} **Important** Warning
+This warning has _formatted text_ in the title.
+\`\`\`
+
+### Tip with Code in Title
+
+\`\`\`{tip} Use \`async/await\`
+This tip has inline code in the title.
+\`\`\`
+
+## Icon Control
+
+### Admonition Without Icon
+
+\`\`\`{note} Note Without Icon
+:icon: false
+This admonition has no icon, allowing for custom emoji or text at the start.
+\`\`\`
+
+### Danger Without Icon (Custom Emoji)
+
+\`\`\`{danger} 🚨 Alert
+:icon: false
+This uses a custom emoji instead of the default icon.
+\`\`\`
+
+### Success Without Icon
+
+\`\`\`{tip} ✅ Success!
+:icon: false
+Custom emoji for a success message.
+\`\`\`
+
+## Dropdown Admonitions
+
+### Basic Dropdown (Closed by Default)
+
+\`\`\`{note} Click to Expand
+:class: dropdown
+This content is hidden by default. Click the summary to reveal it.
+
+It can contain multiple paragraphs and other content.
+\`\`\`
+
+### Dropdown Open by Default
+
+\`\`\`{tip} Hide Me!
+:class: dropdown
+:open: true
+This dropdown starts in the open state. You can close it by clicking the summary.
+\`\`\`
+
+### Warning Dropdown
+
+\`\`\`{warning} Advanced Configuration
+:class: dropdown
+This warning is collapsible to reduce visual clutter.
+
+Only show this to users who need the advanced information.
+\`\`\`
+
+## Simple Appearance
+
+### Simple Note
+
+\`\`\`{note} Simple Styling
+:class: simple
+This admonition uses the simple (plain) appearance for a more subtle look.
+\`\`\`
+
+### Simple Warning
+
+\`\`\`{warning} Subtle Warning
+:class: simple
+A warning with plain styling that's less visually prominent.
+\`\`\`
+
+## Combined Classes
+
+### Simple Dropdown
+
+\`\`\`{important} Combined Features
+:class: simple dropdown
+:open: true
+This admonition combines both simple styling and dropdown functionality.
+
+You can use multiple classes together for flexible presentation.
+\`\`\`
+
+### Simple Dropdown Without Icon
+
+\`\`\`{tip} 💡 Pro Tip
+:class: simple dropdown
+:icon: false
+:open: true
+This combines simple styling, dropdown, and custom emoji (no icon).
+\`\`\`
+
+## Nested Content
+
+### Admonition with Lists
+
+\`\`\`{note} Lists in Admonitions
+This admonition contains a bullet list:
+
+- First item
+- Second item
+  - Nested item
+  - Another nested item
+- Third item
+
+And a numbered list:
+
+1. Step one
+2. Step two
+3. Step three
+\`\`\`
+
+### Admonition with Code Block
+
+\`\`\`{tip} Code Example  
+Here's how to use the feature with inline code: \`greet(name)\`
+
+The function demonstrates the basic usage pattern.
+\`\`\`
+
+### Admonition with Inline Code
+
+\`\`\`{warning} Configuration Required
+Make sure to set \`DEBUG=False\` in production and configure \`ALLOWED_HOSTS\` properly.
+
+Never commit \`.env\` files to version control!
+\`\`\`
+
+### Admonition with Math
+
+\`\`\`{note} Mathematical Formula
+The quadratic formula is:
+
+$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+
+Use this to solve quadratic equations of the form $ax^2 + bx + c = 0$.
+\`\`\`
+
+### Admonition with Links
+
+\`\`\`{seealso} Related Resources
+Check out these related resources:
+
+- [MyST Documentation](https://mystmd.org/)
+- [Web Awesome Components](https://webawesome.com/)
+- [Astro Framework](https://astro.build/)
+\`\`\`
+
+## Nested Admonitions
+
+### Admonition Inside Admonition
+
+\`\`\`{warning} Outer Warning
+This is the outer admonition.
+
+\`\`\`{note} Nested Note
+This note is nested inside the warning admonition.
+
+You can nest admonitions for complex content structures.
+\`\`\`
+
+The warning continues after the nested note.
+\`\`\`
+
+### Multiple Nested Levels
+
+\`\`\`{important} Level 1
+First level admonition.
+
+\`\`\`{tip} Level 2
+Second level admonition.
+
+\`\`\`{note} Level 3
+Third level admonition - deeply nested!
+\`\`\`
+
+Back to level 2.
+\`\`\`
+
+Back to level 1.
+\`\`\`
+
+## Complex Example
+
+### Real-World Usage
+
+\`\`\`{warning} Database Migration Required
+:class: dropdown
+
+**Important:** This update requires a database migration.
+
+Before deploying this update, you must:
+
+1. Backup your database
+2. Run the migration script:
+
+   \\\`\\\`\\\`bash
+   python manage.py migrate
+   \\\`\\\`\\\`
+
+3. Verify the migration succeeded
+
+\`\`\`{danger} Potential Data Loss
+If you skip the migration, you may experience data loss or corruption.
+
+Always test migrations in a staging environment first!
+\`\`\`
+
+\`\`\`{tip} Rollback Plan
+:icon: false
+🔄 Keep a database backup to enable rollback if needed.
+\`\`\`
+
+After migration, restart your application servers.
+\`\`\`
+
+## Edge Cases
+
+### Empty Admonition
+
+\`\`\`{note}
+\`\`\`
+
+### Admonition with Only Title
+
+\`\`\`{tip} Just a Title
+\`\`\`
+
+### Very Long Content
+
+\`\`\`{note} Long Content Test
+This admonition contains a very long paragraph to test text wrapping and layout behavior. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+And another long paragraph for good measure. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+\`\`\`
+`;
+
+// Render the MyST content
+const htmlContent = await mystParseAndRender(mystContent);
+---
+
+<BasePage title={title} description={description}>
+  <div class="admonition-test-page">
+    <div set:html={htmlContent} />
+  </div>
+</BasePage>
+
+<style>
+  .admonition-test-page {
+    max-width: 50rem;
+    margin: 0 auto;
+    padding: var(--wa-space-l);
+  }
+
+  .admonition-test-page h1 {
+    margin-bottom: var(--wa-space-l);
+  }
+
+  .admonition-test-page h2 {
+    margin-top: var(--wa-space-xl);
+    margin-bottom: var(--wa-space-m);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+    padding-bottom: var(--wa-space-2xs);
+  }
+
+  .admonition-test-page h3 {
+    margin-top: var(--wa-space-l);
+    margin-bottom: var(--wa-space-s);
+  }
+</style>

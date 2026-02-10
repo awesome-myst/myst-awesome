@@ -20,6 +20,7 @@ interface Props {
 import { getCollection } from 'astro:content';
 import SearchDialog from '../components/SearchDialog.astro';
 import SearchLauncher from '../components/SearchLauncher.astro';
+import '../styles/admonitions.css';
 
 // Simple try-catch to avoid warnings if projectFrontmatter collection doesn't exist
 let projectConfig: any = null;
@@ -828,4 +829,10 @@ import MystContentStyles from '../components/MystContentStyles.astro';
 
   // renderMystAst
   import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
+</script>
+
+<!-- Admonition components (separate module to isolate from base components) -->
+<script>
+  import '@awesome.me/webawesome/dist/components/callout/callout.js';
+  import '@awesome.me/webawesome/dist/components/details/details.js';
 </script>

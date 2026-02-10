@@ -25,6 +25,8 @@ import type {
   Caption,
   Container,
   Legend,
+  Admonition,
+  AdmonitionTitle,
 } from "@awesome-myst/myst-zod";
 
 import { basicTransformations } from "myst-transforms";
@@ -348,6 +350,105 @@ export async function renderMystAst(root: Root): Promise<string> {
         const htmlNode = node as any;
         const htmlContent = htmlNode.value || "";
         return htmlContent
+      }
+      case "admonition": {
+        const admonNode = node as Admonition;
+        const kind = admonNode.kind || "note";
+        const classStr = (admonNode.class || "");
+        const classes = classStr.split(/\s+/).filter(Boolean);
+        
+        // Parse options from node
+        const isDropdown = classes.includes("dropdown");
+        const isSimple = classes.includes("simple");
+        const showIcon = !((admonNode as any).icon === false);
+        const isOpen = (admonNode as any).open === true;
+        
+        // Variant and icon mapping
+        const variantMap: Record<string, string> = {
+          note: "brand",
+          info: "brand",
+          important: "brand",
+          tip: "success",
+          hint: "success",
+          seealso: "success",
+          attention: "warning",
+          caution: "warning",
+          warning: "warning",
+          danger: "danger",
+          error: "danger",
+        };
+        
+        const iconMap: Record<string, { name: string; variant: string }> = {
+          note: { name: "circle-info", variant: "regular" },
+          info: { name: "circle-info", variant: "regular" },
+          important: { name: "circle-exclamation", variant: "solid" },
+          tip: { name: "lightbulb", variant: "regular" },
+          hint: { name: "lightbulb", variant: "regular" },
+          seealso: { name: "arrow-up-right-from-square", variant: "regular" },
+          attention: { name: "triangle-exclamation", variant: "solid" },
+          caution: { name: "hand", variant: "regular" },
+          warning: { name: "triangle-exclamation", variant: "solid" },
+          danger: { name: "circle-exclamation", variant: "solid" },
+          error: { name: "xmark-circle", variant: "solid" },
+        };
+        
+        const variant = variantMap[kind] || "brand";
+        const icon = iconMap[kind] || iconMap.note;
+        
+        // Separate title from body
+        const titleNode = admonNode.children?.find(c => c.type === "admonitionTitle");
+        const bodyChildren = admonNode.children?.filter(c => c.type !== "admonitionTitle") || [];
+        
+        // Render title
+        let titleHtml = "";
+        if (titleNode) {
+          const titleChildren = await Promise.all(
+            (titleNode as AdmonitionTitle).children?.map(renderNode) || []
+          );
+          titleHtml = titleChildren.join("");
+        } else {
+          // Default title formatting
+          titleHtml = kind === "seealso" ? "See Also" : 
+                      kind.charAt(0).toUpperCase() + kind.slice(1);
+        }
+        
+        // Render body
+        const bodyHtml = await Promise.all(bodyChildren.map(renderNode));
+        const contentHtml = bodyHtml.join("");
+        
+        // Build CSS classes
+        const cssClasses = `admonition admonition-${kind} admonition-${variant}`;
+        
+        // Build icon HTML
+        const iconHtml = showIcon 
+          ? `<wa-icon ${isDropdown ? '' : 'slot="icon" '}name="${icon.name}" variant="${icon.variant}"></wa-icon>`
+          : '';
+        
+        // Render as dropdown or callout
+        if (isDropdown) {
+          return `<wa-details${isOpen ? ' open' : ''} class="${cssClasses}" data-admonition-kind="${kind}">
+      <span slot="summary">
+        ${iconHtml ? iconHtml + ' ' : ''}<strong>${titleHtml}</strong>
+      </span>
+      <div class="admonition-content">${contentHtml}</div>
+    </wa-details>`;
+        } else {
+          const appearance = isSimple ? ` appearance="plain"` : '';
+          return `<wa-callout variant="${variant}"${appearance} class="${cssClasses}" data-admonition-kind="${kind}">
+      ${iconHtml}
+      <strong>${titleHtml}</strong>
+      <div class="admonition-content">${contentHtml}</div>
+    </wa-callout>`;
+        }
+      }
+      case "admonitionTitle": {
+        // AdmonitionTitle is handled by the parent admonition case
+        // This case should not be hit directly during normal rendering
+        const titleNode = node as AdmonitionTitle;
+        const children = await Promise.all(
+          titleNode.children?.map(renderNode) || []
+        );
+        return children.join("");
       }
       default:
         console.warn(`Unknown node type: ${(node as Parent).type}`);
