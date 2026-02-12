@@ -185,6 +185,8 @@ Term 3
 ```
 ````
 
+This page is a modified version of the Typography page from the official [MyST-MD Guide](https://mystmd.org/guide/typography).
+
 (footnotes)=
 
 ## Footnotes
