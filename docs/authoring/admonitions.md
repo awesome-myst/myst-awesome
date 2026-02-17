@@ -31,71 +31,7 @@ In MyST we call these kinds of directives {myst:directive}`admonitions <admoniti
 
 [^docutils-admonitions]: These admonitions are the same as those used in [docutils](https://docutils.sourceforge.io/docs/ref/rst/directives.html#specific-admonitions) and Sphinx.
 
-See below for a demo of each admonition in the default theme.
-
-`````{tab-set}
-
-````{tab-item} Note
-```{note}
-This is an note admonition
-```
-````
-
-````{tab-item} Important
-```{important}
-This is an important admonition
-```
-````
-
-````{tab-item} Hint
-```{hint}
-This is an hint admonition
-```
-````
-
-````{tab-item} See Also
-```{seealso}
-This is an seealso admonition
-```
-````
-
-````{tab-item} Tip
-```{tip}
-This is an tip admonition
-```
-````
-
-````{tab-item} Attention
-```{attention}
-This is an attention admonition
-```
-````
-
-````{tab-item} Caution
-```{caution}
-This is an caution admonition
-```
-````
-
-````{tab-item} Warning
-```{warning}
-This is an warning admonition
-```
-````
-
-````{tab-item} Danger
-```{danger}
-This is an danger admonition
-```
-````
-
-````{tab-item} Error
-```{error}
-This is an error admonition
-```
-````
-
-`````
+See the [Admonition Test Page](/admonition-test) for a live demo of each admonition type in the myst-awesome theme.
 
 ## Admonition Titles
 
