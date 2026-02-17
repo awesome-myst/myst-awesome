@@ -187,7 +187,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 :::{seealso} You can also use a `{dropdown}`
 :class: dropdown
-You can also use a {myst:directive}`dropdown` directive, which provides a more compact writing experience and is simpler in the displayed style. See [](#dropdowns) for more information.
+You can also use a {myst:directive}`dropdown` directive, which provides a more compact writing experience and is simpler in the displayed style. See [](#admonition-dropdown) for more information.
 :::
 
 ## Simpler Admonitions
@@ -226,3 +226,15 @@ Multiple classes can be combined. See below for an example.
 The proof of the lemma for $x \leqslant 0$ is left to the reader.  
 :::
 ```
+
+```{seealso} Admonitions in myst-awesome Theme
+:class: dropdown
+
+The myst-awesome theme renders admonitions using **Web Awesome** components:
+- `{note}`, `{tip}`, `{warning}`, etc. → `<wa-callout>` elements
+- Admonitions with `dropdown` class → `<wa-details>` elements
+
+See the [Admonition Test Page](/admonition-test) for live examples of all admonition types.
+```
+
+This page is a modified version of the Admonitions page from the official [MyST-MD Guide](https://mystmd.org/guide/admonitions).
