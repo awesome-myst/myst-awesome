@@ -287,9 +287,18 @@ export async function renderMystAst(root: Root): Promise<string> {
         return children.join("");
       }
       case "container": {
-        // Container wraps figures and tables with captions
+        // Container wraps figures, tables with captions, or tabSet with tabs
         // Following myst-to-html reference implementation
         const containerNode = node as Container;
+        
+        // Handle tabSet containers specially
+        if (containerNode.kind === 'tabSet') {
+          const children = await Promise.all(
+            containerNode.children?.map(renderNode) || []
+          );
+          return `<wa-tab-group>${children.join('')}</wa-tab-group>`;
+        }
+        
         const children = await Promise.all(
           containerNode.children?.map(renderNode) || []
         );
@@ -313,6 +322,16 @@ export async function renderMystAst(root: Root): Promise<string> {
           classes.length > 0 ? ` class="${classes.join(" ")}"` : "";
 
         return `<figure${idAttr}${classAttr}>${children.join("")}</figure>`;
+      }
+      case "tabItem": {
+        // TabItem renders as wa-tab and wa-tab-panel
+        const tabNode = node as any;
+        const title = tabNode.title || 'Tab';
+        const sync = tabNode.sync || title.toLowerCase().replace(/\s+/g, '-');
+        const children = await Promise.all(
+          tabNode.children?.map(renderNode) || []
+        );
+        return `<wa-tab panel="${escapeHtml(sync)}">${escapeHtml(title)}</wa-tab><wa-tab-panel name="${escapeHtml(sync)}">${children.join('')}</wa-tab-panel>`;
       }
       case "caption": {
         // Caption renders as figcaption element
