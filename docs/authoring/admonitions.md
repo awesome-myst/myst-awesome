@@ -34,69 +34,45 @@ Try changing `tip` to `warning`!
 
 See below for a demo of each admonition in the default theme.
 
-`````{tab-set}
-
-````{tab-item} Note
 ```{note}
-This is an note admonition
+This is a note admonition
 ```
-````
 
-````{tab-item} Important
 ```{important}
 This is an important admonition
 ```
-````
 
-````{tab-item} Hint
 ```{hint}
-This is an hint admonition
+This is a hint admonition
 ```
-````
 
-````{tab-item} See Also
 ```{seealso}
-This is an seealso admonition
+This is a seealso admonition
 ```
-````
 
-````{tab-item} Tip
 ```{tip}
-This is an tip admonition
+This is a tip admonition
 ```
-````
 
-````{tab-item} Attention
 ```{attention}
 This is an attention admonition
 ```
-````
 
-````{tab-item} Caution
 ```{caution}
-This is an caution admonition
+This is a caution admonition
 ```
-````
 
-````{tab-item} Warning
 ```{warning}
-This is an warning admonition
+This is a warning admonition
 ```
-````
 
-````{tab-item} Danger
 ```{danger}
-This is an danger admonition
+This is a danger admonition
 ```
-````
 
-````{tab-item} Error
 ```{error}
 This is an error admonition
 ```
-````
-
-`````
 
 ## Admonition Titles
 
