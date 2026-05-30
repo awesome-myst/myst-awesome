@@ -47,7 +47,7 @@ export async function renderMystAst(root: Root): Promise<string> {
   const footnoteNumberMap = new Map<string, number>(); // Maps identifier → display number
 
   const renderNode = async (node: Node): Promise<string> => {
-    switch (node.type) {
+    switch ((node as any).type) {
       case "paragraph": {
         const children = await Promise.all(
           (node as Paragraph).children?.map(renderNode) || []
@@ -288,9 +288,16 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "container": {
         // Container wraps figures, tables with captions, or tabSet with tabs
-        // Following myst-to-html reference implementation
-        const containerNode = node as Container;
-        
+        // Following myst-to-html reference implementation.
+        // Use a local type that extends the published Container to allow
+        // tabSet kind and identifier/label fields (used at runtime).
+        interface LocalContainer extends Container {
+          kind: "figure" | "table" | "tabSet";
+          identifier?: string;
+          label?: string;
+        }
+        const containerNode = node as LocalContainer;
+
         // Handle tabSet containers specially
         if (containerNode.kind === 'tabSet') {
           const children = await Promise.all(
@@ -314,8 +321,8 @@ export async function renderMystAst(root: Root): Promise<string> {
 
         // ID from identifier or label
         const id =
-          (containerNode as any).identifier ||
-          (containerNode as any).label ||
+          containerNode.identifier ||
+          containerNode.label ||
           undefined;
         const idAttr = id ? ` id="${escapeHtml(id)}"` : "";
         const classAttr =
@@ -325,7 +332,12 @@ export async function renderMystAst(root: Root): Promise<string> {
       }
       case "tabItem": {
         // TabItem renders as wa-tab and wa-tab-panel
-        const tabNode = node as any;
+        interface LocalTabItem {
+          title?: string;
+          sync?: string;
+          children?: any[];
+        }
+        const tabNode = node as LocalTabItem;
         const title = tabNode.title || 'Tab';
         const sync = tabNode.sync || title.toLowerCase().replace(/\s+/g, '-');
         const children = await Promise.all(
