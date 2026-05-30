@@ -6,20 +6,20 @@ thumbnail: ./thumbnails/admonitions.png
 
 Callouts, or "admonitions", highlight a particular block of text that exists slightly apart from the narrative of your page, such as a note or a warning.
 
-In MyST we call these kinds of directives {myst:directive}`admonitions <admonition>`, however, they are almost always used through their _named_ directives, like {myst:directive}`note` or {myst:directive}`danger`. There are ten kinds[^docutils-admonitions] of admonitions available:
+In MyST we call these kinds of directives `admonition`, however, they are almost always used through their _named_ directives, like `note` or `danger`. There are ten kinds[^docutils-admonitions] of admonitions available:
 
 ```{list-table} Named admonitions that can be used as directives
 :label: admonitions-list
-* - 🔵 {myst:directive}`note`
-  - 🟠 {myst:directive}`attention`
-* - 🔵 {myst:directive}`important`
-  - 🟠 {myst:directive}`caution`
-* - 🟢 {myst:directive}`hint`
-  - 🟠 {myst:directive}`warning`
-* - 🟢 {myst:directive}`seealso`
-  - 🔴 {myst:directive}`danger`
-* - 🟢 {myst:directive}`tip`
-  - 🔴 {myst:directive}`error`
+* - 🔵 `note`
+  - 🟠 `attention`
+* - 🔵 `important`
+  - 🟠 `caution`
+* - 🟢 `hint`
+  - 🟠 `warning`
+* - 🟢 `seealso`
+  - 🔴 `danger`
+* - 🟢 `tip`
+  - 🔴 `error`
 ```
 
 [^docutils-admonitions]: These admonitions are the same as those used in [docutils](https://docutils.sourceforge.io/docs/ref/rst/directives.html#specific-admonitions) and Sphinx.
@@ -100,8 +100,8 @@ This is an error admonition
 
 ## Admonition Titles
 
-All admonitions have a single argument ({myst:directive}`docs <admonition.arg>`), which is the admonition title and can use Markdown.
-If a title argument is not supplied the first node of the {myst:directive}`admonition.body` is used if it is a `heading` or a paragraph with fully bold text; otherwise the name of the directive is used (e.g. `seealso` becomes `See Also`; `note` becomes `Note`).
+All admonitions have a single argument (`admonition.arg`), which is the admonition title and can use Markdown.
+If a title argument is not supplied the first node of the `admonition.body` is used if it is a `heading` or a paragraph with fully bold text; otherwise the name of the directive is used (e.g. `seealso` becomes `See Also`; `note` becomes `Note`).
 
 ```{myst}
 :::{tip} Admonition _title_
@@ -112,7 +112,7 @@ Here is an admonition!
 (admonition-github-compatibility)=
 :::::::{tip} Compatibility with GitHub
 :class: dropdown
-GitHub Markdown transforms blockquotes that start with a bold `Note` or text with `[!NOTE]` into a simple admonition (see [GitHub](https://github.com/community/community/discussions/16925)). This syntax only works for `note`, `important` or `warning`. MyST transforms these blockquotes into the appropriate admonitions with a `simple` {myst:directive}`admonition.class`.
+GitHub Markdown transforms blockquotes that start with a bold `Note` or text with `[!NOTE]` into a simple admonition (see [GitHub](https://github.com/community/community/discussions/16925)). This syntax only works for `note`, `important` or `warning`. MyST transforms these blockquotes into the appropriate admonitions with a `simple` `admonition.class`.
 
 ```{myst}
 > [!NOTE]
@@ -136,7 +136,7 @@ GitHub Markdown transforms blockquotes that start with a bold `Note` or text wit
 :::::{tip} Compatibility with Pandoc & Quarto
 :class: dropdown
 In Quarto/Pandoc Markdown admonitions are styled with special classes (like `{.callout-note}` or `{.callout-tip}`).
-If you are using Jupyter Book V1 or Sphinx documentation, use an {myst:directive}`admonition` directive with the specific class, for example:
+If you are using Jupyter Book V1 or Sphinx documentation, use an `admonition` directive with the specific class, for example:
 
 ```{myst}
 ::: {.callout-tip}
@@ -151,7 +151,7 @@ This is an example of a callout with a caption.
 :class: dropdown
 In Sphinx, all named admonitions (like `{note}` or `{tip}`), have **no arguments**.
 If you place content on the first line it will instead be prepended to the admonition body.
-If you are using Jupyter Book V1 or Sphinx documentation, use an {myst:directive}`admonition` directive with the specific class, for example:
+If you are using Jupyter Book V1 or Sphinx documentation, use an `admonition` directive with the specific class, for example:
 
 ```{myst}
 :::{admonition} The Title
@@ -166,10 +166,10 @@ This is the body.
 
 ## Admonition Dropdown
 
-To turn an admonition into a dropdown, add the `dropdown` {myst:directive}`admonition.class` to them.
+To turn an admonition into a dropdown, add the `dropdown` `admonition.class` to them.
 Dropdown admonitions use the `<details>` HTML element (meaning they also will work without JavaScript!),
 and they can be helpful when including text that shouldn't immediately visible to your readers.
-To have a dropdown-style admonition start open, add the {myst:directive}`admonition.open` option.
+To have a dropdown-style admonition start open, add the `admonition.open` option.
 
 ```{myst}
 :::{note} Click Me! 👈
@@ -188,12 +188,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 :::{seealso} You can also use a `{dropdown}`
 :class: dropdown
-You can also use a {myst:directive}`dropdown` directive, which provides a more compact writing experience and is simpler in the displayed style. See [](#admonition-dropdown) for more information.
+You can also use a `dropdown` directive, which provides a more compact writing experience and is simpler in the displayed style. See [](#admonition-dropdown) for more information.
 :::
 
 ## Simpler Admonitions
 
-Admonitions can additionally be styled as `simple`, and can optionally hide the icon using the {myst:directive}`admonition.icon` option.
+Admonitions can additionally be styled as `simple`, and can optionally hide the icon using the `admonition.icon` option.
 
 ```{myst}
 :::{important} Magic
