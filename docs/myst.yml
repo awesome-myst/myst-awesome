@@ -28,7 +28,7 @@ project:
         - file: authoring/admonitions.md
 
 site:
-  title: MyST Awesome 
+  title: MyST Awesome
   options:
     favicon: assets/favicon.ico
     logo: assets/logo.png
