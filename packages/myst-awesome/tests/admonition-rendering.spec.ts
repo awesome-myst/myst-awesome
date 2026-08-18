@@ -5,8 +5,10 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Admonition Rendering", () => {
   test("page loads successfully", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector(".page-main h1", { timeout: 15000 });
 
     // Check that the page loaded successfully
     await expect(page).toHaveTitle(/Admonition Rendering Test/);
@@ -18,8 +20,12 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("all standard admonition kinds render", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector("wa-callout.admonition, wa-details.admonition", {
+      timeout: 15000,
+    });
 
     // Check for each admonition kind (10 standard MyST kinds)
     // Note: "info" is in the schema but not a standard MyST directive
@@ -45,8 +51,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("note admonition has brand variant", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const noteAdmonition = page.locator(
       'wa-callout[data-admonition-kind="note"]'
@@ -56,8 +63,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("tip admonition has success variant", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const tipAdmonition = page.locator(
       'wa-callout[data-admonition-kind="tip"]'
@@ -67,8 +75,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("warning admonition has warning variant", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const warningAdmonition = page.locator(
       'wa-callout[data-admonition-kind="warning"]'
@@ -78,8 +87,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("danger admonition has danger variant", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const dangerAdmonition = page.locator(
       'wa-callout[data-admonition-kind="danger"]'
@@ -89,8 +99,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("icons are present in admonitions", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Check that the first note admonition has an icon
     const noteAdmonition = page.locator(
@@ -102,8 +113,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("tip icon is lightbulb", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const tipAdmonition = page.locator(
       'wa-callout[data-admonition-kind="tip"]'
@@ -113,8 +125,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("warning icon is triangle-exclamation", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const warningAdmonition = page.locator(
       'wa-callout[data-admonition-kind="warning"]'
@@ -124,8 +137,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("default titles are formatted correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Note should have "Note" title
     const noteAdmonition = page.locator(
@@ -143,8 +157,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("custom titles render correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find admonition with "Custom Note Title"
     const customTitleAdmonition = page
@@ -157,8 +172,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("admonitions without icons hide icon element", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find "Note Without Icon" section
     const noIconSection = page.locator("text=Note Without Icon");
@@ -175,8 +191,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("dropdown admonitions use wa-details element", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find dropdown admonitions
     const dropdownAdmonitions = page.locator("wa-details.admonition");
@@ -193,8 +210,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("dropdown can be opened and closed", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find a dropdown that starts closed
     const dropdown = page
@@ -221,8 +239,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("dropdown with open attribute starts open", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find dropdown with ":open: true"
     const openDropdown = page
@@ -238,8 +257,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("simple admonitions have plain appearance", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find admonition with simple class
     const simpleAdmonition = page
@@ -252,8 +272,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("nested content renders correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find admonition with list
     const listAdmonition = page
@@ -272,8 +293,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("code blocks in admonitions render correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find admonition with code block
     const codeAdmonition = page
@@ -289,8 +311,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("nested admonitions render correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Find outer warning admonition
     const outerAdmonition = page
@@ -309,8 +332,9 @@ test.describe("Admonition Rendering", () => {
 
   test("responsive behavior on mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     // Check admonitions are still visible and not overflowing
     const admonitions = page.locator("wa-callout.admonition");
@@ -327,8 +351,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("admonition CSS classes are applied correctly", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const noteAdmonition = page.locator(
       'wa-callout[data-admonition-kind="note"]'
@@ -345,8 +370,9 @@ test.describe("Admonition Rendering", () => {
   });
 
   test("admonition content wrapper is present", async ({ page }) => {
-    await page.goto("http://localhost:4322/admonition-test");
-    await page.waitForLoadState("networkidle");
+    await page.goto("http://localhost:4322/admonition-test", {
+      waitUntil: "domcontentloaded",
+    });
 
     const admonition = page.locator('wa-callout[data-admonition-kind="note"]').first();
     const contentWrapper = admonition.locator(".admonition-content");

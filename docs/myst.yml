@@ -25,6 +25,7 @@ project:
     - title: Authoring
       children:
         - file: authoring/typography.md
+        - file: authoring/admonitions.md
 
 site:
   title: MyST Awesome 

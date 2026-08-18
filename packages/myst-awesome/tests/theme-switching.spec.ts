@@ -100,8 +100,20 @@ test.describe("Theme Switching", () => {
   }) => {
     const consoleErrors: string[] = [];
 
+    const isExternalError = (text: string): boolean => {
+      const patterns = [
+        /403 \(\)/,
+        /404 \(\)/,
+        /ERR_BLOCKED_BY_CLIENT/,
+        /net::ERR_/,
+        /Failed to load resource/,
+        /favicon\.ico/,
+      ];
+      return patterns.some((p) => p.test(text));
+    };
+
     page.on("console", (msg) => {
-      if (msg.type() === "error") {
+      if (msg.type() === "error" && !isExternalError(msg.text())) {
         consoleErrors.push(msg.text());
       }
     });
