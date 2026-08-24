@@ -121,13 +121,19 @@ This roadmap makes the Astro theme a faithful consumer of MyST’s resolved refe
 1. Create `packages/myst-awesome/src/components/XRefHoverPreview.astro` for the server-rendered trigger markup and `packages/myst-awesome/src/lib/wa-xref-preview.ts` for client-side progressive enhancement.
 2. Use an ordinary `<a>` as the trigger; attach preview behavior without replacing browser navigation, keyboard activation, copy-link, or context-menu behavior.
 3. Store `data-xref-url`, `data-xref-data-url`, `data-xref-identifier`, and `data-xref-remote` on resolved cross-reference links.
-4. On hover/focus, fetch the same page JSON identified by `dataUrl`, locate the target by `identifier` or `html_id`, and render a sanitized text preview consisting of title/caption plus a bounded content excerpt.
-5. Cache in-flight and resolved preview requests by absolute data URL so repeated links do not refetch a page.
-6. Use `wa-tooltip` only for a short loading/error label; render the rich preview in an accessible positioned popover component, because tooltip semantics are too limited for interactive excerpts.
-7. Follow the general approach used by Jupyter Book’s MyST theme hover popover—an anchor remains primary and a lazily loaded preview is supplemental—without coupling this Astro implementation to React code.
-8. Set `aria-describedby` only while a non-interactive preview is open, close on Escape and blur, and never trap focus.
-9. Disable previews for intersphinx and unresolved references because they lack a MyST page-data contract.
-10. Add an opt-out frontmatter/site option such as `options.xref_hover_previews: false`, with a default that favors progressive enhancement.
+4. Validate `dataUrl` before any request. `dataUrl` arrives from cross-reference metadata that can name a remote project, so treat it as untrusted input rather than a theme-generated URL:
+   - Resolve it against the document base and require the result to be same-origin, or to match an explicit `options.xref_preview_origins` allowlist of `https:` origins. Reject everything else, including `http:`, `data:`, `blob:`, and `file:`.
+   - Send the request with `credentials: "omit"`, `redirect: "error"`, and an `AbortSignal` timeout, so a preview cannot leak cookies to an allowed origin or be walked to a disallowed one by a redirect chain.
+   - Require a JSON content type on the response and abandon the preview on any other value.
+   - Bound the read: cap the response at a documented byte ceiling and abort past it, so a large or hostile page payload cannot stall the tab.
+5. On hover/focus, fetch the validated page JSON, locate the target by `identifier` or `html_id`, and render a sanitized text preview consisting of title/caption plus a bounded content excerpt.
+6. Treat every validation or fetch failure as "no preview": log a development diagnostic, mark the link so it is not retried in a loop, and leave the anchor's ordinary navigation, keyboard activation, and context menu completely unaffected. A preview is supplemental and must never become a precondition for following a link.
+7. Cache in-flight and resolved preview requests by absolute data URL so repeated links do not refetch a page. Cache only permitted requests; never cache a rejected URL as though it were a miss to retry.
+8. Use `wa-tooltip` only for a short loading/error label; render the rich preview in an accessible positioned popover component, because tooltip semantics are too limited for interactive excerpts.
+9. Follow the general approach used by Jupyter Book’s MyST theme hover popover—an anchor remains primary and a lazily loaded preview is supplemental—without coupling this Astro implementation to React code.
+10. Set `aria-describedby` only while a non-interactive preview is open, close on Escape and blur, and never trap focus.
+11. Disable previews for intersphinx and unresolved references because they lack a MyST page-data contract.
+12. Add an opt-out frontmatter/site option such as `options.xref_hover_previews: false`, with a default that favors progressive enhancement. Cross-origin previews are separately opt-in through the origin allowlist: the progressive-enhancement default covers same-origin project pages only.
 
 ### Loader-side reference index
 
@@ -209,6 +215,7 @@ This roadmap makes the Astro theme a faithful consumer of MyST’s resolved refe
 - [ ] Figures, tables, equations, and headings display only upstream-resolved enumerators and caption-number nodes.
 - [ ] No renderer code counts sections, figures, tables, or equations.
 - [ ] Hover previews are progressive enhancement: links work with JavaScript disabled, on error, and on touch devices.
+- [ ] Preview fetches are restricted to same-origin or allowlisted `https:` origins, omit credentials, reject redirects, require a JSON content type, and enforce a response-size ceiling.
 - [ ] The collections package exposes a typed lookup over the unmodified canonical `myst.xref.json`.
 - [ ] Astro output continues publishing `myst.xref.json` for downstream MyST projects.
 - [ ] Intersphinx references remain ordinary external links and unresolved references preserve author-visible content.

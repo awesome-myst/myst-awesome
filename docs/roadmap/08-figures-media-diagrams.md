@@ -75,8 +75,14 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 1. Render an iframe node as `<figure class="myst-iframe">` only when it has a caption wrapper; otherwise render a `<div class="myst-iframe">`.
 2. Emit `<iframe src title loading="lazy" referrerpolicy="strict-origin-when-cross-origin">`; default a missing title to `"Embedded content"` and issue a development warning.
 3. Apply validated width/height styles and alignment classes. Preserve the placeholder image in `<noscript>` or a static fallback region when present.
-4. Treat YouTube as an ordinary trusted author-supplied embed URL. Do not infer provider URLs, execute provider scripts, or allow arbitrary raw HTML attributes.
-5. Add an optional `iframeAllowlist` theme option for deployments that require host restrictions; ship permissive behavior by default for authoring parity and document the security tradeoff.
+4. Do not infer provider URLs, execute provider scripts, or allow arbitrary raw HTML attributes. YouTube and other hosted-video providers are ordinary embed hosts and get no special standing.
+5. Make `iframeAllowlist` restrictive by default. An iframe runs third-party code in the reader's browser, so an author-supplied URL is not sufficient authorization on its own:
+   - The default allowlist permits same-origin embeds only.
+   - A deployment adds `https:` origins explicitly through the theme option; each entry is an origin, not a substring or a wildcard suffix that a lookalike host can satisfy.
+   - Compare the parsed URL's origin against the list. Never match on a raw string prefix.
+   - Ship a documented starter list for common hosted-video providers that deployments can opt into, so the restrictive default does not make ordinary embeds hard to enable.
+6. Render a disallowed iframe as a labelled fallback — caption text plus a plain external link to the URL — and emit a development warning naming the origin and the option to add. Silently dropping the node makes a misconfigured allowlist look like a renderer bug.
+7. Document the tradeoff in the reverse of the usual direction: authoring parity with a permissive upstream is the opt-in, and reader safety is the default.
 
 ### Mermaid progressive enhancement
 
@@ -91,10 +97,10 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 
 1. Ship semantic figure/image rendering first, behind no feature flag, because it only consumes nodes already accepted by the renderer.
 2. Ship video extension detection in the same slice, but leave uncommon media formats as a linked image fallback until their upstream transform output is verified.
-3. Ship iframe output next with a documented host policy. Test captions before enabling remote-provider examples in theme docs.
+3. Ship iframe output next with the restrictive default host policy in place from the first release; loosening a default after sites depend on it is a breaking security change, whereas widening an allowlist is additive. Test captions before enabling remote-provider examples in theme docs.
 4. Ship the local media manifest separately because it adds file-system work, build output, cache invalidation, and deployment-size concerns.
 5. Make `media.optimize` opt-in for the first release. `sharp` capability alone must not change users’ image URLs or asset ownership unexpectedly.
-6. Use source content hash, transformation options, and source mtime in manifest keys so a rebuilt image cannot collide with a prior output.
+6. Derive manifest keys from the source **content hash and transformation options only**. Identical bytes plus identical options must produce the same key — and therefore the same emitted URL — across checkouts, machines, and CI runs; that is what makes the manifest deterministic and the output URLs cacheable. Source mtime may be kept as a separate non-identity field to skip re-encoding work, but it must never enter the key: a fresh clone rewrites mtimes and would otherwise churn every asset URL on the site.
 7. Ensure emitted optimized asset paths respect `baseDir`, folder URL mode, and the site URL helper proposed in roadmap 11.
 8. Ship Mermaid as a progressive enhancement after its static renderer branch is covered; an unavailable CDN/package must leave the code source readable.
 9. Keep Mermaid configuration theme-owned and conservative: no author-supplied JavaScript callbacks, no unbounded HTML labels, and no global `startOnLoad`.
@@ -130,7 +136,7 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 
 - `packages/myst-awesome/tests/figures-media.spec.ts`: numbered figure, caption, legend, custom kind, remote URL, width/height, alignment, class, and alternate text.
 - `packages/myst-awesome/tests/subfigures.spec.ts`: implicit subfigures, explicit child labels, no-subfigures, and grid classes.
-- `packages/myst-awesome/tests/video-and-iframe.spec.ts`: MP4/WebM `<video>`, static text fallback, accessible YouTube iframe, placeholder, and caption.
+- `packages/myst-awesome/tests/video-and-iframe.spec.ts`: MP4/WebM `<video>`, static text fallback, placeholder, caption, an allowlisted provider iframe rendering as an embed, and the same URL rendering as an external-link fallback when the origin is not allowlisted.
 - `packages/myst-awesome/tests/mermaid.spec.ts`: source fallback before hydration, lazy SVG render, malformed source error, and light/dark rerender.
 - `packages/myst-awesome/tests/media-optimization.spec.ts`: local manifest output and `srcset`; assert remote URLs bypass local optimization.
 - `packages/myst-awesome/src/lib/render-myst-ast.media.test.ts`: escaping and extension classification unit coverage.
@@ -142,6 +148,8 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 - [ ] Figures with multiple children preserve upstream numbering/labels and have usable responsive subfigure layout.
 - [ ] Image and figure classes, dimensions, alignment, caption, legend, and custom kinds survive rendering.
 - [ ] An iframe has a title, lazy loading, safe fallback behavior, and correctly rendered caption.
+- [ ] With no `iframeAllowlist` configured, a cross-origin iframe renders as a labelled external link rather than an embed, and adding its origin to the option renders the embed.
+- [ ] Rebuilding an unchanged image in a fresh clone produces byte-identical manifest keys and asset URLs.
 - [ ] Mermaid source is useful without JavaScript and is upgraded only after the diagram approaches the viewport.
 - [ ] Mermaid has no global rerender loop and does not block the initial page load.
 - [ ] Light/dark image classes work with the existing Web Awesome color-mode classes.

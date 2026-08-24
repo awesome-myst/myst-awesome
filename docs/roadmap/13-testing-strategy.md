@@ -9,7 +9,7 @@ Build a test pyramid around the renderer: deterministic AST-to-HTML conformance 
 
 | Priority | Effort | Depends on |
 | --- | --- | --- |
-| P1 | XL | `01-dependency-updates.md`, `12-myst-zod-updates.md` |
+| P0 | XL | `01-dependency-updates.md`, `12-myst-zod-updates.md` |
 
 ## Overview
 
@@ -100,12 +100,13 @@ Reproduce these real upstream files as small, named assertions; do not copy the 
 ### 1. Spec-conformance harness
 
 1. Add a unit-test runner and script to `packages/myst-awesome/package.json` (Vitest is the recommended runner because upstream uses it; **verify Astro 7/Vite 8 compatibility when choosing its exact version**).
-2. Create `packages/myst-awesome/src/lib/render-myst-ast.spec.ts` for direct renderer behavior and `packages/myst-awesome/tests/spec-conformance/myst-spec-render.spec.ts` for parameterized YAML cases.
-3. Add `packages/myst-awesome/tests/spec-conformance/load-myst-spec-fixtures.ts`. Load local fixture files through a configured source path such as `MYST_SPEC_ROOT`; CI must checkout/pin the fixture revision or vendor a reviewed read-only fixture copy under `tests/fixtures/myst-spec/`. Do not fetch network content in test execution.
-4. Parse YAML with `js-yaml`, iterate `cases`, skip `invalid: true`, validate `case.mdast` with the current myst-zod root schema where coverage exists, then pass it to `renderMystAst`.
-5. Snapshot the output under `packages/myst-awesome/tests/spec-conformance/__snapshots__/`. Key snapshots by fixture basename and case `id`/title. Normalize newline endings and only normalize known nondeterminism such as generated IDs after documenting it.
-6. Store case disposition in `packages/myst-awesome/tests/spec-conformance/manifest.ts`: `supported`, `partial`, `unsupported`, or `blocked-upstream`. A supported case must snapshot; partial/unsupported must assert the present behavior and link to a roadmap issue so `test.skip` does not silently expand.
-7. Start with CommonMark basics, headings, links, lists, math, tables, figures, admonitions, footnotes, targets, and generic fallbacks. Enable extension fixtures only after the corresponding myst-zod schema and renderer document land.
+2. Declare the harness's dependencies directly. The PR that adds the harness must add `vitest` and `js-yaml` (plus `@types/js-yaml`) as direct `devDependencies` of `packages/myst-awesome/package.json` and commit the regenerated `pnpm-lock.yaml` in the same change. Neither may be relied on as a transitive hoist: pnpm's isolated `node_modules` layout does not expose undeclared packages, so a phantom dependency here fails on a clean install rather than on the author's machine. Add the root `pnpm.overrides` pins for both, per the policy in [01-dependency-updates.md](01-dependency-updates.md).
+3. Create `packages/myst-awesome/src/lib/render-myst-ast.spec.ts` for direct renderer behavior and `packages/myst-awesome/tests/spec-conformance/myst-spec-render.spec.ts` for parameterized YAML cases.
+4. Add `packages/myst-awesome/tests/spec-conformance/load-myst-spec-fixtures.ts`. Load local fixture files through a configured source path such as `MYST_SPEC_ROOT`; CI must checkout/pin the fixture revision or vendor a reviewed read-only fixture copy under `tests/fixtures/myst-spec/`. Do not fetch network content in test execution.
+5. Parse YAML with `js-yaml`, iterate `cases`, skip `invalid: true`, validate `case.mdast` with the current myst-zod root schema where coverage exists, then pass it to `renderMystAst`.
+6. Snapshot the output under `packages/myst-awesome/tests/spec-conformance/__snapshots__/`. Key snapshots by fixture basename and case `id`/title. Normalize newline endings and only normalize known nondeterminism such as generated IDs after documenting it.
+7. Store case disposition in `packages/myst-awesome/tests/spec-conformance/manifest.ts`: `supported`, `partial`, `unsupported`, or `blocked-upstream`. A supported case must snapshot; partial/unsupported must assert the present behavior and link to a roadmap issue so `test.skip` does not silently expand.
+8. Start with CommonMark basics, headings, links, lists, math, tables, figures, admonitions, footnotes, targets, and generic fallbacks. Enable extension fixtures only after the corresponding myst-zod schema and renderer document land.
 
 Do **not** compare to `case.html` byte-for-byte. Compare to reviewed myst-awesome snapshots and optionally assert semantic invariants—e.g., table `th`/`td`, link `href`, escaped attributes, `wa-callout` kind—because the upstream expected HTML deliberately does not use the theme's Web Awesome components.
 
@@ -141,13 +142,20 @@ Every screenshot test must set viewport/device explicitly, wait for fonts and cu
 
 Add explicit scripts: `test:unit`, `test:conformance`, `test:upstream-regressions`, `test:e2e`, and retain root `test` as the composed command. Do not make tests depend on a developer's globally running MyST server.
 
+**This table is the single definition of the required merge gate.** Other roadmap documents reference it rather than restating a browser scope of their own; [01-dependency-updates.md](01-dependency-updates.md) in particular defers to the browser-facing tier below.
+
+The gate has two PR shapes, not one. Most PRs touch content, docs prose, or Node-side code and get fast Chromium-only feedback. A **browser-facing PR** — one that changes Astro, Web Awesome, Playwright, or another rendering dependency, or that touches the renderer, layouts, components, or theme CSS — is exactly the case where a Chromium-only pass proves the least, so it runs the full browser matrix *before merge* rather than discovering the breakage on the nightly run. Select the tier by changed paths, with a `full-matrix` label as a manual override.
+
 | CI tier | Trigger | Commands | Platform/browser scope | Required result |
 | --- | --- | --- | --- | --- |
 | Fast validation | every PR | `pnpm install --frozen-lockfile`, collection build, theme unit/conformance/regression tests | Ubuntu, Node 22 | deterministic AST/schema snapshots |
 | Build | every PR | `pnpm run build` | Ubuntu, macOS, Windows, Node 22 | collection + theme + docs production builds |
-| Theme e2e | every PR | theme `test:e2e` | Chromium on Ubuntu; full existing browser matrix nightly or before release | interactions and focused visuals |
-| Docs e2e | every PR | docs Playwright | Chromium + mobile Chromium on Ubuntu; full docs matrix nightly/release | content server/collections integration |
+| Theme e2e | every PR | theme `test:e2e` | Chromium on Ubuntu | interactions and focused visuals |
+| Docs e2e | every PR | docs Playwright | Chromium + mobile Chromium on Ubuntu | content server/collections integration |
+| Browser-facing e2e | PRs touching rendering dependencies, renderer, layouts, components, or theme CSS; or labelled `full-matrix` | theme `test:e2e`, docs Playwright | theme Chromium/Firefox/WebKit plus docs desktop and mobile, on Ubuntu | **required to merge** — cross-browser rendering confidence where it is actually at risk |
 | Full matrix | main/nightly/release | `pnpm test`, all Playwright projects | current three OS CI plus Chromium/Firefox/WebKit and docs mobile | cross-platform regression confidence |
+
+Nightly and release runs remain a backstop for the paths the change-detection heuristic misses; they are not the first place a browser regression in a dependency upgrade should surface.
 
 Retain trace/screenshot/report artifact upload and add unit/conformance snapshot diffs to the same artifact group. The current CI has browser installation and artifact paths that can be extended directly ([existing workflow](https://github.com/awesome-myst/myst-awesome/blob/main/.github/workflows/ci.yml)).
 
@@ -199,8 +207,9 @@ Maintain `packages/myst-awesome/tests/spec-conformance/feature-parity.md` as the
 - [ ] Invalid YAML cases are never silently rendered as valid conformance cases.
 - [ ] Focused upstream transform and myst-to-html regressions have source URLs and local named tests.
 - [ ] Renderer unit, conformance, and upstream-regression tests run without Astro/Playwright.
+- [ ] `vitest` and `js-yaml` are direct `devDependencies` of `packages/myst-awesome`, and the harness runs from a clean `pnpm install --frozen-lockfile` with no phantom dependency.
 - [ ] Playwright covers semantic behavior first and stable visual baselines second across feature pages.
-- [ ] CI runs pnpm build, unit/conformance/regression, theme e2e, and docs build/e2e in the stated matrix.
+- [ ] CI runs pnpm build, unit/conformance/regression, theme e2e, and docs build/e2e in the stated matrix, with the browser-facing tier required on any PR that changes rendering dependencies or rendering code.
 - [ ] The feature-parity companion has one maintained row per node family with fixture, test path, and current status.
 - [ ] A node cannot be marked supported until myst-zod validation, renderer snapshot, and applicable browser test are green.
 

@@ -44,6 +44,10 @@ Documents are numbered in recommended implementation order. Dependency updates
 come first: everything else builds on current upstream AST shapes and current
 Web Awesome components.
 
+The table below is the authoritative priority for every plan. The `Status`
+table at the top of each plan mirrors this value; when the two disagree, this
+table wins and the plan document should be corrected.
+
 | # | Plan | Phase | Priority |
 | --- | --- | --- | --- |
 | 01 | [Dependency updates](./01-dependency-updates.md) | Foundation | P0 |
@@ -52,7 +56,7 @@ Web Awesome components.
 | 04 | [Citations and bibliography](./04-citations-and-bibliography.md) | Scholarly core | P1 |
 | 05 | [UI extension components](./05-ui-extension-components.md) | Components | P1 |
 | 06 | [Proofs, theorems, and exercises](./06-proofs-exercises.md) | Components | P2 |
-| 07 | [Code, execution, and Jupyter outputs](./07-code-execution-and-outputs.md) | Executable content | P1 |
+| 07 | [Code, execution, and Jupyter outputs](./07-code-execution-and-outputs.md) | Executable content | P1 (P3 for live execution and widgets) |
 | 08 | [Figures, media, and diagrams](./08-figures-media-diagrams.md) | Media | P1 |
 | 09 | [Includes, glossaries, terms, and indices](./09-includes-glossaries-indices.md) | Authoring | P2 |
 | 10 | [Frontmatter, SEO, and site metadata](./10-frontmatter-site-metadata.md) | Site | P1 |

@@ -117,14 +117,18 @@ This roadmap closes the foundational renderer gaps before higher-level cross-ref
 
 ### Raw and aside rendering
 
-1. Add `case "raw"` with an explicit browser-format policy: render `value` only for `lang` equal to `html`, `web`, or empty when upstream content policy labels it safe.
-2. For `tex`, `latex`, `typst`, and unknown raw formats, return an empty production string because those are export-specific values in the upstream directive. [Raw directive](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-directives/src/raw.ts)
-3. In development, render a `<pre class="myst-raw--unsupported">` diagnostic only when an opt-in renderer option is enabled; never expose TeX/Typst raw text accidentally in production pages.
-4. Document the trust boundary next to the raw branch: content-server raw HTML is executable markup and must be enabled by site configuration, not silently trusted by all consumers.
-5. Add `case "aside"` returning `<aside class="myst-aside …">`.
-6. Detect a leading `admonitionTitle` child, render it as `<h2 class="myst-aside__title">` or `<p role="heading">` according to the surrounding heading outline, then render the remaining children in `<div class="myst-aside__body">`.
-7. Add `myst-aside--margin`, `myst-aside--sidebar`, and `myst-aside--topic` modifier classes from the aside `kind`; map no aside to `myst-aside--default`.
-8. Use CSS grid placement rather than a Web Awesome card so an aside preserves `<aside>` landmark semantics and can participate in the DocsLayout columns.
+1. Add a single explicit renderer option, `rawHtmlPolicy: "deny" | "allow"`, defaulting to `"deny"`. It is the only input that authorizes raw markup to reach the browser; there is no ambient "upstream content policy" signal and no implicit trust derived from where the AST came from.
+2. Add `case "raw"` that returns an empty production string whenever `rawHtmlPolicy` is `"deny"`, regardless of `lang`. Only under `"allow"` may `value` be emitted, and then only for `lang` equal to `html`, `web`, or empty.
+3. Treat empty `lang` as the highest-risk case, not the most permissive one: an unlabelled `raw` node carries no author declaration of format, so it renders only under the same explicit `"allow"` opt-in as `html`/`web` and never by default.
+4. For `tex`, `latex`, `typst`, and unknown raw formats, return an empty production string under either policy because those are export-specific values in the upstream directive. [Raw directive](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-directives/src/raw.ts)
+5. In development, render a `<pre class="myst-raw--unsupported">` diagnostic only when an opt-in renderer option is enabled; never expose TeX/Typst raw text accidentally in production pages.
+6. Surface `rawHtmlPolicy` as a site-level setting (for example `site.options.raw_html: allow`) so enabling executable markup is a recorded deployment decision in one place, not a per-call-site argument that drifts between routes.
+7. Document the trust boundary next to the raw branch: content-server raw HTML is executable markup that runs with the site's origin and privileges. A project that renders untrusted or contributed content must leave the default in place.
+8. Cover both branches in tests: the denied empty-`lang` path must produce an empty string, the denied `html` path must produce an empty string, and the allowed paths must round-trip the value unchanged. The deny-path tests are the ones that must not be skipped when raw support is still incomplete.
+9. Add `case "aside"` returning `<aside class="myst-aside …">`.
+10. Detect a leading `admonitionTitle` child, render it as `<h2 class="myst-aside__title">` or `<p role="heading">` according to the surrounding heading outline, then render the remaining children in `<div class="myst-aside__body">`.
+11. Add `myst-aside--margin`, `myst-aside--sidebar`, and `myst-aside--topic` modifier classes from the aside `kind`; map no aside to `myst-aside--default`.
+12. Use CSS grid placement rather than a Web Awesome card so an aside preserves `<aside>` landmark semantics and can participate in the DocsLayout columns.
 
 ### Blockquote attribution and quote containers
 
@@ -196,7 +200,7 @@ This roadmap closes the foundational renderer gaps before higher-level cross-ref
 - [ ] Header cells, alignment, captions, and valid cell spans are represented in output without relying on row position heuristics.
 - [ ] Complex table `rowspan`/`colspan` works through the configured raw-HTML path and is never silently invented for standard table nodes.
 - [ ] `thematicBreak`, `span`, `div`, `raw`, `aside`, `mystTarget`, and quote-attribution structures have explicit behavior.
-- [ ] Raw content has a documented opt-in browser trust policy and non-HTML export raw is not emitted as browser markup.
+- [ ] `rawHtmlPolicy` defaults to `"deny"`, an empty-`lang` `raw` node emits nothing under that default, and non-HTML export raw is never emitted as browser markup under either policy.
 - [ ] Unknown directives, roles, and generic nodes render their children in production.
 - [ ] Development builds visibly identify unsupported node types without leaking unescaped source content.
 - [ ] All generated attributes are escaped and restricted to the allowed set.

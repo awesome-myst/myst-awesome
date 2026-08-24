@@ -9,7 +9,7 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
 
 | Priority | Effort | Depends on |
 | --- | --- | --- |
-| P0 | XL | 02 Core AST parity; 03 Cross-references and numbering; 10 Frontmatter, SEO, and site metadata |
+| P1 | XL | 02 Core AST parity; 03 Cross-references and numbering; 10 Frontmatter, SEO, and site metadata |
 
 ## Overview
 
@@ -52,12 +52,16 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
 
 1. Add `packages/myst-astro-collections/src/search.ts`; invoke it after pages and XRef data are loaded, not from the browser.
 2. Port the upstream sectioning idea from [`process/search.ts`](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-cli/src/process/search.ts): create one page record and one record per heading-delimited section, retaining ancestor heading context.
-3. Store `{ id, kind, title, text, excerpt, headings, url, hash, frontmatter }`, where `url + hash` always uses the same route and anchor utilities as rendered links.
-4. Collect visible text from paragraphs, headings, captions, legends, table cells once roadmap 02 lands, and supported admonition content. Exclude raw HTML, code by default, generated navigation, hidden metadata, and duplicate child text.
-5. Add a configurable `search.includeCode` and `search.maxRecordChars`; truncate after text extraction on Unicode boundaries and precompute excerpts at build time.
-6. Write a versioned `public/myst.search.json`; maintain `fuse.json` as a compatibility alias during one minor release, then switch the dialog URL.
-7. Put a content/version hash in the artifact and emit a compact manifest with record count so development can detect stale indexes.
-8. Avoid a runtime full-site fetch, a client-side AST parse, or a dependence on browser-only DOM text extraction.
+3. Store `{ id, kind, title, text, excerpt, headings, url, hash, meta }`, where `url + hash` always uses the same route and anchor utilities as rendered links.
+4. Never serialize the page `frontmatter` object into a search record. `myst.search.json` is a public browser artifact, and frontmatter is an open map that accumulates authorship, source paths, export configuration, draft state, and deployment details as a project grows — a field added for an unrelated reason would silently start shipping to every reader. Instead:
+   - Define `meta` as a fixed, named allowlist of public fields, starting with `{ tags, date, authorNames, kind }`, and build it by explicitly copying each field.
+   - Validate the assembled record against a strict schema that rejects unknown keys immediately before write, so the artifact cannot grow a field that no one reviewed.
+   - Adding a field to `meta` is a deliberate, reviewable change; a new frontmatter key must never reach the artifact by default.
+5. Collect visible text from paragraphs, headings, captions, legends, table cells once roadmap 02 lands, and supported admonition content. Exclude raw HTML, code by default, generated navigation, hidden metadata, and duplicate child text.
+6. Add a configurable `search.includeCode` and `search.maxRecordChars`; truncate after text extraction on Unicode boundaries and precompute excerpts at build time.
+7. Write a versioned `public/myst.search.json`; maintain `fuse.json` as a compatibility alias during one minor release, then switch the dialog URL.
+8. Put a content/version hash in the artifact and emit a compact manifest with record count so development can detect stale indexes.
+9. Avoid a runtime full-site fetch, a client-side AST parse, or a dependence on browser-only DOM text extraction.
 
 ### Search dialog and keyboard behavior
 
@@ -98,7 +102,7 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
 4. Use deterministic record IDs such as `{route}#{heading-id}` and reserve a page-root record ID for pages without headings.
 5. Deduplicate equal visible text only when record URL and heading context are also equal. Repeated text in different sections is useful search evidence.
 6. Limit the default search artifact to public, non-draft pages. A configuration option may include hidden pages for authenticated/private deployments.
-7. Do not expose raw source paths, local file paths, private frontmatter, or unrendered notebook output in the browser artifact.
+7. Do not expose raw source paths, local file paths, private frontmatter, or unrendered notebook output in the browser artifact. The `meta` allowlist plus the strict pre-write schema is the mechanism that enforces this; it is not a convention reviewers are expected to uphold by inspection.
 8. Defer downloading the search artifact until a user invokes search, but preload a small manifest on high-latency documentation sites only after measuring it.
 9. Add a visible “no results” state with query echo, clear-query control, and no iframe preview request.
 10. On navigation to a result hash, allow native anchor behavior first. Apply focus and offset correction only when the target is present and the browser has not already scrolled it into view.
@@ -136,6 +140,7 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
 
 - [ ] Search results include title, heading path, useful excerpt, and stable page-plus-fragment URLs derived from transformed AST.
 - [ ] Search index generation occurs at build/load time and does not require browser parsing of every site page.
+- [ ] `myst.search.json` contains only allowlisted `meta` fields; a test adds an unexpected frontmatter key and asserts it is absent from the artifact and that the strict schema rejects it.
 - [ ] `/` and Cmd/Ctrl+K work without interfering with text editing, and the dialog is keyboard and screen-reader usable.
 - [ ] Project navigation comes from the authored/resolved TOC, preserves title overrides and order, and handles hidden/external nodes intentionally.
 - [ ] Breadcrumbs and previous/next links derive from the same route tree as the sidebar.

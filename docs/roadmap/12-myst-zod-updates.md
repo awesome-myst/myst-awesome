@@ -9,7 +9,7 @@ Bring `@awesome-myst/myst-zod` from partial mdast/MyST coverage to an explicitly
 
 | Priority | Effort | Depends on |
 | --- | --- | --- |
-| P1 | XL | `01-dependency-updates.md` |
+| P0 | XL | `01-dependency-updates.md` |
 
 ## Overview
 
@@ -50,7 +50,7 @@ Zod 4 is relevant because Astro 6 upgrades its own Zod dependency to version 4, 
 
 ### New flow-content schemas
 
-Create the following files under `src/flow-content/`, export them from `src/index.ts`, and add each unique discriminator to `FlowContent` and `uniqueFlowContentSchema`.
+Create the following files under `src/flow-content/`, export them from `src/index.ts`, and add each unique discriminator to `FlowContent` and `uniqueFlowContentSchema`. The `extensions/` rows follow the one-file-per-public-discriminator rule below; do not collapse them back into a single `extensions.ts`, which would make exports, union membership, and test ownership easy to miss for any one node.
 
 | New schema | Required baseline fields | Source/reference |
 | --- | --- | --- |
@@ -61,7 +61,14 @@ Create the following files under `src/flow-content/`, export them from `src/inde
 | `iframe.ts` | `src`, optional width/align/class/title/target/children | [myst-spec iframe](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 | `outputs.ts` | `output`: target, `jupyter_data`, children; `outputs`: target, children, visibility/scroll/id | [myst-spec outputs](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 | `raw.ts` | optional lang/tex/typst/value and mixed children | [myst-spec raw](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
-| `extensions.ts` | `card`, `cardTitle`, `header`, `footer`, `grid`, `icon`, `proof`, `exercise`, `mermaid`, `glossary`, `div`, and any locally observed extension children | [card implementation](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-card/src/index.ts), [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/card.ts` | `card`, plus its `cardTitle`, `header`, and `footer` child discriminators, which have no meaning outside a card | [card implementation](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-card/src/index.ts) |
+| `extensions/grid.ts` | `grid` and `grid-item` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/icon.ts` | `icon` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/proof.ts` | `proof` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/exercise.ts` | `exercise` and `solution` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/mermaid.ts` | `mermaid` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/glossary.ts` | `glossary` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/div.ts` | `div` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
 | `math-group.ts` | `mathGroup`, target fields, enumerated/enumerator, `children: Math[]` | [myst-spec math group](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 | `algorithm-line.ts` | `indent?`, `enumerator?`, phrasing children | [myst-spec algorithm line](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 
@@ -106,6 +113,8 @@ Create these under `src/phrasing-content/`, re-export them, and add them to `Phr
 ### Schema design rules
 
 - Use one file per public named AST discriminator, a colocated exported TypeScript type, and a schema name ending in `Schema`; this matches the current flow-content organization ([current schema exports](https://github.com/awesome-myst/myst-zod/blob/main/src/index.ts)).
+- The one bounded exception: a discriminator that exists only as a structural child of one parent and is never a standalone union member may live in its parent's file. `cardTitle`, `header`, and `footer` in `extensions/card.ts` are the only current instances. A node that appears in `FlowContent` or `PhrasingContent` gets its own file, without exception.
+- A newly observed extension node gets its own module the moment it is added, not a slot in a shared grab-bag file. Adding a discriminator is a three-part change every time: the module, the union entry, and its own test.
 - Model required upstream fields as required, but preserve parser-phase optionality for transformed content. Do not make a field required merely because a renderer wants it.
 - Use string unions for known rendering states such as output visibility and citation kinds; use `z.unknown()` only at explicit extension-map boundaries.
 - Keep AST schemas strict enough to flag misspelled structural fields, but decide unknown-key policy by node family and test it under both Deno and generated npm consumption.

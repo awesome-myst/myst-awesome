@@ -9,7 +9,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 
 | Priority | Effort | Depends on |
 | --- | --- | --- |
-| P1 | L | 02 Core AST parity; 03 Cross-references and numbering |
+| P2 | L | 02 Core AST parity; 03 Cross-references and numbering |
 
 ## Overview
 
@@ -63,7 +63,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 2. Refactor definition-list rendering so a `definitionTerm` can carry the transformed `id="term-…"`, an accessible heading/link target, and a matching description relationship.
 3. Extend the cross-reference renderer from roadmap 03 to recognize term targets. Render the visible label as `<a href="/glossary/#term-…">` when the definition is cross-page and `#term-…` when local.
 4. Create `packages/myst-awesome/src/components/TermTooltip.astro` as a progressive-enhancement script component. It should locate term links annotated with `data-term-id` and attach a `wa-tooltip` containing sanitized plain-text definition preview.
-5. Build `public/myst.terms.json` in `myst-astro-collections`: `{ identifier, label, definitionText, url }[]`, derived from transformed glossary definition terms. Never place rendered HTML in this file.
+5. Build `public/myst.terms.json` in `myst-astro-collections` as a versioned envelope — `{ version, generatedAt, terms }`, where `terms` is `{ identifier, label, definitionText, url }[]` — derived from transformed glossary definition terms. This is the single public shape; the loader, the schema, `TermTooltip`, and every collection consumer parse the envelope and read `terms`, never a bare top-level array. Never place rendered HTML in this file.
 6. Load the terms manifest only on first term hover/focus, cache it in memory, and leave the ordinary link fully functional if the manifest cannot be loaded.
 7. Add styles in [`MystContentStyles.astro`](https://github.com/awesome-myst/myst-awesome/blob/main/packages/myst-awesome/src/components/MystContentStyles.astro) for a subtle dotted affordance without obscuring normal link semantics.
 8. Handle duplicate normalized term identifiers as a build error with both page paths, matching upstream’s requirement that multiple glossaries do not redefine a term. [Glossary guide](https://mystmd.org/guide/glossaries-and-terms)
@@ -73,7 +73,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 1. Add `packages/myst-astro-collections/src/build-index.ts` that walks every transformed page AST, finds `indexEntries`, and records `{ entry, subEntry, emphasis, url, title, anchor }`.
 2. Use the same normalized-letter and ordering behavior as upstream; port it from [`indices.ts`](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-transforms/src/indices.ts) rather than using locale-dependent browser sorting.
 3. Resolve `url` and anchors through the fetched XRef collection where possible. Fail the build for a target without a stable URL instead of emitting a broken index link.
-4. Persist `public/myst.index.json`, structured by letter, main entry, subentry, direct references, `see`, and `see also`; include only escaped text strings and URLs.
+4. Persist `public/myst.index.json` using the same `{ version, generatedAt, groups }` envelope, where `groups` is structured by letter, main entry, subentry, direct references, `see`, and `see also`; include only escaped text strings and URLs.
 5. Add `packages/myst-awesome/src/pages/genindex.astro` (or an integration-installed consumer route) that imports the generated artifact at build time and emits semantic letter headings, definition lists, and reference links.
 6. Render an in-page `genindex` AST node as a link or embed of the generated index only when its project scope matches the built artifact; do not attempt to aggregate the whole project on every page render.
 7. Make the index route configurable (`site.options.index_path`, default `/genindex/`) and include it in navigation only when at least one entry exists.
@@ -84,7 +84,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 1. Fetch pages before producing term/index artifacts so include expansion and transforms have completed.
 2. Build a page-local target map from transformed AST nodes, then merge it with the project XRef map. Record whether a URL came from a local anchor or XRef resolution for diagnostics.
 3. Treat the term registry as project scoped. A nested project or separately mounted collection must produce its own manifest namespace and glossary URLs.
-4. Give all generated artifacts an explicit schema version: `{ version, generatedAt, terms }` and `{ version, generatedAt, groups }`.
+4. Give all generated artifacts the same explicit schema-version envelope: `{ version, generatedAt, terms }` for `myst.terms.json` and `{ version, generatedAt, groups }` for `myst.index.json`. Both are validated against a published schema before write and after read, so a consumer never has to sniff whether it received an envelope or a bare array.
 5. Do not use wall-clock `generatedAt` in deterministic content snapshots; permit it only in a separate development manifest or derive it from the build context.
 6. Keep manifest filenames configurable to avoid collisions where multiple MyST projects share an Astro `public/` directory.
 7. On a page reload in development, invalidate the terms/index in-memory cache when the manifest version changes.
@@ -115,7 +115,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 - Add schemas for `include`, `glossary`, `genindex`, and index-entry-bearing nodes to [`myst-zod`](https://github.com/awesome-myst/myst-zod/blob/main/src/), keeping transform-time nodes valid even though successful collection output should not retain `include`.
 - Add `indexEntries`, `identifier`, `html_id`, `label`, `noSubcontainers`, and common classes to the nodes that upstream transforms annotate.
 - Model term references as the existing cross-reference schema plus a target-kind discriminator if one is not already available; do not make the renderer infer terms from text.
-- Add public manifest schemas in `packages/myst-astro-collections/src/types.d.ts` for `myst.terms.json` and `myst.index.json`.
+- Add public manifest schemas in `packages/myst-astro-collections/src/types.d.ts` for `myst.terms.json` and `myst.index.json`, typing both as the versioned envelope so a consumer written against a bare array fails to compile rather than at runtime.
 
 ## Tests to reproduce
 

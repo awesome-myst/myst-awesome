@@ -9,7 +9,7 @@ This phase gives theorem-like content and pedagogical exercises a first-class, a
 
 | Field | Value |
 | --- | --- |
-| Priority | P1 |
+| Priority | P2 |
 | Effort | L |
 | Depends on | Foundational AST-schema acceptance, renderer escaping policy, and cross-reference/enumeration integration |
 
@@ -144,7 +144,7 @@ This phase gives theorem-like content and pedagogical exercises a first-class, a
 
 ## Dependencies and ordering
 
-1. Land [02-core-ast-parity.md](02-core-ast-parity.md) first, including support for arbitrary flow nodes and `crossReference`.
-2. Land [03-cross-references-and-numbering.md](03-cross-references-and-numbering.md) before this phase’s final acceptance: proof/exercise containers can render first, but `{proof:ref}`-equivalent output cannot be correct without resolved xref metadata.
+1. Land [02-core-ast-parity.md](02-core-ast-parity.md) first, for arbitrary flow-node children and the core structural/fallback rendering these containers sit on. Roadmap 02 does not own the `crossReference` branch.
+2. Land [03-cross-references-and-numbering.md](03-cross-references-and-numbering.md) before this phase’s final acceptance: it owns the `crossReference` renderer, target IDs, and enumerator handling. Proof/exercise containers can render first, but `{proof:ref}`-equivalent output cannot be correct without resolved xref metadata.
 3. [05-ui-extension-components.md](05-ui-extension-components.md) should land before this phase’s solution UI so `Solution.astro` can reuse the shared Resolver and `wa-details` conventions.
 4. [07-code-execution-and-outputs.md](07-code-execution-and-outputs.md) can follow independently, but exercise gates and solutions must be tested again when executable code-cell/output support lands.

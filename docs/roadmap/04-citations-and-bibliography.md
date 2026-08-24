@@ -97,11 +97,12 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 ### Render `cite` and `citeGroup`
 
 1. Add type imports for `Cite` and `CiteGroup` after the compatible `myst-zod` release exposes them.
-2. Add `case "cite"` that looks up `cite.label` in `references.cite.data`.
-3. Render resolved children first; this preserves author–year, numeric, parenthetical, narrative, prefix, suffix, and partial forms chosen by upstream citation-js processing. [Inline rendering](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-cli/src/transforms/citations.ts)
-4. Wrap a resolved citation in `<a class="myst-citation" href="#ref-{escaped label}" data-cite-label="…">…</a>`.
-5. Add `data-cite-enumerator`, `data-cite-doi`, and `data-cite-url` only when page metadata contains them; escape each value.
-6. Use a stable bibliography ID based on normalized citation label rather than the numeric enumerator, because author–year and numeric styles may change the latter.
+2. Add one canonical helper, `bibliographyId(label)`, and export it alongside the renderer. It performs the label normalization once and returns the full `ref-…` fragment identifier. Every citation `href`, every bibliography entry `id`, and every back-link must call it; no site in the codebase may build a `ref-…` string by interpolating a raw label.
+3. Add `case "cite"` that looks up `cite.label` in `references.cite.data`.
+4. Render resolved children first; this preserves author–year, numeric, parenthetical, narrative, prefix, suffix, and partial forms chosen by upstream citation-js processing. [Inline rendering](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-cli/src/transforms/citations.ts)
+5. Wrap a resolved citation in `<a class="myst-citation" href="#{bibliographyId(label)}" data-cite-label="…">…</a>`, escaping the attribute value as usual.
+6. Add `data-cite-enumerator`, `data-cite-doi`, and `data-cite-url` only when page metadata contains them; escape each value.
+7. Base the bibliography ID on the normalized citation label rather than the numeric enumerator, because author–year and numeric styles may change the latter. Normalization must be deterministic and collision-checked: if two distinct labels normalize to the same identifier, fail the build rather than emitting two elements with one ID.
 7. For an unresolved label, return `<span class="myst-citation myst-citation--missing">` with rendered children or escaped label; add a development diagnostic but do not fabricate bibliographic facts.
 8. Add `case "citeGroup"` that renders its children inside `<span class="myst-citation-group">`; preserve upstream child punctuation rather than joining labels with a theme-defined delimiter.
 9. If a cite group’s children are individual `cite` nodes without punctuation, preserve their AST order and use a semicolon separator only as a narrowly scoped accessibility fallback.
@@ -110,13 +111,13 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 ### Render the bibliography directive
 
 1. Add `case "bibliography"` that reads `references.cite.order` and `references.cite.data`.
-2. Output `<section class="myst-bibliography" aria-labelledby="myst-bibliography-title">` with a configurable heading defaulting to “References”.
+2. Give each bibliography directive a page-scoped ordinal from the render context and derive its heading ID from that ordinal — `myst-bibliography-title-{n}` — rather than a fixed constant. Output `<section class="myst-bibliography" aria-labelledby="{that id}">` with a configurable heading defaulting to “References”, and put the same generated ID on the heading element. A page may legitimately contain more than one bibliography, and a repeated `aria-labelledby` target silently breaks the heading relationship for assistive technology.
 3. Use `<ol>` when all citation records have enumerators and numeric style presentation is selected; otherwise use `<div role="list">` or `<ul>` with neutral styling for author–year output.
-4. Render each entry as `<li id="ref-{label}" data-cite-label="{label}">` and insert the server-provided `html` only through a dedicated, documented bibliography-HTML sanitizer.
+4. Render each entry as `<li id="{bibliographyId(label)}" data-cite-label="{label}">` using the same helper the `cite` branch calls, so an anchor and its entry can never disagree about the fragment. Insert the server-provided `html` only through a dedicated, documented bibliography-HTML sanitizer.
 5. The server-provided bibliography HTML contains emphasis and external DOI anchors produced by citation formatting utilities, so sanitize to a tight allow-list (`a`, `i`, `em`, `strong`, `span`, text) and require `https:` on external hrefs. [Formatted citation examples](https://github.com/jupyter-book/mystmd/blob/main/packages/citation-js-utils/tests/fixtures.ts)
 6. Preserve the directive’s optional `filter` as a phase-one capability: implement only clearly documented values after observing upstream resolved filter semantics; otherwise ignore it with a development warning rather than filtering arbitrarily.
 7. If no bibliography directive occurs but the page has citation metadata, do **not** append a bibliography automatically in phase one; author placement must remain explicit.
-8. If multiple bibliography directives occur, render each with the same ordered entries in phase one and log a development warning; introduce directive-specific filtering only after an upstream contract is verified.
+8. If multiple bibliography directives occur, render each with the same ordered entries in phase one and log a development warning; introduce directive-specific filtering only after an upstream contract is verified. Only the first bibliography on a page carries the canonical entry IDs; later repetitions render the same content with `data-cite-label` but no `id`, so `bibliographyId(label)` continues to identify exactly one element per page.
 9. Add back-link affordances only after recording citation anchor IDs; do not add a false single backlink for labels cited multiple times.
 
 ### Citation hover/focus details
@@ -125,7 +126,7 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 2. Emit citation metadata to the DOM as escaped `data-*` fields or a page-scoped JSON `<script type="application/json" id="myst-citation-data">` serialized by the route.
 3. Prefer page-scoped JSON for bibliography HTML and abstracts to avoid unreadably large `data-*` attributes.
 4. On pointer hover and keyboard focus, display a non-interactive preview containing the formatted bibliographic entry, DOI link, and external URL when present.
-5. Use an ordinary anchor as the activation surface and preserve `href="#ref-label"` so Enter, copy link, reader navigation, and no-JavaScript behavior remain correct.
+5. Use an ordinary anchor as the activation surface and preserve the `bibliographyId(label)` `href` so Enter, copy link, reader navigation, and no-JavaScript behavior remain correct.
 6. Use `wa-tooltip` only for a concise text-only “Citation details” hint; implement rich content in a positioned popover that is connected with `aria-describedby`.
 7. Close on Escape, focus loss, and pointer exit with a small delay; respect `prefers-reduced-motion`.
 8. Sanitize bibliography HTML before injecting it into the popover just as for the visible bibliography list.
@@ -145,7 +146,7 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 1. Ship bibliography-section rendering in this roadmap.
 2. Do not transform `cite` nodes into `footnoteReference` nodes, because upstream footnotes have a separate reference/definition graph and enumerator transform. [Footnote transform](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-transforms/src/footnotes.ts)
 3. Design a later “citation footnotes” option only if page data grows a stable placement model that can expose one formatted definition per citation and multiple backreferences.
-4. Until then, numeric citation links to `#ref-label` supply the conventional bibliography interaction without corrupting footnote numbering.
+4. Until then, numeric citation links to the `bibliographyId(label)` fragment supply the conventional bibliography interaction without corrupting footnote numbering.
 
 ### Files to create or modify
 
@@ -197,7 +198,8 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 
 - [ ] `cite`, `citeGroup`, and `bibliography` nodes have explicit renderer branches.
 - [ ] Inline citation text comes from resolved AST children and supports numeric and author–year results without client-side CSL formatting.
-- [ ] Every resolved citation links to a stable bibliography entry ID.
+- [ ] Every resolved citation links to a stable bibliography entry ID, produced by the single `bibliographyId(label)` helper that also emits the entry’s `id`.
+- [ ] A page with two bibliography directives emits unique heading IDs and exactly one element per bibliography entry ID.
 - [ ] Bibliography output uses server-provided citation data in upstream first-use order.
 - [ ] Formatted bibliography HTML is sanitized by a narrow, tested allow-list before it reaches `set:html` or a preview panel.
 - [ ] DOI resolution, BibTeX/CSL parsing, style selection, and cache behavior remain in the MyST content-server pipeline.

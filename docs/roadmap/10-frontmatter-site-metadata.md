@@ -9,7 +9,7 @@ This roadmap separates three concerns that are currently conflated: schema accep
 
 | Priority | Effort | Depends on |
 | --- | --- | --- |
-| P0 | XL | 02 Core AST parity; 05 UI extension components |
+| P1 | XL | 02 Core AST parity; 05 UI extension components |
 
 ## Overview
 

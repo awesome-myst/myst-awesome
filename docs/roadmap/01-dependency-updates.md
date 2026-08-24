@@ -48,26 +48,33 @@ The existing theme has a Vite `noExternal` rule for Web Awesome and direct deep 
 
 ### Target dependency policy
 
-Use exact versions for root override convergence and compatible caret ranges for packages that publish a library. Re-run `pnpm install` once per PR and commit the resulting `pnpm-lock.yaml`.
+The policy has two halves, and they are not interchangeable:
+
+- **Root `pnpm.overrides` are exact versions**, with no range operator. An override exists to collapse a dependency to one installed copy; a caret there re-admits the duplicate majors/minors this policy is meant to eliminate, and it makes `pnpm why` output non-reproducible between checkouts.
+- **Direct consumer manifests use compatible caret ranges** so each workspace package still publishes a usable range to its own downstream consumers. `astro` is the exception: it is pinned exactly everywhere because the Astro 6/7 migrations are gated per PR.
+
+Re-run `pnpm install` once per PR and commit the resulting `pnpm-lock.yaml`. The exact values below are targets as of writing; confirm the current release at implementation time and pin to that version rather than carrying a stale number forward.
 
 | Dependency | Root `pnpm.overrides` | `packages/myst-awesome` | `packages/myst-astro-collections` | `docs` |
 | --- | --- | --- | --- | --- |
 | `astro` | `7.2.2` | `7.2.2` | `7.2.2` | `7.2.2` |
 | `@awesome.me/webawesome` | `3.11.0` | `^3.11.0` | — | `^3.11.0` |
-| `mystmd` | `^1.10.1` | — | — | `^1.10.1` |
-| `myst-parser` | `^1.7.3` | `^1.7.3` | — | `^1.7.3` |
-| `myst-transforms` | `^1.3.50` | `^1.3.50` | — | — |
-| `myst-common` | `^1.10.0` | — | — | `^1.10.0` |
-| `myst-spec-ext` | `^1.10.0` | `^1.10.0` | — | — |
-| `@awesome-myst/myst-zod` | `^0.7.0` | `^0.7.0` | `^0.7.0` | indirect/workspace |
+| `mystmd` | `1.10.1` | — | — | `^1.10.1` |
+| `myst-parser` | `1.7.3` | `^1.7.3` | — | `^1.7.3` |
+| `myst-transforms` | `1.3.50` | `^1.3.50` | — | — |
+| `myst-common` | `1.10.0` | — | — | `^1.10.0` |
+| `myst-spec-ext` | `1.10.0` | `^1.10.0` | — | — |
+| `@awesome-myst/myst-zod` | `0.7.0` | `^0.7.0` | `^0.7.0` | indirect/workspace |
 | `shiki` | — | `^4.4.3` | — | — |
 | `katex` | — | `^0.18.4` | — | — |
 | `lit` | — | `^3.3.3` | — | — |
 | `fuse.js` | — | `^7.5.0` | — | remove root-only duplicate or set `^7.5.0` |
-| `sharp` | `^0.35.3` | `^0.35.3` | — | `^0.35.3` |
+| `sharp` | `0.35.3` | `^0.35.3` | — | `^0.35.3` |
 | `scienceicons` | — | `^0.0.14` | — | — |
-| `@playwright/test` | `^1.62.1` | dev `^1.62.1` | — | dev `^1.62.1` |
-| `typescript` | `^6.0.2` | `^6.0.2` | dev `^6.0.2` | `^6.0.2` |
+| `@playwright/test` | `1.62.1` | dev `^1.62.1` | — | dev `^1.62.1` |
+| `typescript` | `6.0.2` | `^6.0.2` | dev `^6.0.2` | `^6.0.2` |
+
+Bumping a pinned override is a normal, reviewable one-line change; treat it as the intended maintenance cost of deduplication rather than a reason to widen the override to a range.
 
 Version targets should be checked in their package release notes at implementation time: [Astro](https://www.npmjs.com/package/astro), [Web Awesome](https://www.npmjs.com/package/@awesome.me/webawesome), [MyST](https://www.npmjs.com/package/mystmd), [Shiki](https://www.npmjs.com/package/shiki), [KaTeX](https://www.npmjs.com/package/katex), [Playwright](https://www.npmjs.com/package/@playwright/test), and [myst-zod](https://www.npmjs.com/package/@awesome-myst/myst-zod).
 
@@ -88,7 +95,7 @@ Version targets should be checked in their package release notes at implementati
 4. **PR 4 — Web Awesome 3.11.0:** update the root/theme/docs ranges; validate imports in `DocsLayout.astro`, `ContentLayout.astro`, `SearchDialog.astro`, and all custom-element selectors. Confirm the `noExternal`/`optimizeDeps` workarounds still have a reason before retaining them.
 5. **PR 5 — MyST family and myst-zod:** update mystmd, parser, transforms, common, spec-ext, and myst-zod atomically. Add `myst-spec-ext` before roadmap 12 consumes its type surface. Build the headless docs server and inspect serialized ASTs.
 6. **PR 6 — renderer libraries:** upgrade Shiki 4, KaTeX 0.18, Sharp 0.35, Lit 3.3.3, Fuse 7.5, and Science Icons 0.0.14; adjust `shiki-highlighter.ts`, `katex-renderer.ts`, `wa-scienceicons.ts`, and search code only where compilation or snapshots require it.
-7. **PR 7 — test tooling and TypeScript:** upgrade Playwright; move to TypeScript 6.0.2 or the latest compatible 6.x patch after `astro check` and `tsc` are clean. Do not replace `tsc` with `tsgo`.
+7. **PR 7 — test tooling and TypeScript:** upgrade Playwright; move to TypeScript 6.0.2 or the latest compatible 6.x patch after `astro check` and `tsc` are clean, and pin the root override to whichever patch is selected. Do not replace `tsc` with `tsgo`.
 
 ### Astro and TypeScript migration gates
 
@@ -102,7 +109,7 @@ Version targets should be checked in their package release notes at implementati
 
 For each PR run `pnpm install --frozen-lockfile`, `pnpm run build`, `pnpm test`, and the focused command for the changed workspace. The root scripts already compose collection build, theme build, docs build, and both Playwright suites ([root scripts](https://github.com/awesome-myst/myst-awesome/blob/main/package.json)).
 
-For browser-facing PRs, run the complete Playwright matrix locally where practical and let CI exercise Chromium, Firefox, and WebKit for the theme plus desktop/mobile projects for docs ([theme Playwright config](https://github.com/awesome-myst/myst-awesome/blob/main/packages/myst-awesome/tests/playwright.config.ts), [docs Playwright config](https://github.com/awesome-myst/myst-awesome/blob/main/docs/tests/playwright.config.ts)).
+Every PR in this sequence is browser-facing by definition, so each one runs the browser-facing CI tier defined in [13-testing-strategy.md](13-testing-strategy.md) — theme Chromium, Firefox, and WebKit plus the docs desktop and mobile projects — as a required merge gate. That document is the single definition of the gate; do not maintain a second browser policy here. Run the complete Playwright matrix locally as well where practical ([theme Playwright config](https://github.com/awesome-myst/myst-awesome/blob/main/packages/myst-awesome/tests/playwright.config.ts), [docs Playwright config](https://github.com/awesome-myst/myst-awesome/blob/main/docs/tests/playwright.config.ts)).
 
 Rollback by reverting the single dependency PR, its manifest/lockfile pair, and any mechanically required source migration in the same revert. Never hand-edit transitive versions in `pnpm-lock.yaml`; restore the prior lockfile and rerun the previous frozen install. Keep an Astro 6 branch/tag until the Astro 7 CI matrix has passed twice on main.
 
@@ -139,7 +146,7 @@ Do not migrate myst-zod to Zod 4 in this dependency PR. It is Deno-first and cur
 ## Acceptance criteria
 
 - [ ] Node 22.12.0+ is the documented and CI-tested floor before Astro 6 lands.
-- [ ] Root overrides and all three package manifests match the target policy.
+- [ ] Every root `pnpm.overrides` entry is an exact version with no range operator, and all three package manifests match the target policy.
 - [ ] `docs/pixi.toml` requires MyST 1.10.1 or later within the 1.x series.
 - [ ] Astro 5→6 and 6→7 land in distinct, revertible PRs.
 - [ ] `pnpm run build` and `pnpm test` pass on Linux, macOS, and Windows CI.
