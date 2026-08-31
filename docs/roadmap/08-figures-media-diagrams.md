@@ -100,7 +100,7 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 3. Ship iframe output next with the restrictive default host policy in place from the first release; loosening a default after sites depend on it is a breaking security change, whereas widening an allowlist is additive. Test captions before enabling remote-provider examples in theme docs.
 4. Ship the local media manifest separately because it adds file-system work, build output, cache invalidation, and deployment-size concerns.
 5. Make `media.optimize` opt-in for the first release. `sharp` capability alone must not change users’ image URLs or asset ownership unexpectedly.
-6. Derive manifest keys from the source **content hash and transformation options only**. Identical bytes plus identical options must produce the same key — and therefore the same emitted URL — across checkouts, machines, and CI runs; that is what makes the manifest deterministic and the output URLs cacheable. Source mtime may be kept as a separate non-identity field to skip re-encoding work, but it must never enter the key: a fresh clone rewrites mtimes and would otherwise churn every asset URL on the site.
+6. Derive manifest keys from the source **content hash and transformation options only**. Identical bytes plus identical options must produce the same key — and therefore the same emitted URL — across checkouts, machines, and CI runs; that is what makes the manifest deterministic and the output URLs cacheable. Source mtime may be kept as a separate non-identity field to skip re-encoding work, but it must never enter the key: a fresh clone rewrites mtimes and would otherwise churn every asset URL on the site. The key covers inputs, not the encoder, and identical inputs do not guarantee identical output bytes: `sharp` and the `libvips` build behind it can encode the same source differently across versions and platform binaries. Record the effective encoder identity (`sharp` version plus the `libvips` version it reports) once as a manifest-level field rather than inside each key, so upgrading the encoder does not churn every URL. Treat a manifest whose recorded identity differs from the running build as stale and re-encode every entry instead of mixing outputs, and fail the build if two legs of one release disagree on that identity.
 7. Ensure emitted optimized asset paths respect `baseDir`, folder URL mode, and the site URL helper proposed in roadmap 11.
 8. Ship Mermaid as a progressive enhancement after its static renderer branch is covered; an unavailable CDN/package must leave the code source readable.
 9. Keep Mermaid configuration theme-owned and conservative: no author-supplied JavaScript callbacks, no unbounded HTML labels, and no global `startOnLoad`.
@@ -138,7 +138,7 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 - `packages/myst-awesome/tests/subfigures.spec.ts`: implicit subfigures, explicit child labels, no-subfigures, and grid classes.
 - `packages/myst-awesome/tests/video-and-iframe.spec.ts`: MP4/WebM `<video>`, static text fallback, placeholder, caption, an allowlisted provider iframe rendering as an embed, and the same URL rendering as an external-link fallback when the origin is not allowlisted.
 - `packages/myst-awesome/tests/mermaid.spec.ts`: source fallback before hydration, lazy SVG render, malformed source error, and light/dark rerender.
-- `packages/myst-awesome/tests/media-optimization.spec.ts`: local manifest output and `srcset`; assert remote URLs bypass local optimization.
+- `packages/myst-awesome/tests/media-optimization.spec.ts`: local manifest output and `srcset`; assert remote URLs bypass local optimization, and that a rebuild on the recorded encoder identity emits byte-identical assets for an unchanged source.
 - `packages/myst-awesome/src/lib/render-myst-ast.media.test.ts`: escaping and extension classification unit coverage.
 
 ## Acceptance criteria
@@ -149,7 +149,8 @@ This roadmap closes the media-rendering gap between the MyST AST delivered by th
 - [ ] Image and figure classes, dimensions, alignment, caption, legend, and custom kinds survive rendering.
 - [ ] An iframe has a title, lazy loading, safe fallback behavior, and correctly rendered caption.
 - [ ] With no `iframeAllowlist` configured, a cross-origin iframe renders as a labelled external link rather than an embed, and adding its origin to the option renders the embed.
-- [ ] Rebuilding an unchanged image in a fresh clone produces byte-identical manifest keys and asset URLs.
+- [ ] Rebuilding an unchanged image in a fresh clone produces identical manifest keys, asset URLs, and emitted asset bytes, and the manifest records the `sharp`/`libvips` identity that produced them.
+- [ ] Two CI platforms building the same commit agree on keys, URLs, and encoder identity; a differing identity fails the build rather than publishing mixed output.
 - [ ] Mermaid source is useful without JavaScript and is upgraded only after the diagram approaches the viewport.
 - [ ] Mermaid has no global rerender loop and does not block the initial page load.
 - [ ] Light/dark image classes work with the existing Web Awesome color-mode classes.

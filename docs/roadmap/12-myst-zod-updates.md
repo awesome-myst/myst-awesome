@@ -62,10 +62,11 @@ Create the following files under `src/flow-content/`, export them from `src/inde
 | `outputs.ts` | `output`: target, `jupyter_data`, children; `outputs`: target, children, visibility/scroll/id | [myst-spec outputs](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 | `raw.ts` | optional lang/tex/typst/value and mixed children | [myst-spec raw](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-spec/src/ext.ts) |
 | `extensions/card.ts` | `card`, plus its `cardTitle`, `header`, and `footer` child discriminators, which have no meaning outside a card | [card implementation](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-card/src/index.ts) |
-| `extensions/grid.ts` | `grid` and `grid-item` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/grid.ts` | `grid` only. The `grid-item` directive emits a `div` node and `grid-item-card` emits a `card`, so neither needs a discriminator here | [grid extension](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-grid/src/index.ts) |
 | `extensions/icon.ts` | `icon` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
 | `extensions/proof.ts` | `proof` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
-| `extensions/exercise.ts` | `exercise` and `solution` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
+| `extensions/exercise.ts` | `exercise`, including its `gate` field for start/end forms | [exercise extension](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-exercise/src/exercise.ts) |
+| `extensions/solution.ts` | `solution`, including `gate`. It is a sibling directive that targets an exercise rather than a structural child of one, so the one-file-per-discriminator rule applies and it does not share `extensions/exercise.ts` | [exercise extension](https://github.com/jupyter-book/mystmd/blob/main/packages/myst-ext-exercise/src/exercise.ts) |
 | `extensions/mermaid.ts` | `mermaid` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
 | `extensions/glossary.ts` | `glossary` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |
 | `extensions/div.ts` | `div` | [directive implementations](https://github.com/jupyter-book/mystmd/tree/main/packages/myst-directives/src) |

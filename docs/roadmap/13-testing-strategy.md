@@ -144,7 +144,7 @@ Add explicit scripts: `test:unit`, `test:conformance`, `test:upstream-regression
 
 **This table is the single definition of the required merge gate.** Other roadmap documents reference it rather than restating a browser scope of their own; [01-dependency-updates.md](01-dependency-updates.md) in particular defers to the browser-facing tier below.
 
-The gate has two PR shapes, not one. Most PRs touch content, docs prose, or Node-side code and get fast Chromium-only feedback. A **browser-facing PR** — one that changes Astro, Web Awesome, Playwright, or another rendering dependency, or that touches the renderer, layouts, components, or theme CSS — is exactly the case where a Chromium-only pass proves the least, so it runs the full browser matrix *before merge* rather than discovering the breakage on the nightly run. Select the tier by changed paths, with a `full-matrix` label as a manual override.
+The gate has two PR shapes, not one. Most PRs touch content, docs prose, or Node-side code and get fast Chromium-only feedback. A **browser-facing PR** — one that changes Astro, Web Awesome, Playwright, or another rendering dependency; one that moves the toolchain floor those rendering paths are built and tested on, such as the Node engine range or the TypeScript version; or one that touches the renderer, layouts, components, or theme CSS — is exactly the case where a Chromium-only pass proves the least, so it runs the full browser matrix *before merge* rather than discovering the breakage on the nightly run. Every step of the [01-dependency-updates.md](01-dependency-updates.md) sequence meets that definition, including its Node-floor and test-tooling/TypeScript steps. Select the tier by changed paths, with a `full-matrix` label as a manual override.
 
 | CI tier | Trigger | Commands | Platform/browser scope | Required result |
 | --- | --- | --- | --- | --- |
@@ -152,7 +152,7 @@ The gate has two PR shapes, not one. Most PRs touch content, docs prose, or Node
 | Build | every PR | `pnpm run build` | Ubuntu, macOS, Windows, Node 22 | collection + theme + docs production builds |
 | Theme e2e | every PR | theme `test:e2e` | Chromium on Ubuntu | interactions and focused visuals |
 | Docs e2e | every PR | docs Playwright | Chromium + mobile Chromium on Ubuntu | content server/collections integration |
-| Browser-facing e2e | PRs touching rendering dependencies, renderer, layouts, components, or theme CSS; or labelled `full-matrix` | theme `test:e2e`, docs Playwright | theme Chromium/Firefox/WebKit plus docs desktop and mobile, on Ubuntu | **required to merge** — cross-browser rendering confidence where it is actually at risk |
+| Browser-facing e2e | PRs touching rendering dependencies, the toolchain floor they build on (Node engine range, TypeScript), the renderer, layouts, components, or theme CSS — which covers every step of [01-dependency-updates.md](01-dependency-updates.md); or labelled `full-matrix` | theme `test:e2e`, docs Playwright | theme Chromium/Firefox/WebKit plus docs desktop and mobile, on Ubuntu | **required to merge** — cross-browser rendering confidence where it is actually at risk |
 | Full matrix | main/nightly/release | `pnpm test`, all Playwright projects | current three OS CI plus Chromium/Firefox/WebKit and docs mobile | cross-platform regression confidence |
 
 Nightly and release runs remain a backstop for the paths the change-detection heuristic misses; they are not the first place a browser regression in a dependency upgrade should surface.

@@ -59,7 +59,7 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
    - Adding a field to `meta` is a deliberate, reviewable change; a new frontmatter key must never reach the artifact by default.
 5. Collect visible text from paragraphs, headings, captions, legends, table cells once roadmap 02 lands, and supported admonition content. Exclude raw HTML, code by default, generated navigation, hidden metadata, and duplicate child text.
 6. Add a configurable `search.includeCode` and `search.maxRecordChars`; truncate after text extraction on Unicode boundaries and precompute excerpts at build time.
-7. Write a versioned `public/myst.search.json`; maintain `fuse.json` as a compatibility alias during one minor release, then switch the dialog URL.
+7. Write the versioned envelope to `public/myst.search.json` only. During the compatibility window `fuse.json` keeps the shape it has now — a top-level array of records — as a projection of the new index, not an alias of the envelope; [`docs/tests/fuse-index.spec.ts`](https://github.com/awesome-myst/myst-awesome/blob/main/docs/tests/fuse-index.spec.ts) asserts that array shape and must keep passing unchanged. Point the dialog at `myst.search.json`, then retire `fuse.json` and its test together in a later minor release.
 8. Put a content/version hash in the artifact and emit a compact manifest with record count so development can detect stale indexes.
 9. Avoid a runtime full-site fetch, a client-side AST parse, or a dependence on browser-only DOM text extraction.
 
@@ -140,7 +140,8 @@ This roadmap replaces the current metadata-only Fuse experience with an AST-deri
 
 - [ ] Search results include title, heading path, useful excerpt, and stable page-plus-fragment URLs derived from transformed AST.
 - [ ] Search index generation occurs at build/load time and does not require browser parsing of every site page.
-- [ ] `myst.search.json` contains only allowlisted `meta` fields; a test adds an unexpected frontmatter key and asserts it is absent from the artifact and that the strict schema rejects it.
+- [ ] `myst.search.json` contains only allowlisted `meta` fields: a test adds an unexpected frontmatter key to a source page and asserts the key is absent from the built artifact.
+- [ ] The strict record schema rejects an unknown field injected directly into a serialized search record, tested separately from source-key filtering because a working allowlist removes the key before validation ever sees it.
 - [ ] `/` and Cmd/Ctrl+K work without interfering with text editing, and the dialog is keyboard and screen-reader usable.
 - [ ] Project navigation comes from the authored/resolved TOC, preserves title overrides and order, and handles hidden/external nodes intentionally.
 - [ ] Breadcrumbs and previous/next links derive from the same route tree as the sidebar.

@@ -88,7 +88,7 @@ This roadmap adds citation and bibliography presentation without duplicating MyS
 ### Define a renderer context
 
 1. Change `renderMystAst(root)` to `renderMystAst(root, options?: RenderMystOptions)`.
-2. Add `references?: Page["references"]`, `pageUrl?: string`, `rawHtmlPolicy?: "off" | "trusted"`, and `dev?: boolean` to `RenderMystOptions`.
+2. Add `references?: Page["references"]`, `pageUrl?: string`, `rawHtmlPolicy?: "deny" | "allow"`, and `dev?: boolean` to `RenderMystOptions`. [02-core-ast-parity.md](02-core-ast-parity.md) owns that option, its `"deny"` default, and its `site.options.raw_html` mapping; this document only carries it through the shared `RenderMystOptions` shape.
 3. Keep the options object optional so existing editor/test call sites remain compatible.
 4. In [`docs/src/pages/book/[...slug].astro`](https://github.com/awesome-myst/myst-awesome/blob/main/docs/src/pages/book/[...slug].astro), call `await renderMystAst(page.data.mdast, { references: page.data.references, pageUrl: page.id })`.
 5. Update every direct renderer test page to await the async output before assigning `set:html`; the current route’s direct call should be corrected as part of this work. [Renderer signature](https://github.com/awesome-myst/myst-awesome/blob/main/packages/myst-awesome/src/lib/render-myst-ast.ts)

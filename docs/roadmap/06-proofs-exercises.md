@@ -106,7 +106,7 @@ This phase gives theorem-like content and pedagogical exercises a first-class, a
 
 ## myst-zod notes
 
-- Add `proof.ts`, `exercise.ts`, and `solution.ts` under `myst-zod/src/flow-content/`, then add them to [`flow-content.ts`](https://github.com/awesome-myst/myst-zod/blob/main/src/flow-content/flow-content.ts).
+- Add one module per discriminator — `extensions/proof.ts`, `extensions/exercise.ts`, and `extensions/solution.ts` — under `myst-zod/src/`, following the layout in [12-myst-zod-updates.md](12-myst-zod-updates.md), then add all three to [`flow-content.ts`](https://github.com/awesome-myst/myst-zod/blob/main/src/flow-content/flow-content.ts).
 - `proofSchema` needs `type: "proof"`, optional `kind` constrained to the complete upstream list, `enumerated`, optional `enumerator`, `identifier`, `label`, `hidden`, `class`, and recursive children.
 - `exerciseSchema` needs `type: "exercise"`, `enumerated`, optional `enumerator`, `hidden`, optional `gate: "start" | "end"`, target metadata, and children.
 - `solutionSchema` needs `type: "solution"`, `hidden`, optional `gate`, target metadata, and children. It must permit an `admonitionTitle` containing a `crossReference`.

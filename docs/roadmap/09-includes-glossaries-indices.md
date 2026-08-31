@@ -115,7 +115,7 @@ This roadmap treats includes as an upstream content-server responsibility and fo
 - Add schemas for `include`, `glossary`, `genindex`, and index-entry-bearing nodes to [`myst-zod`](https://github.com/awesome-myst/myst-zod/blob/main/src/), keeping transform-time nodes valid even though successful collection output should not retain `include`.
 - Add `indexEntries`, `identifier`, `html_id`, `label`, `noSubcontainers`, and common classes to the nodes that upstream transforms annotate.
 - Model term references as the existing cross-reference schema plus a target-kind discriminator if one is not already available; do not make the renderer infer terms from text.
-- Add public manifest schemas in `packages/myst-astro-collections/src/types.d.ts` for `myst.terms.json` and `myst.index.json`, typing both as the versioned envelope so a consumer written against a bare array fails to compile rather than at runtime.
+- Define runtime manifest schemas for `myst.terms.json` and `myst.index.json` in a real module — `packages/myst-astro-collections/src/manifest-schemas.ts`, or a shared `myst-zod` export if other packages need them — not in `packages/myst-astro-collections/src/types.d.ts`. A `.d.ts` file is erased at compile time and can validate nothing, and the repository has no manifest validation path today. Parse with those schemas on both sides, before writing each artifact and after reading it, and derive the exported TypeScript types from them with `z.infer`. Model both as the versioned envelope so a consumer written against a bare array fails to compile as well as failing to parse.
 
 ## Tests to reproduce
 
