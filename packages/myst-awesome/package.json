@@ -12,6 +12,9 @@
     "./utils/*": "./src/utils/*",
     "./scripts/*": "./scripts/*"
   },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
