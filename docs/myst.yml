@@ -26,9 +26,25 @@ project:
       children:
         - file: authoring/typography.md
         - file: authoring/admonitions.md
+    - title: Roadmap
+      children:
+        - file: roadmap/index.md
+        - file: roadmap/01-dependency-updates.md
+        - file: roadmap/02-core-ast-parity.md
+        - file: roadmap/03-cross-references-and-numbering.md
+        - file: roadmap/04-citations-and-bibliography.md
+        - file: roadmap/05-ui-extension-components.md
+        - file: roadmap/06-proofs-exercises.md
+        - file: roadmap/07-code-execution-and-outputs.md
+        - file: roadmap/08-figures-media-diagrams.md
+        - file: roadmap/09-includes-glossaries-indices.md
+        - file: roadmap/10-frontmatter-site-metadata.md
+        - file: roadmap/11-search-navigation-toc.md
+        - file: roadmap/12-myst-zod-updates.md
+        - file: roadmap/13-testing-strategy.md
 
 site:
-  title: MyST Awesome 
+  title: MyST Awesome
   options:
     favicon: assets/favicon.ico
     logo: assets/logo.png
