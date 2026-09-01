@@ -125,7 +125,7 @@ This phase adds first-class rendering for MyST cards, grids, tabs, dropdowns, bu
 ## Tests to create
 
 - `packages/myst-awesome/tests/ui-extension-components.spec.ts`: AST fixture page renders card slots, responsive grids, and a linked card without nested anchors.
-- `packages/myst-awesome/tests/tabs-rendering.spec.ts`: every `wa-tab[panel]` value has exactly one matching `wa-tab-panel[name]` in the same set, exactly one `wa-tab` and one `wa-tab-panel` carry `active` and their id matches `wa-tab-group[active]` while the remaining panels stay inactive, plus keyboard activation and sync data attributes.
+- `packages/myst-awesome/tests/tabs-rendering.spec.ts`: within each set, the `wa-tab[panel]` values and the `wa-tab-panel[name]` values each contain no duplicates and form the same set of ids — assert set equality in both directions, because a per-tab forward lookup still passes when two tabs target one panel and another panel has no tab at all; exactly one `wa-tab` and one `wa-tab-panel` carry `active` and their id matches `wa-tab-group[active]` while the remaining panels stay inactive; plus keyboard activation and sync data attributes.
 - `packages/myst-awesome/tests/dropdown-rendering.spec.ts`: closed/open dropdown state, title as summary, keyboard disclosure, and nested content.
 - `packages/myst-awesome/tests/button-icon-rendering.spec.ts`: linked versus non-linked button semantics, rejected unsafe URL, scienceicons library output, decorative icon accessibility, and unknown-icon fallback.
 - `packages/myst-awesome/tests/ui-component-overrides.spec.ts`: each Resolver selects an injected Astro override while retaining rendered child fragments.
