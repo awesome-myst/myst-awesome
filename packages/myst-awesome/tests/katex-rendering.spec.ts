@@ -7,9 +7,6 @@ test.describe("KaTeX Math Rendering", () => {
   test("renders inline math correctly", async ({ page }) => {
     await page.goto("http://localhost:4322/katex-test");
 
-    // Wait for page to load
-    await page.waitForLoadState("networkidle");
-
     // Check that the page loaded successfully
     await expect(page).toHaveTitle(/KaTeX Math Test/);
 
@@ -33,9 +30,6 @@ test.describe("KaTeX Math Rendering", () => {
 
   test("renders display math correctly", async ({ page }) => {
     await page.goto("http://localhost:4322/katex-test");
-
-    // Wait for page to load
-    await page.waitForLoadState("networkidle");
 
     // Check for display math elements
     const displayMath = page.locator(".katex-display");
@@ -65,7 +59,6 @@ test.describe("KaTeX Math Rendering", () => {
     // We would need to create this via the MyST renderer
     // For now, just check that the page loads without crashing
     await page.goto("http://localhost:4322/katex-test");
-    await page.waitForLoadState("networkidle");
 
     // Page should load successfully even if there were math errors
     const title = await page.locator("h1").first().textContent();
@@ -76,7 +69,10 @@ test.describe("KaTeX Math Rendering", () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("http://localhost:4322/katex-test");
-    await page.waitForLoadState("networkidle");
+
+    // `.all()` resolves against the DOM as it is right now rather than
+    // retrying, so assert the math is present before enumerating it.
+    await expect(page.locator(".katex").first()).toBeVisible();
 
     // Check that math elements are still visible and properly sized
     const mathElements = await page.locator(".katex").all();

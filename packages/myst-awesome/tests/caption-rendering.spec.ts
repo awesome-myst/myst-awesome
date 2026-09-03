@@ -6,7 +6,6 @@ import { test, expect } from "@playwright/test";
 test.describe("Caption and Figure Rendering", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:4322/caption-test");
-    await page.waitForLoadState("networkidle");
   });
 
   test("page loads successfully", async ({ page }) => {
@@ -129,7 +128,6 @@ test.describe("Caption and Figure Rendering", () => {
 test.describe("Image Alignment with CSS Classes", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
   });
 
   test("left-aligned image has align-left class", async ({ page }) => {
