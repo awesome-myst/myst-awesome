@@ -160,7 +160,7 @@ pnpm --filter=myst-awesome exec playwright show-report
 ```bash
 pnpm install      # Install dependencies (uses pnpm@10.28.2)
 pnpm preview      # Preview production build
-pnpm run check-engines   # Verify Node.js >=22.12.0 and matching engines fields
+pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, and the CI pin
 ```
 
 ### Important Notes
@@ -799,8 +799,9 @@ jobs:
 - Matrix: Ubuntu 24.04, macOS 15, Windows 2022
 - Node: 22.12.0 — the supported floor, declared as `engines.node` in the root,
   theme, collections, and docs manifests and enforced by
-  `scripts/check-node-engines.mjs`. Astro 6+ drops Node 18/20, so CI runs the
-  floor itself rather than "latest 22.x".
+  `scripts/check-node-engines.mjs`, which also asserts that the matrix pin above
+  equals that declared floor. Astro 6+ drops Node 18/20, so CI runs the floor
+  itself rather than "latest 22.x".
 - Playwright: Install with `--with-deps` on Linux only
 - Build order: collections → theme → docs
 - Test execution: `pnpm test` (runs all packages)
