@@ -145,9 +145,9 @@ Do not migrate myst-zod to Zod 4 in this dependency PR. It is Deno-first and cur
 
 ## Acceptance criteria
 
-- [ ] Node 22.12.0+ is the documented and CI-tested floor before Astro 6 lands.
+- [x] Node 22.12.0+ is the documented and CI-tested floor before Astro 6 lands.
 - [ ] Every root `pnpm.overrides` entry is an exact version with no range operator, and all three package manifests match the target policy.
-- [ ] `docs/pixi.toml` requires MyST 1.10.1 or later within the 1.x series.
+- [x] `docs/pixi.toml` requires MyST 1.10.1 or later within the 1.x series.
 - [ ] Astro 5→6 and 6→7 land in distinct, revertible PRs.
 - [ ] `pnpm run build` and `pnpm test` pass on Linux, macOS, and Windows CI.
 - [ ] Web Awesome component registration, theme switching, search, KaTeX, Shiki code blocks, Sharp images, and Science Icons are visually checked.

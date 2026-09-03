@@ -23,6 +23,19 @@ A modern, responsive MyST-MD theme built with [Web Awesome](https://webawesome.c
 
 This project uses **pnpm workspaces** for monorepo management.
 
+### Prerequisites
+
+| Tool             | Supported version | Where it is declared                                                          |
+| :--------------- | :---------------- | :---------------------------------------------------------------------------- |
+| Node.js          | `>=22.12.0`       | `engines.node` in every workspace manifest; CI is pinned to this exact floor   |
+| pnpm             | `>=10.28.2`       | `packageManager` in the root manifest (`corepack enable` installs it)          |
+| MyST (`mystmd`)  | `>=1.10.1,<2`     | `docs/pixi.toml`, for the headless content server the docs app builds against  |
+
+Node.js 22.12.0 is the floor required by Astro 6 and later; Node 18 and 20 are
+not supported. Run `pnpm run check-engines` to verify your toolchain before
+opening an issue about an install or build failure; the same check runs in CI,
+where it also fails if the manifests and the pinned CI matrix ever disagree.
+
 ### Installation
 
 ```sh

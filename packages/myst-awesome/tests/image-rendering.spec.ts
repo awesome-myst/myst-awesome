@@ -7,14 +7,12 @@ test.describe("Image Node Rendering", () => {
   test("renders simple images correctly", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
 
-    // Wait for page to load
-    await page.waitForLoadState("networkidle");
-
     // Check that the page loaded successfully
     await expect(page).toHaveTitle(/Image Rendering Test/);
 
-    // Check for image elements
+    // Check for image elements. `.count()` does not retry, so wait first.
     const images = page.locator("img");
+    await expect(images.first()).toBeVisible();
     const imageCount = await images.count();
     expect(imageCount).toBeGreaterThan(0);
 
@@ -27,7 +25,6 @@ test.describe("Image Node Rendering", () => {
 
   test("renders image alt text correctly", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find image with specific alt text
     const blueImage = page.locator('img[alt="Blue placeholder image"]');
@@ -39,7 +36,6 @@ test.describe("Image Node Rendering", () => {
 
   test("renders image title attribute correctly", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find image with title attribute
     const imageWithTitle = page.locator(
@@ -54,7 +50,6 @@ test.describe("Image Node Rendering", () => {
 
   test("renders left-aligned images with correct styling", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find left-aligned image
     const leftImage = page.locator('img[alt="Green placeholder image"]');
@@ -74,7 +69,6 @@ test.describe("Image Node Rendering", () => {
     page,
   }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find center-aligned image
     const centerImage = page.locator('img[alt="Purple placeholder image"]');
@@ -94,7 +88,6 @@ test.describe("Image Node Rendering", () => {
     page,
   }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find right-aligned image
     const rightImage = page.locator('img[alt="Red placeholder image"]');
@@ -112,7 +105,6 @@ test.describe("Image Node Rendering", () => {
 
   test("renders images with custom width", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find image with custom width
     const customWidthImage = page.locator(
@@ -129,7 +121,10 @@ test.describe("Image Node Rendering", () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
+
+    // `.all()` resolves against the DOM as it is right now rather than
+    // retrying, so assert the images are present before enumerating them.
+    await expect(page.locator("img").first()).toBeVisible();
 
     // Check that images are still visible and properly sized
     const images = await page.locator("img").all();
@@ -147,10 +142,10 @@ test.describe("Image Node Rendering", () => {
 
   test("all images load successfully", async ({ page, browserName }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
-    // Get all images
+    // Get all images. `.count()` does not retry, so wait for the first one.
     const images = page.locator("img");
+    await expect(images.first()).toBeVisible();
     const imageCount = await images.count();
     expect(imageCount).toBeGreaterThan(0);
 
@@ -182,7 +177,6 @@ test.describe("Image Node Rendering", () => {
     page,
   }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find image with both width and alignment (left-aligned with 300px width)
     const imageWithBoth = page.locator('img[alt="Green placeholder image"]');
@@ -198,7 +192,6 @@ test.describe("Image Node Rendering", () => {
 
   test("handles images without optional attributes", async ({ page }) => {
     await page.goto("http://localhost:4322/image-test");
-    await page.waitForLoadState("networkidle");
 
     // Find image with only alt text (no title, width, or align)
     const simpleImage = page.locator('img[alt="Yellow placeholder image"]');
