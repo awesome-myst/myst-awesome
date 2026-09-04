@@ -76,6 +76,8 @@ Re-run `pnpm install` once per PR and commit the resulting `pnpm-lock.yaml`. The
 
 Bumping a pinned override is a normal, reviewable one-line change; treat it as the intended maintenance cost of deduplication rather than a reason to widen the override to a range.
 
+Overrides serve a second purpose beyond deduplication: holding the installed tree to the declared Node floor. A transitive dependency is free to declare an `engines.node` higher than this repository supports, and neither `pnpm install` nor a local run on a newer Node will surface it. Pin such a package to the newest version compatible with the floor, and prefer that to raising the floor itself — the floor is a promise this repository makes to consumers of its published packages, so it should move only when a direct dependency actually requires it. After changing Astro or any package that carries a large transitive tree, check the regenerated lockfile for `engines` entries above the floor rather than assuming a green local run covers it.
+
 Version targets should be checked in their package release notes at implementation time: [Astro](https://www.npmjs.com/package/astro), [Web Awesome](https://www.npmjs.com/package/@awesome.me/webawesome), [MyST](https://www.npmjs.com/package/mystmd), [Shiki](https://www.npmjs.com/package/shiki), [KaTeX](https://www.npmjs.com/package/katex), [Playwright](https://www.npmjs.com/package/@playwright/test), and [myst-zod](https://www.npmjs.com/package/@awesome-myst/myst-zod).
 
 ### Files and package edits
@@ -100,6 +102,7 @@ Version targets should be checked in their package release notes at implementati
 ### Astro and TypeScript migration gates
 
 - Before PR 2, add/confirm CI uses Node 22.12.0+. Astro 6 no longer supports Node 18 or 20 ([Astro 6 Node requirement](https://docs.astro.build/en/guides/upgrade-to/v6/)).
+- Validate each dependency PR on the exact Node version the CI matrix pins, not merely on the development machine. A newer local Node silently satisfies engine floors that CI does not, so a green local run is not evidence that the supported floor still builds.
 - Search `packages/` and `docs/` for `astro:schema`; replace it with `astro/zod` only where present, and do not make speculative source edits.
 - Review the two `vite` objects and the theme's `astro:config:setup` integration under Vite 7/8; adapter-only changes are unlikely here but plugin-hook behavior must be verified ([scienceicons integration](https://github.com/awesome-myst/myst-awesome/blob/main/packages/myst-awesome/src/integrations/scienceicons.ts)).
 - Declare every client dependency that Vite cannot reach from its cold-start scan in `optimizeDeps.include`. Vite 7 discovers dependencies imported from `.astro` `<script>` blocks and from lazily loaded client modules only when a route is first requested, then re-optimizes and broadcasts a full page reload; a parallel browser test run racing that reload fails with `504 (Outdated Optimize Dep)`, destroyed execution contexts, and reset `window` hooks. The theme lists its own dependencies by name; the docs app reaches the same modules through the linked `@awesome-myst/myst-awesome` workspace package and must use Vite's `parent > dep` syntax. Verify with a cold dev server (`rm -rf node_modules/.vite .astro`) and confirm no `new dependencies optimized` line appears while routes load in parallel.
@@ -124,6 +127,7 @@ Rollback by reverting the single dependency PR, its manifest/lockfile pair, and 
 | Web Awesome deep import moves | module-not-found error or undefined custom element | update imports after checking [Web Awesome documentation](https://webawesome.com/docs/), then retain a component-registration test |
 | MyST types drift from serialized content | collection/schema failure or renderer unknown-node warning | pin all MyST core packages to the target family and capture the AST as a fixture |
 | native/image dependency differs by OS | Sharp installation/build failure in one matrix leg | keep Sharp in the same PR as its lockfile and retain the existing three-OS CI matrix |
+| a transitive dependency declares a Node floor above the repository's | nothing locally, if the developer's Node is newer than the CI pin; an `EBADENGINE`/`Unsupported engine` failure for anyone installing with `engine-strict` | pin the offending package to the newest version compatible with the declared floor via `pnpm.overrides`; validate on the exact CI Node version rather than on the development machine |
 | TypeScript 7 disrupts Astro templates | `astro check` or editor/type-plugin errors | revert to the approved TS 6.x line and wait for the programmatic API path ([TypeScript 7 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)) |
 
 ## myst-zod notes
