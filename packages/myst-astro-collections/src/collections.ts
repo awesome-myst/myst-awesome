@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 Fideus Labs LLC
 
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import type { MystServerConfig, ProjectConfig } from "./loaders.js";
 import {
   createMystXrefLoader,

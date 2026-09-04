@@ -86,6 +86,23 @@ export default defineConfig({
     ssr: {
       noExternal: ["@awesome.me/webawesome"],
     },
+    // Vite's cold-start dependency scan does not reach these, because they are
+    // imported from `.astro` <script> blocks and from the client-side MyST
+    // editor module rather than from a scanned entry. Left undeclared, the dev
+    // server discovers them on the first request, re-optimizes, and forces a
+    // full page reload that races anything already navigating.
+    optimizeDeps: {
+      include: [
+        "fuse.js",
+        "katex",
+        "lit",
+        "lit/directives/unsafe-html.js",
+        "myst-parser",
+        "myst-transforms",
+        "shiki",
+      ],
+      exclude: ["@awesome.me/webawesome"],
+    },
     // Pass theme config to client and server
     define: {
       __THEME_CONFIG__: JSON.stringify(themeConfig),
