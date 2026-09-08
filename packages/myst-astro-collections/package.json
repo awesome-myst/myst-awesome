@@ -28,7 +28,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "node tests/test-yaml-loader.mjs"
+    "test": "node tests/test-yaml-loader.mjs && node tests/astro7-content-collections.mjs"
   },
   "keywords": [
     "astro",
