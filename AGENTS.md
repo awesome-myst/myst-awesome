@@ -31,7 +31,7 @@
   - **3100** - MyST content server (headless)
 
 ### Key Technologies
-- **Astro 5.x** + TypeScript strict mode
+- **Astro 7.x** + TypeScript strict mode
 - **Web Awesome 3.x beta** - Comprehensive component library
 - **MyST 1.8.x** - Markedly Structured Text for scientific communication
 - **pnpm 10.x** - Fast, disk-efficient package manager with workspaces

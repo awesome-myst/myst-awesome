@@ -121,7 +121,7 @@ const tocItems = showTableOfContents ? [
 
         {showDate && publishDate && (
           <div class="meta-item date">
-            <wa-icon name="calendar" variant="regular"></wa-icon>
+            <wa-icon name="calendar" variant="regular"></wa-icon>{" "}
             <time datetime={publishDate.toISOString()}>
               {publishDate.toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -134,14 +134,14 @@ const tocItems = showTableOfContents ? [
 
         {showReadingTime && (
           <div class="meta-item reading-time">
-            <wa-icon name="clock" variant="regular"></wa-icon>
+            <wa-icon name="clock" variant="regular"></wa-icon>{" "}
             <span>{estimatedReadingTime}</span>
           </div>
         )}
 
         {lastModified && (
           <div class="meta-item updated">
-            <wa-icon name="pencil" variant="regular"></wa-icon>
+            <wa-icon name="pencil" variant="regular"></wa-icon>{" "}
             <time datetime={lastModified.toISOString()}>
               Updated {lastModified.toLocaleDateString()}
             </time>

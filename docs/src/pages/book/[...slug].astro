@@ -146,18 +146,20 @@ const nextPage = currentIndex < allPages.length - 1 ? allPages[currentIndex + 1]
 
   <!-- Main Content -->
   {page.data ? (
-    <!-- Render MyST content -->
-    <div class="content-body" set:html={renderMystAst(page.data.mdast)} />
+    <Fragment>
+      {/* Render MyST content */}
+      <div class="content-body" set:html={renderMystAst(page.data.mdast)} />
 
-    <!-- Show frontmatter if available -->
-    {page.data.frontmatter && Object.keys(page.data.frontmatter).length > 0 && (
-      <details class="frontmatter-details">
-        <summary>
-          Page Frontmatter
-        </summary>
-        <pre class="frontmatter-code">{JSON.stringify(page.data.frontmatter, null, 2)}</pre>
-      </details>
-    )}
+      {/* Show frontmatter if available */}
+      {page.data.frontmatter && Object.keys(page.data.frontmatter).length > 0 && (
+        <details class="frontmatter-details">
+          <summary>
+            Page Frontmatter
+          </summary>
+          <pre class="frontmatter-code">{JSON.stringify(page.data.frontmatter, null, 2)}</pre>
+        </details>
+      )}
+    </Fragment>
   ) : (
     <div class="loading-container">
       <p>Loading page content...</p>
