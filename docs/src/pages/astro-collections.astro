@@ -121,8 +121,8 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
             <div class="references-list">
               {xrefEntry.data.references.slice(0, 10).map((ref) => (
                 <div class="reference-item">
-                  <strong>{ref.kind}:</strong>
-                  <a href={ref.url}>{ref.url}</a>
+                  <strong>{ref.kind}:</strong>{" "}
+                  <a href={ref.url}>{ref.url}</a>{" "}
                   {ref.identifier && <span class="identifier">#{ref.identifier}</span>}
                   <br />
                   <small>Data: {ref.data}</small>
@@ -145,7 +145,7 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
 
     <footer>
       <p>
-        This demonstrates Astro Content Collections integration with MyST.
+        This demonstrates Astro Content Collections integration with MyST.{" "}
         <a href="https://github.com/awesome-myst/myst-awesome">View on GitHub</a>
       </p>
     </footer>

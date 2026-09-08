@@ -28,7 +28,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "node tests/test-yaml-loader.mjs"
+    "test": "node tests/test-yaml-loader.mjs && node tests/astro7-content-collections.mjs"
   },
   "keywords": [
     "astro",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@awesome-myst/myst-zod": "^0.6.0",
     "@types/node": "^24.2.0",
-    "astro": "6.4.8",
+    "astro": "7.3.2",
     "p-queue": "^8.1.0",
     "yaml": "^2.8.1"
   },
