@@ -5,7 +5,7 @@
 interface Props {
   showThemeSelector?: boolean;
   showColorSchemeSelector?: boolean;
-  size?: 'small' | 'medium' | 'large';
+  size?: 's' | 'm' | 'l';
   appearance?: 'filled' | 'outlined' | 'plain';
   currentTheme?: string;
   currentColorScheme?: string;
@@ -14,7 +14,7 @@ interface Props {
 const {
   showThemeSelector = true,
   showColorSchemeSelector = true,
-  size = 'small',
+  size = 's',
   appearance = 'filled',
   currentTheme = 'default',
   currentColorScheme = 'auto'
@@ -62,6 +62,15 @@ const {
 </div>
 
 <script>
+  // Register the elements this component renders. ThemeControls is exported for
+  // direct use, not only through ThemeControlsResolver, so it cannot rely on
+  // the resolver's imports: a page that renders it directly would otherwise
+  // show the ten <wa-option> labels as a run of plain text.
+  import '@awesome.me/webawesome/dist/components/select/select.js';
+  import '@awesome.me/webawesome/dist/components/option/option.js';
+  import '@awesome.me/webawesome/dist/components/divider/divider.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+
   // Theme selector functionality
   const themeSelector = document.querySelector('.theme-selector');
   const colorSchemeSelector = document.querySelector('.color-scheme-selector');

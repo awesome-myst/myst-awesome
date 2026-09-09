@@ -46,6 +46,13 @@ export default defineConfig({
         "@awesome-myst/myst-awesome > myst-transforms",
         "@awesome-myst/myst-awesome > shiki",
       ],
+      // Web Awesome cannot be handled the same way: `parent > dep` names one
+      // module, and the theme reaches roughly forty Web Awesome deep imports
+      // from its `<script>` blocks. Excluding the package keeps the optimizer
+      // from discovering them one route at a time — dropping this line makes a
+      // cold dev server answer the home page's in-flight module requests with
+      // `504 (Outdated Optimize Dep)` and fail the dynamic import of Astro's
+      // own client runtime.
       exclude: ["@awesome.me/webawesome"],
     },
     // Pass theme config to client and server

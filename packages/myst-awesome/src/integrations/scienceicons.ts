@@ -100,7 +100,7 @@ export function scienceicons(
             "page-ssr",
             `
             if (typeof window !== 'undefined') {
-              import('@awesome.me/webawesome/dist/utilities/icon-library.js').then(({ registerIconLibrary }) => {
+              import('@awesome.me/webawesome/dist/components/icon/library.js').then(({ registerIconLibrary }) => {
                 registerIconLibrary('scienceicons', {
                   resolver: (name) => \`${iconBaseUrl}/\${name}.svg\`,
                   mutator: (svg) => svg.setAttribute('fill', 'currentColor')

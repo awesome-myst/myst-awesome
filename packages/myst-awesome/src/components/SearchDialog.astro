@@ -17,7 +17,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
     <div class="search-container">
       <div class="search-left">
         <div class="search-top">
-          <wa-input class="search-input" placeholder="Type to search…" size="medium">
+          <wa-input class="search-input" placeholder="Type to search…" size="m">
             <wa-icon slot="start" name="magnifying-glass"></wa-icon>
           </wa-input>
           <div class="keys-help">
@@ -46,6 +46,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
   import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
   import Fuse from 'fuse.js'
+  import { onDomReady } from '../lib/dom-ready.js';
 
   /** @type {HTMLElement | null} */
   let dialog;
@@ -336,7 +337,7 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 
-  document.addEventListener('DOMContentLoaded', () => {
+  onDomReady(() => {
   // Global '/' shortcut to open search when not typing in an input/textarea
     /** @param {KeyboardEvent} e */
     const onGlobalKey = (e) => {

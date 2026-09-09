@@ -199,6 +199,14 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 </script>
 ```
 
+Every component imports the elements *it* renders. Relying on a parent layout or
+a sibling resolver to have imported them works until someone uses the component
+on its own, and the failure is silent: the element never upgrades and its
+children render as plain markup. `pnpm run check-webawesome` walks each page's
+`.astro` import graph and fails on any `wa-*` element that no module in it
+registers; CI runs it after install. Use `s`/`m`/`l` for `size`, not the
+long-form values, which Web Awesome deprecates.
+
 #### Web Awesome CSS
 - Import Web Awesome CSS **once** in `BasePage.astro` for bundling:
   - `@awesome.me/webawesome/dist/styles/webawesome.css`
@@ -1085,7 +1093,7 @@ packages:
     "overrides": {
       "@awesome-myst/myst-zod": "^0.6.1",
       "astro": "5.14.1",
-      "@awesome.me/webawesome": "^3.1.0",
+      "@awesome.me/webawesome": "3.12.0",
       "@playwright/test": "^1.57.0",
       "mystmd": "^1.8.0",
       "myst-common": "^1.9.3"
