@@ -14,7 +14,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -229,15 +229,33 @@ function collect(entry) {
 }
 
 const failures = [];
+let pagesChecked = 0;
 for (const path of [...files.keys()].sort()) {
-  if (!path.includes(`${join("src", "pages")}${"/"}`)) continue;
+  // `path` is built with `join`, so it is separator-native: `src\pages\` on
+  // Windows. Compare in POSIX form so the filter — and the reported path —
+  // behave identically on all three CI operating systems.
+  const relativePath = relative(repoRoot, path).split(sep).join("/");
+  if (!relativePath.includes("src/pages/")) continue;
+  pagesChecked += 1;
   const { rendered, registered } = collect(path);
   const missing = [...rendered]
     .filter((tag) => !registered.has(tag) && !locallyDefinedElements.has(tag))
     .sort();
   if (missing.length > 0) {
-    failures.push(`${relative(repoRoot, path)}: ${missing.join(", ")}`);
+    failures.push(`${relativePath}: ${missing.join(", ")}`);
   }
+}
+
+// A filter that matches nothing would report success while checking nothing,
+// which is how a separator bug hides on one operating system. Every search root
+// has pages, so an empty selection is a defect in this script.
+if (pagesChecked === 0) {
+  console.error(
+    "Web Awesome registration check selected no pages — the `src/pages/` " +
+      `filter matched none of the ${files.size} .astro files found. This is a ` +
+      "bug in the check, not a clean result.",
+  );
+  process.exit(1);
 }
 
 if (failures.length > 0) {
@@ -255,5 +273,6 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Web Awesome registration check passed for ${files.size} .astro files.`,
+  `Web Awesome registration check passed for ${pagesChecked} pages ` +
+    `(${files.size} .astro files).`,
 );
