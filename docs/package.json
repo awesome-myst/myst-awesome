@@ -18,7 +18,7 @@
   "dependencies": {
     "@awesome-myst/myst-astro-collections": "workspace:*",
     "@awesome-myst/myst-awesome": "workspace:*",
-    "@awesome.me/webawesome": "^3.0.0-beta.3",
+    "@awesome.me/webawesome": "^3.12.0",
     "astro": "7.3.2",
     "myst-common": "^1.5.2",
     "myst-directives": "^1.5.2",

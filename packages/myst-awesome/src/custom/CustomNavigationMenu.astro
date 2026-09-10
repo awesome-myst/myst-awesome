@@ -17,7 +17,7 @@
                     <span class="custom-link-text">{item.title}</span>
                   </div>
                   {item.badge && (
-                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge" data-testid="nav-badge">
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="s" class="custom-item-badge" data-testid="nav-badge">
                       {item.badge}
                     </wa-badge>
                   )}
@@ -71,7 +71,7 @@ const {
       <wa-input 
         class="custom-search-input" 
         placeholder={searchPlaceholder} 
-        size="small"
+        size="s"
         appearance="outlined"
       >
         <wa-icon slot="start" name="magnifying-glass" variant="solid"></wa-icon>
@@ -90,7 +90,7 @@ const {
               )}
               {section.title}
               {section.badge && (
-                <wa-badge variant={section.badgeVariant || 'brand'} size="small" class="custom-badge">
+                <wa-badge variant={section.badgeVariant || 'brand'} size="s" class="custom-badge">
                   {section.badge}
                 </wa-badge>
               )}
@@ -114,7 +114,7 @@ const {
                     <span class="custom-link-text">{item.title}</span>
                   </div>
                   {item.badge && (
-                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small" class="custom-item-badge" data-testid="nav-badge">
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="s" class="custom-item-badge" data-testid="nav-badge">
                       {item.badge}
                     </wa-badge>
                   )}

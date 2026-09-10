@@ -90,7 +90,7 @@ const { items, showSearch = true, ...rest } = Astro.props;
   <!-- Your custom navigation implementation -->
   {showSearch && (
     <div class="search-container">
-      <wa-input placeholder="Search..." size="small">
+      <wa-input placeholder="Search..." size="s">
         <wa-icon slot="start" name="magnifying-glass"></wa-icon>
       </wa-input>
     </div>
@@ -253,7 +253,7 @@ Example of a table of contents with progress tracking:
     <div slot="header" class="toc-header">
       <wa-icon name="list-ul" variant="solid"></wa-icon>
       <h3>Contents</h3>
-      <wa-badge variant="success" size="small">{items.length}</wa-badge>
+      <wa-badge variant="success" size="s">{items.length}</wa-badge>
     </div>
     
     <div class="progress-container">

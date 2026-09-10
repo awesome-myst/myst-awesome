@@ -240,7 +240,9 @@ import MystContentStyles from '../components/MystContentStyles.astro';
 
     <!-- Theme and navigation scripts -->
     <script>
-            // Mobile navigation functionality
+      import { onDomReady } from '../lib/dom-ready.js';
+
+      // Mobile navigation functionality
       const drawer = document.querySelector('.mobile-nav-drawer') as any;
       const toggleButton = document.querySelector<HTMLElement>('.mobile-nav-toggle');
       const pageLayout = document.querySelector('.page-layout') as HTMLElement;
@@ -315,7 +317,7 @@ import MystContentStyles from '../components/MystContentStyles.astro';
 
       // Remove wa-cloak class once Web Awesome is loaded
       // This ensures proper theme rendering
-      document.addEventListener('DOMContentLoaded', () => {
+      onDomReady(() => {
         // Wait for next frame to ensure Web Awesome has had time to initialize
         requestAnimationFrame(() => {
           document.documentElement.classList.remove('wa-cloak');

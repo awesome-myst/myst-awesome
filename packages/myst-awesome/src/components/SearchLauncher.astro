@@ -19,7 +19,7 @@ const { placeholder = 'Search', class: className = '' } = Astro.props;
   <wa-input 
     class="search-launcher-input" 
     placeholder={placeholder} 
-    size="medium" 
+    size="m" 
     type="text" 
     appearance="outlined"
     readonly
@@ -32,9 +32,10 @@ const { placeholder = 'Search', class: className = '' } = Astro.props;
 <script>
   import '@awesome.me/webawesome/dist/components/input/input.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import { onDomReady } from '../lib/dom-ready.js';
 
   // Initialize launcher click handler
-  document.addEventListener('DOMContentLoaded', () => {
+  onDomReady(() => {
     const launcher = document.querySelector('.search-launcher-input');
     if (launcher) {
       // Prevent the input from actually receiving focus (it's just a trigger)

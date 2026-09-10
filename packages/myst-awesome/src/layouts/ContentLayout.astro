@@ -83,7 +83,7 @@ const tocItems = showTableOfContents ? [
 
     <div class="header-controls">
       <!-- Color scheme toggle -->
-      <wa-button class="theme-toggle" appearance="plain" size="small">
+      <wa-button class="theme-toggle" appearance="plain" size="s">
         <wa-icon class="only-light" name="moon" variant="regular"></wa-icon>
         <wa-icon class="only-dark" name="sun" variant="regular"></wa-icon>
       </wa-button>
@@ -114,7 +114,7 @@ const tocItems = showTableOfContents ? [
       <div class="article-meta">
         {showAuthor && author && (
           <div class="meta-item author">
-            <wa-avatar size="small" label={author}></wa-avatar>
+            <wa-avatar size="s" label={author}></wa-avatar>
             <span class="author-name">{author}</span>
           </div>
         )}
@@ -152,7 +152,7 @@ const tocItems = showTableOfContents ? [
       {showTags && tags.length > 0 && (
         <div class="article-tags">
           {tags.map(tag => (
-            <wa-tag size="small" variant="neutral">
+            <wa-tag size="s" variant="neutral">
               <wa-icon slot="start" name="tag" variant="regular"></wa-icon>
               {tag}
             </wa-tag>
@@ -171,19 +171,19 @@ const tocItems = showTableOfContents ? [
       <div class="sharing-section">
         <h3 class="sharing-title">Share this article</h3>
         <div class="sharing-buttons">
-          <wa-button size="small" appearance="outlined" class="share-button">
+          <wa-button size="s" appearance="outlined" class="share-button">
             <wa-icon slot="start" name="twitter" family="brands"></wa-icon>
             Twitter
           </wa-button>
-          <wa-button size="small" appearance="outlined" class="share-button">
+          <wa-button size="s" appearance="outlined" class="share-button">
             <wa-icon slot="start" name="linkedin" family="brands"></wa-icon>
             LinkedIn
           </wa-button>
-          <wa-button size="small" appearance="outlined" class="share-button">
+          <wa-button size="s" appearance="outlined" class="share-button">
             <wa-icon slot="start" name="facebook" family="brands"></wa-icon>
             Facebook
           </wa-button>
-          <wa-button size="small" appearance="outlined" class="share-button">
+          <wa-button size="s" appearance="outlined" class="share-button">
             <wa-icon slot="start" name="link" variant="regular"></wa-icon>
             Copy Link
           </wa-button>
@@ -264,10 +264,10 @@ const tocItems = showTableOfContents ? [
         <h4>Subscribe</h4>
         <p>Get notified about new articles and updates.</p>
         <div class="newsletter-signup">
-          <wa-input placeholder="Enter your email" size="small" type="email">
+          <wa-input placeholder="Enter your email" size="s" type="email">
             <wa-icon slot="start" name="envelope" variant="regular"></wa-icon>
           </wa-input>
-          <wa-button size="small" variant="brand">Subscribe</wa-button>
+          <wa-button size="s" variant="brand">Subscribe</wa-button>
         </div>
       </div>
     </div>
@@ -284,6 +284,17 @@ const tocItems = showTableOfContents ? [
 </BasePage>
 
 <script>
+  // Register the elements this layout renders. BasePage registers wa-button and
+  // wa-icon for its own chrome, but wa-avatar, wa-badge, wa-input and wa-tag
+  // appear only here, so the byline, category badge and tag list rendered as
+  // undefined elements on every page using this layout.
+  import '@awesome.me/webawesome/dist/components/avatar/avatar.js';
+  import '@awesome.me/webawesome/dist/components/badge/badge.js';
+  import '@awesome.me/webawesome/dist/components/button/button.js';
+  import '@awesome.me/webawesome/dist/components/icon/icon.js';
+  import '@awesome.me/webawesome/dist/components/input/input.js';
+  import '@awesome.me/webawesome/dist/components/tag/tag.js';
+
   // Theme toggle functionality
   const themeToggle = document.querySelector('.theme-toggle');
 

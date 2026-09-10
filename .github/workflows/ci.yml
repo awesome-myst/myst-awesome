@@ -41,6 +41,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify Web Awesome element registration
+        run: node scripts/check-webawesome-registration.mjs
+
       - name: Install Playwright (Linux)
         if: runner.os == 'Linux'
         run: |

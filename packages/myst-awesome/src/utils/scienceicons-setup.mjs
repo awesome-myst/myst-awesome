@@ -66,7 +66,7 @@ export function setupScienceiconsForDocs(docsPublicDir, baseDir = '') {
  */
 export function createScienceiconsRegistrationScript(baseUrl = '/scienceicons') {
   return `
-import { registerIconLibrary } from '@awesome.me/webawesome/dist/utilities/icon-library.js';
+import { registerIconLibrary } from '@awesome.me/webawesome/dist/components/icon/library.js';
 
 // Register scienceicons library
 registerIconLibrary('scienceicons', {

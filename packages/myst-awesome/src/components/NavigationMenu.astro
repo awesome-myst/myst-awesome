@@ -33,7 +33,7 @@ const {
 <nav class="navigation-menu">
   {showSearch && (
     <div class="nav-search">
-      <wa-input class="search-input" placeholder={searchPlaceholder} size="small">
+      <wa-input class="search-input" placeholder={searchPlaceholder} size="s">
         <wa-icon slot="start" name="magnifying-glass"></wa-icon>
       </wa-input>
     </div>
@@ -51,7 +51,7 @@ const {
                 )}
                 {section.title}
                 {section.badge && (
-                  <wa-badge variant={section.badgeVariant || 'neutral'} size="small">
+                  <wa-badge variant={section.badgeVariant || 'neutral'} size="s">
                     {section.badge}
                   </wa-badge>
                 )}
@@ -63,7 +63,7 @@ const {
                 )}
                 {section.title}
                 {section.badge && (
-                  <wa-badge variant={section.badgeVariant || 'neutral'} size="small">
+                  <wa-badge variant={section.badgeVariant || 'neutral'} size="s">
                     {section.badge}
                   </wa-badge>
                 )}
@@ -71,7 +71,7 @@ const {
             )}
 
             {collapsible && section.children && section.children.length > 0 && (
-              <wa-button class="nav-toggle" appearance="plain" size="small">
+              <wa-button class="nav-toggle" appearance="plain" size="s">
                 <wa-icon name="chevron-down" class="nav-expand-icon"></wa-icon>
                 <wa-icon name="chevron-up" class="nav-collapse-icon" style="display: none;"></wa-icon>
               </wa-button>
@@ -93,7 +93,7 @@ const {
                   )}
                   <span class="nav-link-text">{item.title}</span>
                   {item.badge && (
-                    <wa-badge variant={item.badgeVariant || 'neutral'} size="small">
+                    <wa-badge variant={item.badgeVariant || 'neutral'} size="s">
                       {item.badge}
                     </wa-badge>
                   )}
@@ -113,7 +113,7 @@ const {
                           )}
                           <span class="nav-link-text">{subItem.title}</span>
                           {subItem.badge && (
-                            <wa-badge variant={subItem.badgeVariant || 'neutral'} size="small">
+                            <wa-badge variant={subItem.badgeVariant || 'neutral'} size="s">
                               {subItem.badge}
                             </wa-badge>
                           )}

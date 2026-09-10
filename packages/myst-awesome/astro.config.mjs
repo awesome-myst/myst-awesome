@@ -101,6 +101,14 @@ export default defineConfig({
         "myst-transforms",
         "shiki",
       ],
+      // Web Awesome is the opposite case and must stay out of the optimizer.
+      // Its per-component deep imports are only reachable through the linked
+      // theme package, which Vite's `parent > dep` syntax cannot enumerate, so
+      // the docs app discovers them mid-load and answers the in-flight requests
+      // with `504 (Outdated Optimize Dep)`. Both configs keep the exclusion so
+      // they stay comparable; the residual cost is a dev-only "Multiple
+      // versions of Lit loaded" warning, because Web Awesome's Lit is then
+      // served unbundled while the theme's own copy is pre-bundled.
       exclude: ["@awesome.me/webawesome"],
     },
     // Pass theme config to client and server
