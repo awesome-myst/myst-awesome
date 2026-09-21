@@ -39,7 +39,7 @@
   "author": "Fideus Labs LLC",
   "license": "MIT",
   "dependencies": {
-    "@awesome-myst/myst-zod": "^0.6.0",
+    "@awesome-myst/myst-zod": "^0.7.0",
     "@types/node": "^24.2.0",
     "astro": "7.3.2",
     "p-queue": "^8.1.0",
