@@ -154,18 +154,30 @@ function explainResolution(name) {
 }
 
 /**
- * Reads the installed manifest of `name@version` from pnpm's virtual store,
- * where a scoped name is flattened with `+` and a peer-resolved copy carries
- * a `_`-joined suffix after the version.
+ * Indexes the manifests installed in pnpm's virtual store by `name@version`.
  *
- * @returns {object | undefined} the parsed manifest, if that copy is installed
+ * The store directory names cannot be matched by prefix: pnpm truncates any
+ * name longer than `virtual-store-dir-max-length` — 60 on Windows, 120
+ * elsewhere — and appends a hash, and a peer-resolved copy of a scoped
+ * package overruns 60 inside its version. Each directory does still hold the
+ * package under `node_modules/<name>/package.json`, so the manifest's own
+ * `name` and `version` are read instead. Only the packages named in
+ * `wanted` are opened; the store holds hundreds of others.
+ *
+ * @param {Set<string>} wanted package names worth reading
+ * @returns {Map<string, object>} `name@version` to parsed manifest
  */
-function installedManifest(storeEntries, name, version) {
-  const prefix = `${name.replace("/", "+")}@${version}`;
-  const entry = storeEntries.find((dir) => dir === prefix || dir.startsWith(`${prefix}_`));
-  if (!entry) return undefined;
-  const manifestPath = join(repoRoot, store, entry, "node_modules", name, "package.json");
-  return JSON.parse(readFileSync(manifestPath, "utf8"));
+function installedManifests(wanted) {
+  const manifests = new Map();
+  for (const entry of readdirSync(join(repoRoot, store))) {
+    for (const name of wanted) {
+      const manifestPath = join(repoRoot, store, entry, "node_modules", name, "package.json");
+      if (!existsSync(manifestPath)) continue;
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+      if (manifest.name === name) manifests.set(`${name}@${manifest.version}`, manifest);
+    }
+  }
+  return manifests;
 }
 
 const errors = [];
@@ -249,11 +261,11 @@ let declaredRangesChecked = 0;
 if (!existsSync(join(repoRoot, store))) {
   errors.push(`${store}: not found; run \`pnpm install\` before this check`);
 } else {
-  const storeEntries = readdirSync(join(repoRoot, store));
+  const installed = installedManifests(new Set(pinned.keys()));
   const staleExceptions = new Set(Object.keys(DELIBERATE_RANGE_VIOLATIONS));
   for (const [name, version] of pinned) {
     if (unused.has(name)) continue; // already reported against the lockfile
-    const manifest = installedManifest(storeEntries, name, version);
+    const manifest = installed.get(`${name}@${version}`);
     if (!manifest) {
       errors.push(`${store}: ${name}@${version} is not installed; run \`pnpm install\``);
       continue;
