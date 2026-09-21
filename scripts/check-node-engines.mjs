@@ -6,47 +6,14 @@
 // satisfy it. Checking all three together is what keeps the manifests, the CI
 // matrix, and the contributor toolchain from drifting apart.
 
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { workspaceManifests } from "./lib/workspace-manifests.mjs";
+
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const ciWorkflow = join(".github", "workflows", "ci.yml");
-
-/**
- * Minimal reader for this repo's `pnpm-workspace.yaml` package list.
- *
- * Returns one entry per candidate manifest. `globbed` marks manifests found by
- * expanding a `dir/*` pattern: pnpm treats a directory without a `package.json`
- * as simply not a package, so those are allowed to be absent. An explicitly
- * listed package (and the root) must exist.
- *
- * @returns {{ path: string, globbed: boolean }[]}
- */
-function workspaceManifests() {
-  const yaml = readFileSync(join(repoRoot, "pnpm-workspace.yaml"), "utf8");
-  const patterns = yaml
-    .split("\n")
-    .filter((line) => line.trimStart().startsWith("- "))
-    .map((line) => line.trim().slice(2).trim().replace(/^["']|["']$/g, ""));
-
-  const dirs = [{ dir: repoRoot, globbed: false }];
-  for (const pattern of patterns) {
-    if (pattern.endsWith("/*")) {
-      const parent = join(repoRoot, pattern.slice(0, -2));
-      for (const entry of readdirSync(parent)) {
-        const dir = join(parent, entry);
-        if (statSync(dir).isDirectory()) dirs.push({ dir, globbed: true });
-      }
-    } else {
-      dirs.push({ dir: join(repoRoot, pattern), globbed: false });
-    }
-  }
-  return dirs.map(({ dir, globbed }) => ({
-    path: join(dir, "package.json"),
-    globbed,
-  }));
-}
 
 /**
  * Reads the exact Node.js version the CI matrix pins its runners to, so the
@@ -90,7 +57,7 @@ function satisfiesFloor(version, floor) {
 const errors = [];
 const floors = new Map();
 
-for (const { path: manifestPath, globbed } of workspaceManifests()) {
+for (const { path: manifestPath, globbed } of workspaceManifests(repoRoot)) {
   const relativePath = manifestPath.slice(repoRoot.length + 1);
   let manifest;
   try {

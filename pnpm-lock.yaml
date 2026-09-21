@@ -9,7 +9,7 @@ overrides:
   astro: 7.3.2
   unifont: 0.7.4
   '@awesome.me/webawesome': 3.12.0
-  '@playwright/test': ^1.57.0
+  '@playwright/test': 1.57.0
   mystmd: 1.11.0
   myst-common: 1.10.1
   myst-parser: 1.7.4
@@ -84,7 +84,7 @@ importers:
         version: 4.0.0
     devDependencies:
       '@playwright/test':
-        specifier: ^1.57.0
+        specifier: 1.57.0
         version: 1.57.0
       start-server-and-test:
         specifier: ^2.0.12
@@ -164,7 +164,7 @@ importers:
         version: 11.0.5
     devDependencies:
       '@playwright/test':
-        specifier: ^1.57.0
+        specifier: 1.57.0
         version: 1.57.0
 
 packages:

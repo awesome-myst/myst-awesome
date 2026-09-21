@@ -161,6 +161,7 @@ pnpm --filter=myst-awesome exec playwright show-report
 pnpm install      # Install dependencies (uses pnpm@10.28.2)
 pnpm preview      # Preview production build
 pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, and the CI pin
+pnpm run check-deps      # Verify root overrides are exact pins that the manifests and installed tree agree with
 ```
 
 ### Important Notes
@@ -792,6 +793,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+      - name: Verify dependency override policy
+        run: node scripts/check-dependency-policy.mjs
+      
       - name: Install Playwright
         run: pnpm exec playwright install --with-deps
         if: runner.os == 'Linux'  # Only needed on Linux
@@ -1095,7 +1099,7 @@ packages:
       "astro": "7.3.2",
       "unifont": "0.7.4",
       "@awesome.me/webawesome": "3.12.0",
-      "@playwright/test": "^1.57.0",
+      "@playwright/test": "1.57.0",
       "mystmd": "1.11.0",
       "myst-common": "1.10.1",
       "myst-parser": "1.7.4",
@@ -1116,7 +1120,12 @@ packages:
   dependency to a single installed copy, and a caret there would re-admit the
   duplicates. Direct ranges in the workspace manifests stay caret ranges so the
   published packages advertise a usable range; `astro` is pinned exactly
-  everywhere. See `docs/roadmap/01-dependency-updates.md` for the policy.
+  everywhere. `pnpm run check-deps` (`scripts/check-dependency-policy.mjs`,
+  run in CI after install) fails on a ranged override, a direct range that
+  does not admit its pin, a lockfile that resolves anything but the pin, or a
+  pin outside the range a sibling overridden package declares — the last
+  being how a MyST family drifts apart with no install-time warning. See
+  `docs/roadmap/01-dependency-updates.md` for the policy.
 - `mystmd` is a bundled CLI with no runtime dependencies, so the MyST
   overrides govern the copies this workspace imports directly (the theme's
   `myst-parser`/`myst-transforms`, the docs plugin's `myst-directives`/
