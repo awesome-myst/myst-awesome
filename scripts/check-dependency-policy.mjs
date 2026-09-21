@@ -119,7 +119,9 @@ function satisfies(version, range) {
  * @returns {Map<string, Set<string>>} package name to resolved versions
  */
 function lockfileVersions() {
-  const text = readFileSync(join(repoRoot, lockfile), "utf8");
+  // A Windows checkout with autocrlf hands back CRLF; normalise so the
+  // section markers and line matches below hold on every CI leg.
+  const text = readFileSync(join(repoRoot, lockfile), "utf8").replace(/\r\n/g, "\n");
   const start = text.indexOf("\npackages:\n");
   const end = text.indexOf("\nsnapshots:\n", start);
   if (start < 0 || end < 0) {

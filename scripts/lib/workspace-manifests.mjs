@@ -23,7 +23,9 @@ import { join } from "node:path";
  * @returns {{ path: string, globbed: boolean }[]}
  */
 export function workspaceManifests(repoRoot) {
-  const lines = readFileSync(join(repoRoot, "pnpm-workspace.yaml"), "utf8").split("\n");
+  const lines = readFileSync(join(repoRoot, "pnpm-workspace.yaml"), "utf8")
+    .replace(/\r\n/g, "\n")
+    .split("\n");
   const patterns = [];
   let inPackages = false;
   for (const line of lines) {
