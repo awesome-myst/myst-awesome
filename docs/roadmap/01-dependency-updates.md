@@ -13,7 +13,7 @@ This is the first implementation step in the roadmap (P0). It establishes the su
 
 ## Overview
 
-Upgrade in small, reversible pull requests rather than one lockfile rewrite. The target is Astro 7.3.2, Web Awesome 3.12.0, MyST 1.10.x, current rendering libraries, and Playwright 1.62.1; keep TypeScript on the latest 6.x line for now rather than adopting TypeScript 7 in this Astro workspace.
+Upgrade in small, reversible pull requests rather than one lockfile rewrite. The target is Astro 7.3.2, Web Awesome 3.12.0, mystmd 1.11.0 with its myst-common 1.10.1 core family, current rendering libraries, and Playwright 1.62.1; keep TypeScript on the latest 6.x line for now rather than adopting TypeScript 7 in this Astro workspace.
 
 The dependency PRs must update the root override policy **and** every direct consumer. `pnpm.overrides` is the guardrail; it does not replace correct direct ranges in `packages/myst-awesome/package.json`, `packages/myst-astro-collections/package.json`, and `docs/package.json`.
 
@@ -59,11 +59,13 @@ Re-run `pnpm install` once per PR and commit the resulting `pnpm-lock.yaml`. The
 | --- | --- | --- | --- | --- |
 | `astro` | `7.3.2` | `7.3.2` | `7.3.2` | `7.3.2` |
 | `@awesome.me/webawesome` | `3.12.0` | `^3.12.0` | — | `^3.12.0` |
-| `mystmd` | `1.10.1` | — | — | `^1.10.1` |
-| `myst-parser` | `1.7.3` | `^1.7.3` | — | `^1.7.3` |
-| `myst-transforms` | `1.3.50` | `^1.3.50` | — | — |
-| `myst-common` | `1.10.0` | — | — | `^1.10.0` |
-| `myst-spec-ext` | `1.10.0` | `^1.10.0` | — | — |
+| `mystmd` | `1.11.0` | — | — | `^1.11.0` |
+| `myst-parser` | `1.7.4` | `^1.7.4` | — | `^1.7.4` |
+| `myst-directives` | `1.7.4` | — | — | `^1.7.4` |
+| `myst-roles` | `1.7.4` | — | — | `^1.7.4` |
+| `myst-transforms` | `1.3.51` | `^1.3.51` | — | — |
+| `myst-common` | `1.10.1` | — | — | `^1.10.1` |
+| `myst-spec-ext` | `1.10.1` | `^1.10.1` | — | — |
 | `@awesome-myst/myst-zod` | `0.7.0` | `^0.7.0` | `^0.7.0` | indirect/workspace |
 | `shiki` | — | `^4.4.3` | — | — |
 | `katex` | — | `^0.18.4` | — | — |
@@ -100,6 +102,8 @@ Version targets should be checked in their package release notes at implementati
 
    *Outcome.* Pinned to an exact `3.12.0` — the release current at implementation time, confirmed against the registry as this document instructs rather than taken from a written target. The version tables above were updated to match. Three findings are worth carrying forward. First, the registration defect is not specific to the docs home page: `ThemeControls.astro` never registered the elements it renders and only worked because `ThemeControlsResolver.astro` imported them, and `ContentLayout.astro` never registered `wa-avatar`, `wa-badge`, `wa-input` or `wa-tag` at all, so `/blog-example` had the same defect. The fix is per-component imports, and `scripts/check-webawesome-registration.mjs` now walks each page's `.astro` import graph so the class of defect fails a check rather than a reviewer's eye — it reads the installed package to learn which elements each module actually defines, because `tab-group.js` legitimately defines `wa-tab` and `wa-tab-panel` too. Second, `dist/utilities/icon-library.js` no longer exists; `registerIconLibrary` moved to `dist/components/icon/library.js` (the package root also re-exports it). Third, long-form `size` values are deprecated in favour of `s`/`m`/`l`, which every Web Awesome element in the workspace now uses.
 5. **PR 5 — MyST family and myst-zod:** update mystmd, parser, transforms, common, spec-ext, and myst-zod atomically. Add `myst-spec-ext` before roadmap 12 consumes its type surface. Build the headless docs server and inspect serialized ASTs.
+
+   *Outcome.* Pinned to mystmd `1.11.0` and the core family its bundle carries — `myst-common`/`myst-spec-ext` `1.10.1`, `myst-parser`/`myst-directives`/`myst-roles` `1.7.4`, `myst-transforms` `1.3.51` — plus `@awesome-myst/myst-zod` `0.7.0`, confirmed against the registry at implementation time; the tables above were updated to match. `mystmd` is a single bundled `myst.cjs` with no runtime dependencies, so the overrides do not reach the copies the CLI runs. They govern the copies this workspace imports itself — the theme's `myst-parser`/`myst-transforms` behind `wa-myst-editor` and the docs plugin in `docs/src/directives.mjs` — and the point of pinning them is that those match the family the CLI bundles. `myst-directives` and `myst-roles` joined the overrides because `myst-parser` declares them as lockstep siblings and the docs app imports them directly; without the pins the lockfile carried a 1.5.15 copy beside 1.7.x. The myst-zod bump is purely additive (`TabSet`/`TabItem` and a widened `Container` union, verified by diffing the published `.d.ts` files), and the theme's local `tabItem` branch already anticipated it. Serialized ASTs were captured from the headless server under mystmd 1.8.0, 1.10.1 and 1.11.0 for all 19 pages plus `myst.xref.json`; after stripping the per-build `key` identifiers and version stamp they are identical except for one `image` node in `authoring/typography.md`, whose remote source failed to download during the 1.8.0 capture — an environmental difference, not a parser change. Three findings carry forward. First, `astro check` reports 87 pre-existing errors in the theme, none of them from the MyST or myst-zod types (they are DOM typing inside `<script>` blocks and frontmatter demo shapes that already diverged under myst-zod 0.6.1); PR 7 owns the clean run. Second, the docs app's `myst-ext-*` packages were retained at their existing versions as this document instructs, and the docs build proves their newer releases are not required for it to succeed — but the old versions now pull a second `myst-spec@0.0.5` beside `0.0.6`, so the consistency PR should raise them to `myst-ext-button@0.0.2`, `myst-ext-exercise@1.0.10`, `myst-ext-grid@1.1.1`, `myst-ext-proof@1.0.13` and `myst-ext-tabs@1.0.10` (`myst-ext-card` stays at 1.0.9), which collapses `myst-spec` to one copy. Third, the cold-cache `wa-myst-editor` render-module race described under *Validation and rollback* also appears under `CI=1`: in three cold single-worker docs runs it logged `Failed to load render module` in two, and every test still passed, so it remains a local degradation rather than a merge gate but should not be assumed absent in CI.
 6. **PR 6 — renderer libraries:** upgrade Shiki 4, KaTeX 0.18, Sharp 0.35, Lit 3.3.3, Fuse 7.5, and Science Icons 0.0.14; adjust `shiki-highlighter.ts`, `katex-renderer.ts`, `wa-scienceicons.ts`, and search code only where compilation or snapshots require it. Shiki 4 also collapses the duplicate Shiki major that Astro 6 introduced. Keep the `optimizeDeps.include` lists in both Astro configs in step with any import path that moves.
 7. **PR 7 — test tooling and TypeScript:** upgrade Playwright; move to TypeScript 6.0.2 or the latest compatible 6.x patch after `astro check` and `tsc` are clean, and pin the root override to whichever patch is selected. Do not replace `tsc` with `tsgo`.
 
