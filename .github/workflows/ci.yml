@@ -41,6 +41,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify dependency override policy
+        run: node scripts/check-dependency-policy.mjs
+
       - name: Verify Web Awesome element registration
         run: node scripts/check-webawesome-registration.mjs
 

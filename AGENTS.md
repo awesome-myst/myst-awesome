@@ -32,8 +32,8 @@
 
 ### Key Technologies
 - **Astro 7.x** + TypeScript strict mode
-- **Web Awesome 3.x beta** - Comprehensive component library
-- **MyST 1.8.x** - Markedly Structured Text for scientific communication
+- **Web Awesome 3.12** - Comprehensive component library
+- **MyST 1.11** (mystmd 1.11.0 with the myst-common 1.10.1 core family) - Markedly Structured Text for scientific communication
 - **pnpm 10.x** - Fast, disk-efficient package manager with workspaces
 - **Playwright 1.57.x** - End-to-end testing framework
 
@@ -161,6 +161,7 @@ pnpm --filter=myst-awesome exec playwright show-report
 pnpm install      # Install dependencies (uses pnpm@10.28.2)
 pnpm preview      # Preview production build
 pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, and the CI pin
+pnpm run check-deps      # Verify root overrides are exact pins that the manifests and installed tree agree with
 ```
 
 ### Important Notes
@@ -792,6 +793,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+      - name: Verify dependency override policy
+        run: node scripts/check-dependency-policy.mjs
+      
       - name: Install Playwright
         run: pnpm exec playwright install --with-deps
         if: runner.os == 'Linux'  # Only needed on Linux
@@ -1091,12 +1095,18 @@ packages:
   
   "pnpm": {
     "overrides": {
-      "@awesome-myst/myst-zod": "^0.6.1",
-      "astro": "5.14.1",
+      "@awesome-myst/myst-zod": "0.7.0",
+      "astro": "7.3.2",
+      "unifont": "0.7.4",
       "@awesome.me/webawesome": "3.12.0",
-      "@playwright/test": "^1.57.0",
-      "mystmd": "^1.8.0",
-      "myst-common": "^1.9.3"
+      "@playwright/test": "1.57.0",
+      "mystmd": "1.11.0",
+      "myst-common": "1.10.1",
+      "myst-parser": "1.7.4",
+      "myst-directives": "1.7.4",
+      "myst-roles": "1.7.4",
+      "myst-transforms": "1.3.51",
+      "myst-spec-ext": "1.10.1"
     },
     "onlyBuiltDependencies": ["esbuild"]
   }
@@ -1106,6 +1116,21 @@ packages:
 **Critical `pnpm.overrides`:**
 - Ensures consistent versions across all workspace packages
 - Prevents version conflicts between packages
+- Overrides are exact versions, not ranges: each one exists to collapse a
+  dependency to a single installed copy, and a caret there would re-admit the
+  duplicates. Direct ranges in the workspace manifests stay caret ranges so the
+  published packages advertise a usable range; `astro` is pinned exactly
+  everywhere. `pnpm run check-deps` (`scripts/check-dependency-policy.mjs`,
+  run in CI after install) fails on a ranged override, a direct range that is
+  not a caret range or does not admit its pin, a lockfile that resolves
+  anything but the pin, or a pin outside the range a sibling overridden
+  package declares — the last being how a MyST family drifts apart with no
+  install-time warning. See
+  `docs/roadmap/01-dependency-updates.md` for the policy.
+- `mystmd` is a bundled CLI with no runtime dependencies, so the MyST
+  overrides govern the copies this workspace imports directly (the theme's
+  `myst-parser`/`myst-transforms`, the docs plugin's `myst-directives`/
+  `myst-roles`); keep them on the family the pinned `mystmd` bundles.
 - `onlyBuiltDependencies` - Only rebuild esbuild (performance)
 
 ### TypeScript Configs
@@ -1525,7 +1550,7 @@ pnpm build 2>&1 | tee build.log
 // Check root package.json overrides
 "pnpm": {
   "overrides": {
-    "@awesome-myst/myst-zod": "^0.6.1"  // Ensure consistent version
+    "@awesome-myst/myst-zod": "0.7.0"  // Exact pin: one installed copy
   }
 }
 
