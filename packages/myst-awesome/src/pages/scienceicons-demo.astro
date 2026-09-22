@@ -4,6 +4,11 @@
 
 title: "Science Icons Demo"
 description: "Demonstration of the scienceicons library integration with Web Awesome"
+
+// The grid below enumerates the icons the library registers, so it reads the
+// same list `wa-scienceicons.ts` resolves against instead of repeating it: a
+// second copy silently omits whatever the next scienceicons release adds.
+import { SCIENCEICONS } from '../lib/scienceicons-names.js';
 ---
 
 <script>
@@ -90,7 +95,7 @@ description: "Demonstration of the scienceicons library integration with Web Awe
   <h2>Setup Required</h2>
   <p>To use these icons, you need to:</p>
   <ol>
-    <li>Copy scienceicons from <code>node_modules/scienceicons/optimized/24/solid/</code> to <code>public/scienceicons/</code></li>
+    <li>Copy scienceicons from <code>node_modules/scienceicons/24/solid/</code> to <code>public/scienceicons/</code></li>
     <li>Import the wa-scienceicons module in your application</li>
   </ol>
 </wa-card>
@@ -129,122 +134,12 @@ description: "Demonstration of the scienceicons library integration with Web Awe
   <p>All available science icons in the library:</p>
   
   <div class="icon-grid">
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="arxiv"></wa-icon>
-      <span class="icon-name">arxiv</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="binder"></wa-icon>
-      <span class="icon-name">binder</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="bluesky"></wa-icon>
-      <span class="icon-name">bluesky</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc-by"></wa-icon>
-      <span class="icon-name">cc-by</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc-nc"></wa-icon>
-      <span class="icon-name">cc-nc</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc-nd"></wa-icon>
-      <span class="icon-name">cc-nd</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc-sa"></wa-icon>
-      <span class="icon-name">cc-sa</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc-zero"></wa-icon>
-      <span class="icon-name">cc-zero</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="cc"></wa-icon>
-      <span class="icon-name">cc</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="curvenote"></wa-icon>
-      <span class="icon-name">curvenote</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="discord"></wa-icon>
-      <span class="icon-name">discord</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="discourse"></wa-icon>
-      <span class="icon-name">discourse</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="email"></wa-icon>
-      <span class="icon-name">email</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="github"></wa-icon>
-      <span class="icon-name">github</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="jupyter-book"></wa-icon>
-      <span class="icon-name">jupyter-book</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="jupyter-text"></wa-icon>
-      <span class="icon-name">jupyter-text</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="jupyter"></wa-icon>
-      <span class="icon-name">jupyter</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="linkedin"></wa-icon>
-      <span class="icon-name">linkedin</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="mastodon"></wa-icon>
-      <span class="icon-name">mastodon</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="myst"></wa-icon>
-      <span class="icon-name">myst</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="open-access"></wa-icon>
-      <span class="icon-name">open-access</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="orcid"></wa-icon>
-      <span class="icon-name">orcid</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="osi"></wa-icon>
-      <span class="icon-name">osi</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="ror"></wa-icon>
-      <span class="icon-name">ror</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="slack"></wa-icon>
-      <span class="icon-name">slack</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="twitter"></wa-icon>
-      <span class="icon-name">twitter</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="website"></wa-icon>
-      <span class="icon-name">website</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="x"></wa-icon>
-      <span class="icon-name">x</span>
-    </div>
-    <div class="icon-item">
-      <wa-icon library="scienceicons" name="youtube"></wa-icon>
-      <span class="icon-name">youtube</span>
-    </div>
+    {SCIENCEICONS.map((name) => (
+      <div class="icon-item">
+        <wa-icon library="scienceicons" name={name}></wa-icon>
+        <span class="icon-name">{name}</span>
+      </div>
+    ))}
   </div>
 </wa-card>
 
