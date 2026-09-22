@@ -1121,10 +1121,11 @@ packages:
   duplicates. Direct ranges in the workspace manifests stay caret ranges so the
   published packages advertise a usable range; `astro` is pinned exactly
   everywhere. `pnpm run check-deps` (`scripts/check-dependency-policy.mjs`,
-  run in CI after install) fails on a ranged override, a direct range that
-  does not admit its pin, a lockfile that resolves anything but the pin, or a
-  pin outside the range a sibling overridden package declares — the last
-  being how a MyST family drifts apart with no install-time warning. See
+  run in CI after install) fails on a ranged override, a direct range that is
+  not a caret range or does not admit its pin, a lockfile that resolves
+  anything but the pin, or a pin outside the range a sibling overridden
+  package declares — the last being how a MyST family drifts apart with no
+  install-time warning. See
   `docs/roadmap/01-dependency-updates.md` for the policy.
 - `mystmd` is a bundled CLI with no runtime dependencies, so the MyST
   overrides govern the copies this workspace imports directly (the theme's

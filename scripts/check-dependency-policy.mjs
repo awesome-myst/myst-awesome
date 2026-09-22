@@ -5,10 +5,11 @@
 // installed copy, so every entry must be an exact version: a range there
 // re-admits the duplicate majors and minors the override was added to remove.
 // The workspace manifests still publish caret ranges to their own consumers,
-// and each of those ranges must admit the pinned version, otherwise bumping an
-// override silently leaves a published range behind. `astro` is the one
-// dependency pinned exactly everywhere, because its major migrations are gated
-// per pull request.
+// and each of those ranges must both be a caret range and admit the pinned
+// version: admitting it is not enough on its own, because an exact or tilde
+// range publishes something narrower than intended and stops tracking the
+// override at the next bump. `astro` is the one dependency pinned exactly
+// everywhere, because its major migrations are gated per pull request.
 //
 // pnpm applies an override without consulting the range its dependents
 // declare, so a pin can drift outside the family a sibling expects with no
@@ -217,6 +218,17 @@ for (const { path: manifestPath, globbed } of workspaceManifests(repoRoot)) {
         if (range !== version) {
           errors.push(`${relativePath}: "astro" must be pinned exactly to ${version}, got "${range}"`);
         }
+        continue;
+      }
+      // A range that merely admits the pin is not enough: an exact or tilde
+      // range here would publish a narrower range to this package's own
+      // consumers than the policy intends, and it would silently stop
+      // tracking the override on the next bump.
+      if (!range.startsWith("^")) {
+        errors.push(
+          `${relativePath}: "${name}": "${range}" must be a caret range admitting the override ` +
+            `${version}; only astro is pinned exactly in a workspace manifest`,
+        );
         continue;
       }
       const admits = satisfies(version, range);
