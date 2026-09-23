@@ -14,6 +14,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
+ * Locates the installed scienceicons SVGs.
+ *
+ * Resolved through Node rather than as a path relative to this file: pnpm
+ * installs the package under the theme's own `node_modules`, npm may hoist it
+ * to a workspace root, and a consumer of the published theme puts it somewhere
+ * else again. `scienceicons` declares no `exports` map, so its `package.json`
+ * is addressable and the icon directory sits beside it.
+ *
+ * @param {string} [variant] - Icon set directory, e.g. `24/solid`
+ * @returns {string} absolute path to the directory of SVGs
+ */
+function scienceIconsDir(variant = "24/solid") {
+  const manifest = fileURLToPath(import.meta.resolve("scienceicons/package.json"));
+  return path.join(path.dirname(manifest), variant);
+}
+
+/**
  * Copy scienceicons to target directory with base_dir support
  *
  * @param {string} sourceDir - Source directory containing SVG files
@@ -83,11 +100,7 @@ function copyScienceIcons(sourceDir, targetBaseDir, baseDir = "") {
 
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const defaultSourceDir = path.resolve(
-    __dirname,
-    "../../../node_modules/scienceicons/24/solid"
-  );
-  copyScienceIcons(defaultSourceDir);
+  copyScienceIcons(scienceIconsDir());
 }
 
 export { copyScienceIcons };

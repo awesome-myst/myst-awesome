@@ -8,7 +8,7 @@
  * that can be used with Web Awesome's <wa-icon> component.
  * 
  * Setup:
- * 1. Copy the scienceicons from node_modules/scienceicons/optimized/24/solid/
+ * 1. Copy the scienceicons from node_modules/scienceicons/24/solid/
  *    to your public/scienceicons/ directory
  * 2. Import this module in your application
  * 
@@ -31,56 +31,14 @@
 
 import { registerIconLibrary } from '@awesome.me/webawesome';
 
-// List of available scienceicons (24px solid variants)
-const SCIENCEICONS = [
-  'arxiv',
-  'binder',
-  'bluesky',
-  'cc-by',
-  'cc-nc',
-  'cc-nd',
-  'cc-sa',
-  'cc-zero',
-  'cc',
-  'curvenote',
-  'discord',
-  'discourse',
-  'email',
-  'github',
-  'jupyter-book',
-  'jupyter-text',
-  'jupyter',
-  'linkedin',
-  'mastodon',
-  'myst',
-  'open-access',
-  'orcid',
-  'osi',
-  'ror',
-  'slack',
-  'twitter',
-  'website',
-  'x',
-  'youtube',
-] as const;
-
-/**
- * Type for available scienceicon names
- */
-export type ScienceIconName = typeof SCIENCEICONS[number];
-
-/**
- * Check if an icon name is a valid scienceicon
- */
-export function isScienceIcon(name: string): name is ScienceIconName {
-  return SCIENCEICONS.includes(name as ScienceIconName);
-}
+import { SCIENCEICONS, isScienceIcon } from './scienceicons-names.js';
+import type { ScienceIconName } from './scienceicons-names.js';
 
 /**
  * Get the URL for a scienceicon
  * 
  * Note: The scienceicons must be made available in your public directory.
- * You can copy them from node_modules/scienceicons/optimized/24/solid/
+ * You can copy them from node_modules/scienceicons/24/solid/
  * to your public/scienceicons/ directory, or set up a build process to do this automatically.
  */
 export function getScienceIconUrl(name: string, baseUrl?: string): string {
@@ -127,8 +85,10 @@ export function registerScienceIconsLibrary(baseUrl?: string) {
   });
 }
 
-// Export the icon list for use by other modules
-export { SCIENCEICONS };
+// Re-exported so a consumer that only wants the names need not know they
+// live in their own module.
+export { SCIENCEICONS, isScienceIcon };
+export type { ScienceIconName };
 
 // Also export a convenience function to get all available icon names
 export function getScienceIconNames(): readonly string[] {

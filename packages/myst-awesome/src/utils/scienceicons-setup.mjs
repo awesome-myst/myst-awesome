@@ -8,9 +8,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /**
  * Setup scienceicons for docs build
  * @param {string} docsPublicDir - Path to the docs public directory
@@ -18,8 +15,13 @@ const __dirname = path.dirname(__filename);
  */
 export function setupScienceiconsForDocs(docsPublicDir, baseDir = '') {
   try {
-    // Resolve paths
-    const sourceDir = path.resolve(__dirname, '../../node_modules/scienceicons/24/solid');
+    // Resolve the icons through Node rather than as a path relative to this
+    // file: the package sits under the theme's own `node_modules` with pnpm,
+    // under a hoisted root with npm, and elsewhere again for a consumer of the
+    // published theme. `scienceicons` declares no `exports` map, so its
+    // `package.json` is addressable and the icon directory sits beside it.
+    const manifest = fileURLToPath(import.meta.resolve('scienceicons/package.json'));
+    const sourceDir = path.join(path.dirname(manifest), '24/solid');
     const iconTargetDir = path.join(docsPublicDir, baseDir, 'scienceicons');
 
     // Check if source exists

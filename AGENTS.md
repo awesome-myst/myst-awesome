@@ -162,6 +162,8 @@ pnpm install      # Install dependencies (uses pnpm@10.28.2)
 pnpm preview      # Preview production build
 pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, and the CI pin
 pnpm run check-deps      # Verify root overrides are exact pins that the manifests and installed tree agree with
+pnpm run check-webawesome    # Verify every wa-* element a page renders is registered by its import graph
+pnpm run check-scienceicons  # Verify the theme's scienceicon allowlist matches the installed package
 ```
 
 ### Important Notes

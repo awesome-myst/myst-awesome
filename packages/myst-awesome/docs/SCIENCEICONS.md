@@ -21,7 +21,7 @@ Copy the scienceicons SVG files to your public directory:
 npm run copy-scienceicons
 
 # Or manually copy from:
-# node_modules/scienceicons/optimized/24/solid/
+# node_modules/scienceicons/24/solid/
 # to:
 # public/scienceicons/
 ```
@@ -50,14 +50,17 @@ Use icons in your templates:
 
 ## Available Icons
 
-The library includes 29 science-related icons:
+`SCIENCEICONS` in [`src/lib/scienceicons-names.ts`](../src/lib/scienceicons-names.ts)
+is the single source of truth for the set. Read it at runtime with
+`getScienceIconNames()`, or see the [demo page](#demo), which renders every
+entry.
 
-- **Academic**: `arxiv`, `orcid`, `open-access`
-- **Code & Development**: `github`, `jupyter`, `jupyter-book`, `jupyter-text`, `binder`
-- **Communication**: `discord`, `discourse`, `email`, `linkedin`, `mastodon`, `slack`, `twitter`, `x`, `youtube`
-- **Organizations**: `curvenote`, `myst`, `ror`, `osi`
-- **Licenses**: `cc`, `cc-by`, `cc-nc`, `cc-nd`, `cc-sa`, `cc-zero`
-- **Social**: `bluesky`, `website`
+The names are deliberately not repeated here. The list is an allowlist — the
+resolver refuses any name outside it, so an icon the package ships but the list
+omits simply never renders, with no build error — and a second copy in prose
+drifts the next time upstream adds one, as happened when `scienceicons@0.0.14`
+added `semble`. `pnpm run check-scienceicons` compares the list against the
+installed package on every CI run; prose it cannot check.
 
 ## Styling
 
@@ -148,7 +151,7 @@ For Astro projects, you can import the library in your layout or component:
 
 ## Demo
 
-See the [scienceicons demo page](./src/pages/scienceicons-demo.astro) for a complete example with all available icons.
+See the [scienceicons demo page](../src/pages/scienceicons-demo.astro) for a complete example with all available icons.
 
 ## License
 
