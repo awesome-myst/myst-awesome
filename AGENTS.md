@@ -163,6 +163,7 @@ pnpm install      # Install dependencies (uses pnpm@10.28.2)
 pnpm preview      # Preview production build
 pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, and the CI pin
 pnpm run check-deps      # Verify root overrides are exact pins that the manifests and installed tree agree with
+pnpm run check-installed-engines  # Verify every installed package's engines.node admits the Node floor
 pnpm run check-webawesome    # Verify every wa-* element a page renders is registered by its import graph
 pnpm run check-scienceicons  # Verify the theme's scienceicon allowlist matches the installed package
 pnpm run typecheck       # Build collections with tsc, then `astro check` the theme and docs
@@ -800,6 +801,9 @@ jobs:
       - name: Verify dependency override policy
         run: node scripts/check-dependency-policy.mjs
       
+      - name: Verify installed packages support the Node floor
+        run: node scripts/check-installed-engines.mjs
+      
       - name: Type-check
         run: pnpm run typecheck
       
@@ -820,7 +824,10 @@ jobs:
   theme, collections, and docs manifests and enforced by
   `scripts/check-node-engines.mjs`, which also asserts that the matrix pin above
   equals that declared floor. Astro 6+ drops Node 18/20, so CI runs the floor
-  itself rather than "latest 22.x".
+  itself rather than "latest 22.x". `scripts/check-installed-engines.mjs` then
+  holds the installed tree to the same floor, because a transitive dependency
+  that declares a higher one fails nothing unless pnpm runs with
+  `engine-strict`.
 - Type-check: `pnpm run typecheck` must report no errors; it builds the
   collections package first because the theme and docs read its types from
   `dist/`

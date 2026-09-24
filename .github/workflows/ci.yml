@@ -44,6 +44,9 @@ jobs:
       - name: Verify dependency override policy
         run: node scripts/check-dependency-policy.mjs
 
+      - name: Verify installed packages support the Node floor
+        run: node scripts/check-installed-engines.mjs
+
       - name: Verify Web Awesome element registration
         run: node scripts/check-webawesome-registration.mjs
 

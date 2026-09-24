@@ -22,7 +22,11 @@ overrides:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      semver:
+        specifier: ^7.8.5
+        version: 7.8.5
 
   docs:
     dependencies:
