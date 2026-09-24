@@ -72,18 +72,17 @@ const {
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
 
   // Theme selector functionality
-  const themeSelector = document.querySelector('.theme-selector');
-  const colorSchemeSelector = document.querySelector('.color-scheme-selector');
+  const themeSelector = document.querySelector<HTMLElementTagNameMap['wa-select']>('.theme-selector');
+  const colorSchemeSelector = document.querySelector<HTMLElementTagNameMap['wa-select']>('.color-scheme-selector');
 
   if (themeSelector) {
     // Set initial value from localStorage
     const savedTheme = localStorage.getItem('theme') || 'default';
     themeSelector.value = savedTheme;
 
-    themeSelector.addEventListener('wa-change', (e) => {
-      if (window.setTheme) {
-        window.setTheme(e.target.value);
-      }
+    themeSelector.addEventListener('wa-change', () => {
+      const { value } = themeSelector;
+      if (typeof value === 'string') window.setTheme?.(value);
     });
   }
 
@@ -92,9 +91,10 @@ const {
     const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
     colorSchemeSelector.value = savedColorScheme;
 
-    colorSchemeSelector.addEventListener('wa-change', (e) => {
-      if (window.setColorScheme) {
-        window.setColorScheme(e.target.value);
+    colorSchemeSelector.addEventListener('wa-change', () => {
+      const { value } = colorSchemeSelector;
+      if (value === 'light' || value === 'dark' || value === 'auto') {
+        window.setColorScheme?.(value);
       }
     });
   }

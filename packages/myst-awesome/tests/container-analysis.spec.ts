@@ -13,7 +13,7 @@ test.describe("DOM Hierarchy Analysis", () => {
       const html = document.documentElement;
       const body = document.body;
 
-      const getElementInfo = (el, name) => {
+      const getElementInfo = (el: Element | null, name: string) => {
         if (!el) return { name, missing: true };
         const rect = el.getBoundingClientRect();
         const computed = getComputedStyle(el);

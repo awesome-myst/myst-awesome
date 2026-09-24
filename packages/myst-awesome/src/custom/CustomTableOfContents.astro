@@ -381,9 +381,9 @@ const {
 
   // Update scroll progress & active TOC link
   window.addEventListener('scroll', () => {
-    const fill = document.querySelector('.custom-progress-fill');
+    const fill = document.querySelector<HTMLElement>('.custom-progress-fill');
     const text = document.querySelector('.custom-progress-text');
-    const links = document.querySelectorAll('.custom-toc-link');
+    const links = document.querySelectorAll<HTMLElement>('.custom-toc-link');
     const scrollTop = document.documentElement.scrollTop;
     const height = document.documentElement.scrollHeight - window.innerHeight;
     const pct = Math.floor((scrollTop / height) * 100);
@@ -392,7 +392,7 @@ const {
 
     links.forEach(link => {
       const id = link.dataset.target;
-      const el = document.getElementById(id);
+      const el = id ? document.getElementById(id) : null;
       if (!el) return;
       const r = el.getBoundingClientRect();
       link.classList.toggle('custom-active', r.top <= 0 && r.bottom > 0);

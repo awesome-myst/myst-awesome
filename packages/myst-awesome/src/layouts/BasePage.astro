@@ -312,8 +312,8 @@ import MystContentStyles from '../components/MystContentStyles.astro';
       }
 
       // Expose functions globally for theme controls
-      (window as any).setColorScheme = setColorScheme;
-      (window as any).setTheme = setTheme;
+      window.setColorScheme = setColorScheme;
+      window.setTheme = setTheme;
 
       // Remove wa-cloak class once Web Awesome is loaded
       // This ensures proper theme rendering

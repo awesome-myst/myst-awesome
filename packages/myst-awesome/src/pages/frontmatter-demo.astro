@@ -12,9 +12,11 @@ import Affiliations from '../components/frontmatter/Affiliations.astro';
 import LicenseBadges from '../components/frontmatter/LicenseBadges.astro';
 import DownloadsDropdown from '../components/frontmatter/DownloadsDropdown.astro';
 import LaunchButton from '../components/frontmatter/LaunchButton.astro';
+import { ExportFormats } from '@awesome-myst/myst-zod';
+import type { Contributor, ProjectAndPageFrontmatter, ProjectFrontmatter } from '@awesome-myst/myst-zod';
 
 // Sample frontmatter data for testing
-const sampleFrontmatter = {
+const sampleFrontmatter: ProjectAndPageFrontmatter & Pick<ProjectFrontmatter, 'thebe'> = {
   title: "Machine Learning in Scientific Computing",
   subtitle: "A comprehensive guide to modern ML techniques",
   doi: "10.1000/xyz123",
@@ -30,7 +32,10 @@ const sampleFrontmatter = {
       orcid: "0000-0009-8765-4321",
       affiliations: ["uni2"]
     }
-  ],
+    // MyST emits an author's affiliations as ids into the top-level list, and
+    // myst-zod keeps them as strings at runtime, but its 0.7.0 types declare
+    // Affiliation objects. The cast keeps the demo on the shape MyST emits.
+  ] as unknown as Contributor[],
   affiliations: [
     {
       id: "uni1",
@@ -47,42 +52,44 @@ const sampleFrontmatter = {
       name: "Computational Biology Lab"
     }
   ],
-  license: [
-    {
+  license: {
+    content: {
       id: "CC-BY-4.0",
       name: "Creative Commons Attribution 4.0",
       url: "https://creativecommons.org/licenses/by/4.0/",
       CC: true
     },
-    {
+    code: {
       id: "MIT",
-      name: "MIT License", 
+      name: "MIT License",
       url: "https://opensource.org/licenses/MIT",
       osi: true
     }
-  ],
+  },
+  // myst-zod 0.7.0 declares SiteFrontmatter's `exports` as required.
+  exports: [],
   downloads: [
     {
-      format: "pdf",
+      format: ExportFormats.pdf,
       url: "/downloads/paper.pdf",
       title: "Download PDF"
     },
     {
-      format: "jupyter",
-      url: "/downloads/notebook.ipynb", 
-      title: "Download Notebook"
+      url: "/downloads/notebook.ipynb",
+      title: "Download Notebook",
+      filename: "notebook.ipynb",
+      static: true
     }
   ],
   thebe: {
-    repository: "username/repo-name",
     binder: {
       repo: "username/repo-name",
       ref: "main"
     },
     server: {
-      url: "https://hub.jupyter.org"
-    },
-    path: "notebooks/example.ipynb"
+      url: "https://hub.jupyter.org",
+      token: "demo-token"
+    }
   }
 };
 

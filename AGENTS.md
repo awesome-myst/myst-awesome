@@ -35,7 +35,8 @@
 - **Web Awesome 3.12** - Comprehensive component library
 - **MyST 1.11** (mystmd 1.11.0 with the myst-common 1.10.1 core family) - Markedly Structured Text for scientific communication
 - **pnpm 10.x** - Fast, disk-efficient package manager with workspaces
-- **Playwright 1.57.x** - End-to-end testing framework
+- **TypeScript 6.0** - `astro check` and `tsc`; TypeScript 7 is deferred until Astro's tooling supports it
+- **Playwright 1.63.x** - End-to-end testing framework
 
 ### Core Design Patterns
 - **Slot-based layouts** following Web Awesome patterns (header, navigation, aside, main, footer)
@@ -164,6 +165,7 @@ pnpm run check-engines   # Verify Node.js >=22.12.0, matching engines fields, an
 pnpm run check-deps      # Verify root overrides are exact pins that the manifests and installed tree agree with
 pnpm run check-webawesome    # Verify every wa-* element a page renders is registered by its import graph
 pnpm run check-scienceicons  # Verify the theme's scienceicon allowlist matches the installed package
+pnpm run typecheck       # Build collections with tsc, then `astro check` the theme and docs
 ```
 
 ### Important Notes
@@ -798,6 +800,9 @@ jobs:
       - name: Verify dependency override policy
         run: node scripts/check-dependency-policy.mjs
       
+      - name: Type-check
+        run: pnpm run typecheck
+      
       - name: Install Playwright
         run: pnpm exec playwright install --with-deps
         if: runner.os == 'Linux'  # Only needed on Linux
@@ -816,6 +821,9 @@ jobs:
   `scripts/check-node-engines.mjs`, which also asserts that the matrix pin above
   equals that declared floor. Astro 6+ drops Node 18/20, so CI runs the floor
   itself rather than "latest 22.x".
+- Type-check: `pnpm run typecheck` must report no errors; it builds the
+  collections package first because the theme and docs read its types from
+  `dist/`
 - Playwright: Install with `--with-deps` on Linux only
 - Build order: collections → theme → docs
 - Test execution: `pnpm test` (runs all packages)
@@ -1092,6 +1100,7 @@ packages:
     "dev": "pnpm --filter=myst-awesome dev",
     "build": "pnpm --filter=myst-astro-collections build && pnpm --filter=myst-awesome build && pnpm --filter=myst-awesome-docs build",
     "test": "pnpm --filter=myst-astro-collections test && pnpm --filter=myst-awesome test && pnpm --filter=myst-awesome-docs test",
+    "typecheck": "pnpm --filter=myst-astro-collections build && pnpm --filter=myst-awesome typecheck && pnpm --filter=myst-awesome-docs typecheck",
     "dev-docs": "pnpm --filter=myst-awesome-docs dev"
   },
   
@@ -1101,14 +1110,16 @@ packages:
       "astro": "7.3.2",
       "unifont": "0.7.4",
       "@awesome.me/webawesome": "3.12.0",
-      "@playwright/test": "1.57.0",
+      "@playwright/test": "1.63.0",
       "mystmd": "1.11.0",
       "myst-common": "1.10.1",
       "myst-parser": "1.7.4",
       "myst-directives": "1.7.4",
       "myst-roles": "1.7.4",
       "myst-transforms": "1.3.51",
-      "myst-spec-ext": "1.10.1"
+      "myst-spec-ext": "1.10.1",
+      "sharp": "0.35.4",
+      "typescript": "6.0.3"
     },
     "onlyBuiltDependencies": ["esbuild"]
   }
@@ -1158,11 +1169,20 @@ packages:
     "strict": true,
     "moduleResolution": "bundler",
     "target": "ES2022",
+    "types": ["node"],
     "declaration": true,
     "outDir": "./dist"
   }
 }
 ```
+
+TypeScript 6 defaults `types` to `[]`, so a package that uses Node globals such
+as `process` must list `"node"` explicitly rather than relying on every
+installed `@types/*` package being loaded.
+
+The docs tsconfig also excludes `_build`: the MyST server downloads its
+book-theme template there, and with Astro's `allowJs` those bundled files would
+otherwise run `astro check` out of memory.
 
 ---
 

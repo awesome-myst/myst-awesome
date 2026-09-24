@@ -9,7 +9,7 @@
  * - frontmatter: The page frontmatter data from page.data.frontmatter
  * - baseUrl: Optional base URL for scienceicons (e.g., '/book' for subdirectory deployments)
  */
-import type { ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
+import type { ProjectAndPageFrontmatter, ProjectFrontmatter } from '@awesome-myst/myst-zod';
 import Authors from './Authors.astro';
 import Affiliations from './Affiliations.astro';
 import LicenseBadges from './LicenseBadges.astro';
@@ -17,7 +17,9 @@ import DownloadsDropdown from './DownloadsDropdown.astro';
 import LaunchButton from './LaunchButton.astro';
 
 interface Props {
-  frontmatter: ProjectAndPageFrontmatter;
+  // `thebe` is a project-level key, so it is present only when the caller
+  // merges project frontmatter into the page's.
+  frontmatter: ProjectAndPageFrontmatter & Pick<ProjectFrontmatter, 'thebe'>;
   baseUrl?: string;
   components?: {
     authors?: any;

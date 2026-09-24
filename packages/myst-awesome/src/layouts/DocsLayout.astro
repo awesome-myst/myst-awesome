@@ -482,9 +482,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       // Web Awesome select components emit 'change' events
       themeSelector.addEventListener('change', (e: any) => {
         const value = (e.target as any)?.value ?? 'default';
-        if ((window as any).setTheme) {
-          (window as any).setTheme(value);
-        }
+        window.setTheme?.(value);
       });
     }
 
@@ -514,9 +512,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         const current = (active.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
         const next = order[(order.indexOf(current) + 1) % order.length];
         setActive(next);
-        if ((window as any).setColorScheme) {
-          (window as any).setColorScheme(next);
-        }
+        window.setColorScheme?.(next);
       });
 
       // Also support direct selection if custom UI triggers events in the future
@@ -524,9 +520,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         btn.addEventListener('select', () => {
           const value = (btn.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
           setActive(value);
-          if ((window as any).setColorScheme) {
-            (window as any).setColorScheme(value);
-          }
+          window.setColorScheme?.(value);
         });
       });
     }

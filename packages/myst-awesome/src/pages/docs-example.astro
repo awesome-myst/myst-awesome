@@ -4,10 +4,11 @@
 
 import DocsLayout from '../layouts/DocsLayout.astro';
 import NavigationMenu from '../components/NavigationMenu.astro';
+import type { NavItem } from '../components/NavigationMenu.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
 // Sample navigation data
-const navItems = [
+const navItems: NavItem[] = [
   {
     title: "Getting Started",
     icon: "rocket",
@@ -59,7 +60,6 @@ const tocItems = [
   showEditButton={true}
   showThemeSelector={true}
   editUrl="https://github.com/example/myst-awesome/edit/main/docs/index.md"
-  author="MyST Team"
   lastModified={new Date('2024-01-15')}
   nextPage={{ title: "Installation Guide", href: "/docs/installation" }}
   prevPage={{ title: "Introduction", href: "/docs/intro" }}

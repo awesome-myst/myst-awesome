@@ -119,7 +119,7 @@ const description = projectEntry?.data.project?.description || 'Explore MyST con
 
             <h3>Recent References</h3>
             <div class="references-list">
-              {xrefEntry.data.references.slice(0, 10).map((ref) => (
+              {xrefEntry.data.references.slice(0, 10).map((ref: any) => (
                 <div class="reference-item">
                   <strong>{ref.kind}:</strong>{" "}
                   <a href={ref.url}>{ref.url}</a>{" "}

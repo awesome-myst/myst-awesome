@@ -50,6 +50,11 @@ jobs:
       - name: Verify scienceicon name list
         run: node scripts/check-scienceicons.mjs
 
+      # Builds the collections package with `tsc` first: the theme and docs
+      # resolve its types from `dist/`.
+      - name: Type-check
+        run: pnpm run typecheck
+
       - name: Install Playwright (Linux)
         if: runner.os == 'Linux'
         run: |

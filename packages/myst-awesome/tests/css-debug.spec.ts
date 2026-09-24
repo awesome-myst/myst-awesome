@@ -16,7 +16,7 @@ test.describe("CSS Debug", () => {
       for (let sheet of document.styleSheets) {
         try {
           for (let rule of sheet.cssRules) {
-            if (rule.type === CSSRule.STYLE_RULE) {
+            if (rule instanceof CSSStyleRule) {
               const styleRule = rule;
               if (
                 styleRule.selectorText &&

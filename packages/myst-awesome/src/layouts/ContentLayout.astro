@@ -302,7 +302,7 @@ const tocItems = showTableOfContents ? [
     themeToggle.addEventListener('click', () => {
       const currentScheme = localStorage.getItem('color-scheme') || 'auto';
       const newScheme = currentScheme === 'dark' ? 'light' : 'dark';
-      window.setColorScheme(newScheme);
+      window.setColorScheme?.(newScheme);
     });
   }
 
@@ -371,7 +371,8 @@ const tocItems = showTableOfContents ? [
     const input = newsletterForm.querySelector('wa-input');
     const button = newsletterForm.querySelector('wa-button');
 
-    button.addEventListener('click', () => {
+    button?.addEventListener('click', () => {
+      if (!input) return;
       const email = input.value;
       if (email) {
         // Implement newsletter signup
