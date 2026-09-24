@@ -68,7 +68,6 @@ myst-awesome/
 │   │   │   │   ├── wa-scienceicons.ts    # Science icon setup
 │   │   │   │   ├── html-escape.ts        # HTML sanitization
 │   │   │   │   └── ...
-│   │   │   ├── integrations/      # Astro integrations (scienceicons.ts)
 │   │   │   ├── pages/             # Demo/test pages
 │   │   │   ├── assets/            # Static assets
 │   │   │   └── content.config.ts  # Static project frontmatter collection
