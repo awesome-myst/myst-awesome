@@ -144,7 +144,7 @@ const {
 
   // Search functionality
   if (navMenu && searchInput) {
-    searchInput.addEventListener('wa-input', () => {
+    searchInput.addEventListener('input', () => {
       const query = (searchInput.value ?? '').toLowerCase();
       const navItems = navMenu.querySelectorAll<HTMLElement>('.nav-item, .nav-subitem');
 

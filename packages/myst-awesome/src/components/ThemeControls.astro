@@ -80,7 +80,7 @@ const {
     const savedTheme = localStorage.getItem('theme') || 'default';
     themeSelector.value = savedTheme;
 
-    themeSelector.addEventListener('wa-change', () => {
+    themeSelector.addEventListener('change', () => {
       const { value } = themeSelector;
       if (typeof value === 'string') window.setTheme?.(value);
     });
@@ -91,7 +91,7 @@ const {
     const savedColorScheme = localStorage.getItem('color-scheme') || 'auto';
     colorSchemeSelector.value = savedColorScheme;
 
-    colorSchemeSelector.addEventListener('wa-change', () => {
+    colorSchemeSelector.addEventListener('change', () => {
       const { value } = colorSchemeSelector;
       if (value === 'light' || value === 'dark' || value === 'auto') {
         window.setColorScheme?.(value);
