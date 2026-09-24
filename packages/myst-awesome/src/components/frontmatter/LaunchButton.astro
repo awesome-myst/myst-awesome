@@ -63,7 +63,7 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
           variant="primary"
           onclick={`window.open('${buildBinderUrl(repoUrl, repoRef)}', '_blank')`}
         >
-          <wa-icon library="scienceicons" name="binder" slot="prefix" />
+          <wa-icon library="scienceicons" name="binder" slot="start" />
           Launch Binder
         </wa-button>
       )}
@@ -73,7 +73,7 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
           variant="primary"
           onclick={`window.open('${buildJupyterHubUrl(jupyterHubUrl, repoUrl)}', '_blank')`}
         >
-          <wa-icon library="scienceicons" name="jupyter" slot="prefix" />
+          <wa-icon library="scienceicons" name="jupyter" slot="start" />
           Launch JupyterHub
         </wa-button>
       )}

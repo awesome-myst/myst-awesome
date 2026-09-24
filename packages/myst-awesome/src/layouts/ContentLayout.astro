@@ -141,7 +141,7 @@ const tocItems = showTableOfContents ? [
 
         {lastModified && (
           <div class="meta-item updated">
-            <wa-icon name="pencil" variant="regular"></wa-icon>{" "}
+            <wa-icon name="pencil"></wa-icon>{" "}
             <time datetime={lastModified.toISOString()}>
               Updated {lastModified.toLocaleDateString()}
             </time>
@@ -153,7 +153,7 @@ const tocItems = showTableOfContents ? [
         <div class="article-tags">
           {tags.map(tag => (
             <wa-tag size="s" variant="neutral">
-              <wa-icon slot="start" name="tag" variant="regular"></wa-icon>
+              <wa-icon slot="start" name="tag"></wa-icon>
               {tag}
             </wa-tag>
           ))}
@@ -184,7 +184,7 @@ const tocItems = showTableOfContents ? [
             Facebook
           </wa-button>
           <wa-button size="s" appearance="outlined" class="share-button">
-            <wa-icon slot="start" name="link" variant="regular"></wa-icon>
+            <wa-icon slot="start" name="link"></wa-icon>
             Copy Link
           </wa-button>
         </div>
@@ -355,9 +355,9 @@ const tocItems = showTableOfContents ? [
         case 'Copy Link':
           navigator.clipboard.writeText(url).then(() => {
             // Show success feedback
-            button.innerHTML = '<wa-icon slot="start" name="check" variant="regular"></wa-icon>Copied!';
+            button.innerHTML = '<wa-icon slot="start" name="check"></wa-icon>Copied!';
             setTimeout(() => {
-              button.innerHTML = '<wa-icon slot="start" name="link" variant="regular"></wa-icon>Copy Link';
+              button.innerHTML = '<wa-icon slot="start" name="link"></wa-icon>Copy Link';
             }, 2000);
           });
           break;

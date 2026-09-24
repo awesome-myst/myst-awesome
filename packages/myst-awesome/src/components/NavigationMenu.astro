@@ -47,7 +47,7 @@ const {
             {section.href ? (
               <a href={section.href} class="nav-section-title-link">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} variant={section.iconFamily}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -59,7 +59,7 @@ const {
             ) : (
               <h3 class="nav-section-title">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} variant={section.iconFamily}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -89,7 +89,7 @@ const {
                   aria-current={item.current ? 'page' : undefined}
                 >
                   {showIcons && item.icon && (
-                    <wa-icon name={item.icon} variant={item.iconFamily || 'regular'}></wa-icon>
+                    <wa-icon name={item.icon} variant={item.iconFamily}></wa-icon>
                   )}
                   <span class="nav-link-text">{item.title}</span>
                   {item.badge && (
@@ -109,7 +109,7 @@ const {
                           aria-current={subItem.current ? 'page' : undefined}
                         >
                           {showIcons && subItem.icon && (
-                            <wa-icon name={subItem.icon} variant={subItem.iconFamily || 'regular'}></wa-icon>
+                            <wa-icon name={subItem.icon} variant={subItem.iconFamily}></wa-icon>
                           )}
                           <span class="nav-link-text">{subItem.title}</span>
                           {subItem.badge && (

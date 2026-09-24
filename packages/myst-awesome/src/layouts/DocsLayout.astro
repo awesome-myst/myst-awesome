@@ -241,7 +241,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       <!-- Theme selector (optional) -->
       {showThemeSelector && (
         <wa-select class="theme-selector" placeholder="Select theme" appearance="filled" size="s" value={theme}>
-          <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
+          <wa-icon slot="start" name="paintbrush"></wa-icon>
           <wa-option value="default">Default</wa-option>
           <wa-option value="awesome">Awesome</wa-option>
         </wa-select>
@@ -409,7 +409,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       <nav class="article-nav">
         {prevPage && (
           <a href={prevPage.href} class="nav-prev">
-            <wa-icon name="arrow-left" variant="regular"></wa-icon>
+            <wa-icon name="arrow-left"></wa-icon>
             <div>
               <span class="nav-label">Previous</span>
               <span class="nav-title">{prevPage.title}</span>
@@ -423,7 +423,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
               <span class="nav-label">Next</span>
               <span class="nav-title">{nextPage.title}</span>
             </div>
-            <wa-icon name="arrow-right" variant="regular"></wa-icon>
+            <wa-icon name="arrow-right"></wa-icon>
           </a>
         )}
       </nav>
