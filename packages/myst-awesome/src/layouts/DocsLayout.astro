@@ -291,7 +291,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
     )}
   </div>
 
-  <nav slot="navigation" class="docs-navigat | 'shoelace'ion">
+  <nav slot="navigation" class="docs-navigation">
     {toc.map((entry: Entry) => {
       const url = getEntryUrl(entry);
       const title = getEntryTitle(entry);
@@ -664,10 +664,6 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
 
   .nav-search {
     width: 100%;
-  }
-
-  .docs-navigation {
-    padding: var(--wa-space-m);
   }
 
   .nav-section {
