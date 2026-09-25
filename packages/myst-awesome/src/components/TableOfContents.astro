@@ -60,14 +60,13 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
   // Table of contents functionality
   const toc = document.querySelector('.table-of-contents');
   const tocToggle = toc?.querySelector('.toc-toggle');
-  const tocNav = toc?.querySelector('.toc-nav');
-  const tocLinks = toc?.querySelectorAll('.toc-link');
+  const tocNav = toc?.querySelector<HTMLElement>('.toc-nav');
+  const tocLinks = toc?.querySelectorAll('.toc-link') ?? [];
 
   // Collapsible functionality
-  if (tocToggle && tocNav) {
-    const collapseIcon = tocToggle.querySelector('.toc-collapse-icon');
-    const expandIcon = tocToggle.querySelector('.toc-expand-icon');
-
+  const collapseIcon = tocToggle?.querySelector<HTMLElement>('.toc-collapse-icon');
+  const expandIcon = tocToggle?.querySelector<HTMLElement>('.toc-expand-icon');
+  if (tocToggle && tocNav && collapseIcon && expandIcon) {
     tocToggle.addEventListener('click', () => {
       const isCollapsed = tocNav.style.display === 'none';
 
@@ -136,12 +135,12 @@ const filteredItems = items.filter(item => item.level <= maxLevel);
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const target = link.getAttribute('data-toc-target');
-        const element = document.getElementById(target);
+        const element = target ? document.getElementById(target) : null;
 
         if (element) {
           const headerOffset = 80; // Account for sticky headers
           const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
           window.scrollTo({
             top: offsetPosition,

@@ -44,11 +44,19 @@ jobs:
       - name: Verify dependency override policy
         run: node scripts/check-dependency-policy.mjs
 
+      - name: Verify installed packages support the Node floor
+        run: node scripts/check-installed-engines.mjs
+
       - name: Verify Web Awesome element registration
         run: node scripts/check-webawesome-registration.mjs
 
       - name: Verify scienceicon name list
         run: node scripts/check-scienceicons.mjs
+
+      # Builds the collections package with `tsc` first: the theme and docs
+      # resolve its types from `dist/`.
+      - name: Type-check
+        run: pnpm run typecheck
 
       - name: Install Playwright (Linux)
         if: runner.os == 'Linux'

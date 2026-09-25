@@ -42,7 +42,7 @@ function getAffiliation(id: string) {
           )}
           {author.affiliations && (
             <div class="author-affiliations">
-              {author.affiliations.map(affId => {
+              {author.affiliations.map((affId: string) => {
                 const affiliation = getAffiliation(affId);
                 return affiliation ? (
                   <span class="affiliation-badge">{affiliation.name}</span>

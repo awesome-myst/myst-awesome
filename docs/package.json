@@ -11,7 +11,8 @@
     "build": "npm run setup-assets && start-server-and-test myst-content-server http://localhost:3100/myst.xref.json \"astro build\"",
     "preview": "astro preview",
     "myst-content-server": "myst start --headless",
-    "test": "playwright test --config=tests/playwright.config.ts"
+    "test": "playwright test --config=tests/playwright.config.ts",
+    "typecheck": "astro check"
   },
   "author": "Fideus Labs LLC",
   "license": "MIT",
@@ -32,11 +33,12 @@
     "myst-roles": "^1.7.4",
     "mystmd": "^1.11.0",
     "sharp": "^0.35.4",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "unist-builder": "^4.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.1",
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.63.0",
     "start-server-and-test": "^2.0.12"
   }
 }

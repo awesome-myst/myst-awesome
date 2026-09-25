@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 Fideus Labs LLC
 
-interface NavItem {
+export interface NavItem {
   title: string;
   href?: string;
   icon?: string;
@@ -47,7 +47,7 @@ const {
             {section.href ? (
               <a href={section.href} class="nav-section-title-link">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} variant={section.iconFamily}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -59,7 +59,7 @@ const {
             ) : (
               <h3 class="nav-section-title">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} variant={section.iconFamily}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -89,7 +89,7 @@ const {
                   aria-current={item.current ? 'page' : undefined}
                 >
                   {showIcons && item.icon && (
-                    <wa-icon name={item.icon} variant={item.iconFamily || 'regular'}></wa-icon>
+                    <wa-icon name={item.icon} variant={item.iconFamily}></wa-icon>
                   )}
                   <span class="nav-link-text">{item.title}</span>
                   {item.badge && (
@@ -109,7 +109,7 @@ const {
                           aria-current={subItem.current ? 'page' : undefined}
                         >
                           {showIcons && subItem.icon && (
-                            <wa-icon name={subItem.icon} variant={subItem.iconFamily || 'regular'}></wa-icon>
+                            <wa-icon name={subItem.icon} variant={subItem.iconFamily}></wa-icon>
                           )}
                           <span class="nav-link-text">{subItem.title}</span>
                           {subItem.badge && (
@@ -138,16 +138,15 @@ const {
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
 
   // Navigation menu functionality
-  const navMenu = document.querySelector('.navigation-menu');
-  const searchInput = navMenu?.querySelector('.search-input');
-  const navToggles = navMenu?.querySelectorAll('.nav-toggle');
-  const navLinks = navMenu?.querySelectorAll('.nav-link, .nav-sublink');
+  const navMenu = document.querySelector<HTMLElement>('.navigation-menu');
+  const searchInput = navMenu?.querySelector<HTMLElementTagNameMap['wa-input']>('.search-input');
+  const navToggles = navMenu?.querySelectorAll<HTMLElement>('.nav-toggle') ?? [];
 
   // Search functionality
-  if (searchInput) {
-    searchInput.addEventListener('wa-input', (e) => {
-      const query = e.target.value.toLowerCase();
-      const navItems = navMenu.querySelectorAll('.nav-item, .nav-subitem');
+  if (navMenu && searchInput) {
+    searchInput.addEventListener('input', () => {
+      const query = (searchInput.value ?? '').toLowerCase();
+      const navItems = navMenu.querySelectorAll<HTMLElement>('.nav-item, .nav-subitem');
 
       navItems.forEach(item => {
         const link = item.querySelector('.nav-link, .nav-sublink');
@@ -158,24 +157,24 @@ const {
 
         // Show parent sections if any child matches
         if (shouldShow) {
-          let parent = item.closest('.nav-section');
+          let parent = item.closest<HTMLElement>('.nav-section');
           while (parent) {
             parent.style.display = 'block';
-            parent = parent.parentElement?.closest('.nav-section');
+            parent = parent.parentElement?.closest<HTMLElement>('.nav-section') ?? null;
           }
         }
       });
 
       // Hide sections with no visible items
       if (query) {
-        const sections = navMenu.querySelectorAll('.nav-section');
+        const sections = navMenu.querySelectorAll<HTMLElement>('.nav-section');
         sections.forEach(section => {
           const visibleItems = section.querySelectorAll('.nav-item:not([style*="display: none"]), .nav-subitem:not([style*="display: none"])');
           section.style.display = visibleItems.length > 0 ? 'block' : 'none';
         });
       } else {
         // Reset all visibility when search is cleared
-        const allItems = navMenu.querySelectorAll('.nav-section, .nav-item, .nav-subitem');
+        const allItems = navMenu.querySelectorAll<HTMLElement>('.nav-section, .nav-item, .nav-subitem');
         allItems.forEach(item => {
           item.style.display = 'block';
         });
@@ -185,12 +184,12 @@ const {
 
   // Collapsible sections
   navToggles.forEach(toggle => {
-    const section = toggle.closest('.nav-section');
-    const navList = section?.querySelector('.nav-list');
-    const expandIcon = toggle.querySelector('.nav-expand-icon');
-    const collapseIcon = toggle.querySelector('.nav-collapse-icon');
+    const section = toggle.closest<HTMLElement>('.nav-section');
+    const navList = section?.querySelector<HTMLElement>('.nav-list');
+    const expandIcon = toggle.querySelector<HTMLElement>('.nav-expand-icon');
+    const collapseIcon = toggle.querySelector<HTMLElement>('.nav-collapse-icon');
 
-    if (navList && expandIcon && collapseIcon) {
+    if (section && navList && expandIcon && collapseIcon) {
       toggle.addEventListener('click', () => {
         const isCollapsed = navList.style.display === 'none';
 
@@ -213,8 +212,8 @@ const {
   navMenu?.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
-      const focusableElements = Array.from(navMenu.querySelectorAll('a, button, input'));
-      const currentIndex = focusableElements.indexOf(document.activeElement);
+      const focusableElements = Array.from(navMenu.querySelectorAll<HTMLElement>('a, button, input'));
+      const currentIndex = focusableElements.findIndex((element) => element === document.activeElement);
 
       let nextIndex;
       if (e.key === 'ArrowDown') {

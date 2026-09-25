@@ -40,9 +40,8 @@ function buildJupyterHubUrl(hubUrl: string, repo: string, path: string = '') {
 // Extract launch options from thebe config
 const binderOptions = thebe?.binder;
 const jupyterHubUrl = thebe?.server?.url;
-const repoUrl = binderOptions?.repo || thebe?.repository;
+const repoUrl = binderOptions?.repo;
 const repoRef = binderOptions?.ref || 'HEAD';
-const notebookPath = thebe?.path || '';
 
 const hasLaunchOptions = binderOptions || jupyterHubUrl;
 ---
@@ -62,9 +61,9 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
       {binderOptions && repoUrl && (
         <wa-button 
           variant="primary"
-          onclick={`window.open('${buildBinderUrl(repoUrl, repoRef, notebookPath)}', '_blank')`}
+          onclick={`window.open('${buildBinderUrl(repoUrl, repoRef)}', '_blank')`}
         >
-          <wa-icon library="scienceicons" name="binder" slot="prefix" />
+          <wa-icon library="scienceicons" name="binder" slot="start" />
           Launch Binder
         </wa-button>
       )}
@@ -72,9 +71,9 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
       {jupyterHubUrl && repoUrl && (
         <wa-button 
           variant="primary"
-          onclick={`window.open('${buildJupyterHubUrl(jupyterHubUrl, repoUrl, notebookPath)}', '_blank')`}
+          onclick={`window.open('${buildJupyterHubUrl(jupyterHubUrl, repoUrl)}', '_blank')`}
         >
-          <wa-icon library="scienceicons" name="jupyter" slot="prefix" />
+          <wa-icon library="scienceicons" name="jupyter" slot="start" />
           Launch JupyterHub
         </wa-button>
       )}
@@ -88,7 +87,7 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
         {binderOptions && repoUrl && (
           <wa-dropdown-item>
             <a 
-              href={buildBinderUrl(repoUrl, repoRef, notebookPath)}
+              href={buildBinderUrl(repoUrl, repoRef)}
               target="_blank"
               rel="noopener noreferrer"
               style="display: flex; align-items: center; gap: var(--wa-space-s); width: 100%; padding: var(--wa-space-s); text-decoration: none; color: inherit; border-radius: var(--wa-border-radius);"
