@@ -75,10 +75,14 @@ Displays launch options for Jupyter/Binder environments.
 - `kernelName` - Optional kernel name for display
 
 **Features:**
-- Binder launch button with automatic URL construction
-- JupyterHub integration
-- Repository source links
+- Binder launch button built from `thebe.binder.repo` and `thebe.binder.ref`
+- JupyterHub launch button when `thebe.server.url` is an http(s) URL
+- Repository source link: `owner/name` shorthand links to GitHub for the default
+  provider, and a full http(s) URL is used as given
 - Dropdown for additional options
+
+The launch actions are links, never generated JavaScript, and a `thebe` value
+that is not an http(s) URL renders no link.
 
 ## Icons
 
@@ -123,31 +127,43 @@ interface Frontmatter {
     institution?: string;
     ror?: string;
   }>;
-  license?: Array<{
-    id?: string;
-    name?: string;
-    url?: string;
-    CC?: boolean;
-    osi?: boolean;
-  }>;
+  license?: {
+    content?: License;
+    code?: License;
+  };
   downloads?: Array<{
     format: string;
     url: string;
     title?: string;
   }>;
+  // Project-level: present on a page only when project frontmatter is merged in.
   thebe?: {
-    repository?: string;
     binder?: {
-      repo: string;
-      ref?: string;
+      repo?: string;      // `owner/name` for the GitHub provider
+      ref?: string;       // defaults to HEAD
+      url?: string;
+      provider?: string;  // github (default), gitlab, git, gist
     };
     server?: {
       url: string;
+      token: string;
     };
-    path?: string;
   };
 }
+
+interface License {
+  id?: string;
+  name?: string;
+  url?: string;
+  note?: string;
+  free?: boolean;
+  CC?: boolean;
+  osi?: boolean;
+}
 ```
+
+These shapes follow `@awesome-myst/myst-zod`; its `ProjectAndPageFrontmatter`,
+`Licenses` and `ExpandedThebeFrontmatter` types are the reference.
 
 ## Integration with MyST Collections
 

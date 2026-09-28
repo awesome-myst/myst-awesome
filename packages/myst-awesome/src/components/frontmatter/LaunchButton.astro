@@ -18,32 +18,50 @@ interface Props {
 
 const { thebe, kernelName } = Astro.props;
 
-// Helper function to build Binder URL
-function buildBinderUrl(repo: string, ref: string = 'HEAD', path: string = '') {
-  const baseUrl = 'https://mybinder.org/v2/gh';
-  let url = `${baseUrl}/${repo}/${ref}`;
-  if (path) {
-    url += `?urlpath=tree/${encodeURIComponent(path)}`;
+// Frontmatter is author input and these values become link targets, so only
+// http(s) URLs are accepted; anything else, `javascript:` included, is dropped.
+function httpUrl(value: string | undefined): URL | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url : undefined;
+  } catch {
+    return undefined;
   }
-  return url;
 }
 
-// Helper function to build JupyterHub URL
-function buildJupyterHubUrl(hubUrl: string, repo: string, path: string = '') {
-  let url = `${hubUrl}/hub/user-redirect/git-pull?repo=${encodeURIComponent(repo)}`;
-  if (path) {
-    url += `&urlpath=tree/${encodeURIComponent(path)}`;
+// Binder expects the ref as a single path segment, so a ref containing a slash
+// must be encoded.
+function buildBinderUrl(repo: string, ref: string) {
+  const path = [...repo.split('/'), ref].map(encodeURIComponent).join('/');
+  return `https://mybinder.org/v2/gh/${path}`;
+}
+
+function buildJupyterHubUrl(hub: URL, repo: string) {
+  const url = new URL('hub/user-redirect/git-pull', hub.href.endsWith('/') ? hub : `${hub.href}/`);
+  url.searchParams.set('repo', repo);
+  return url.href;
+}
+
+// MyST's `binder.repo` is `owner/name` shorthand for the default GitHub
+// provider; a full http(s) URL is used as given.
+function sourceUrl(repo: string, provider: string | undefined) {
+  const url = httpUrl(repo);
+  if (url) return url.href;
+  if ((provider ?? 'github') === 'github' && /^[\w.-]+\/[\w.-]+$/.test(repo)) {
+    return `https://github.com/${repo}`;
   }
-  return url;
+  return undefined;
 }
 
 // Extract launch options from thebe config
 const binderOptions = thebe?.binder;
-const jupyterHubUrl = thebe?.server?.url;
+const jupyterHub = httpUrl(thebe?.server?.url);
 const repoUrl = binderOptions?.repo;
 const repoRef = binderOptions?.ref || 'HEAD';
+const repoSourceUrl = repoUrl ? sourceUrl(repoUrl, binderOptions?.provider) : undefined;
 
-const hasLaunchOptions = binderOptions || jupyterHubUrl;
+const hasLaunchOptions = binderOptions || jupyterHub;
 ---
 
 <script>
@@ -59,20 +77,14 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
   <div style="margin-bottom: var(--wa-space-l);">
     <wa-button-group>
       {binderOptions && repoUrl && (
-        <wa-button 
-          variant="primary"
-          onclick={`window.open('${buildBinderUrl(repoUrl, repoRef)}', '_blank')`}
-        >
+        <wa-button variant="primary" href={buildBinderUrl(repoUrl, repoRef)} target="_blank">
           <wa-icon library="scienceicons" name="binder" slot="start" />
           Launch Binder
         </wa-button>
       )}
       
-      {jupyterHubUrl && repoUrl && (
-        <wa-button 
-          variant="primary"
-          onclick={`window.open('${buildJupyterHubUrl(jupyterHubUrl, repoUrl)}', '_blank')`}
-        >
+      {jupyterHub && repoUrl && (
+        <wa-button variant="primary" href={buildJupyterHubUrl(jupyterHub, repoUrl)} target="_blank">
           <wa-icon library="scienceicons" name="jupyter" slot="start" />
           Launch JupyterHub
         </wa-button>
@@ -100,10 +112,10 @@ const hasLaunchOptions = binderOptions || jupyterHubUrl;
           </wa-dropdown-item>
         )}
         
-        {repoUrl && (
+        {repoSourceUrl && (
           <wa-dropdown-item>
             <a 
-              href={repoUrl}
+              href={repoSourceUrl}
               target="_blank"
               rel="noopener noreferrer"
               style="display: flex; align-items: center; gap: var(--wa-space-s); width: 100%; padding: var(--wa-space-s); text-decoration: none; color: inherit; border-radius: var(--wa-border-radius);"
