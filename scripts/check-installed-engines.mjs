@@ -20,18 +20,21 @@ import { lockfile, lockfileVersions } from "./lib/lockfile.mjs";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const store = join("node_modules", ".pnpm");
 
-// Packages whose declared floor is deliberately left above the repository's,
-// with the evidence that they run on it anyway. Prefer pinning an older,
-// compatible release through `pnpm.overrides`; an entry here is for the case
-// where no such release can serve the dependent. Each entry must still be
-// violating the floor; once it is not, the entry is reported as stale.
+// Package versions whose declared floor is deliberately left above the
+// repository's, with the evidence that they run on it anyway. Prefer pinning an
+// older, compatible release through `pnpm.overrides`; an entry here is for the
+// case where no such release can serve the dependent. Entries are keyed by
+// `name@version` because the evidence covers only the version it was gathered
+// on: an update to another above-floor version fails until it is reviewed. Each
+// entry must still be installed and violating the floor; once it is not, the
+// entry is reported as stale.
 const DELIBERATE_ENGINE_EXCEPTIONS = {
   // `@astrojs/check` converts `.astro` files through a wasm build that pins
   // this runtime exactly. The `^22.13.0` marks where `require(esm)` stopped
   // printing an ExperimentalWarning, not a missing API: the converter itself
   // declares `>=22.12.0`, and `astro check` passes on 22.12.0. Only the
   // workspace's devDependencies pull it in.
-  "@napi-rs/wasm-runtime": "astro check is verified on the floor; the range tracks a warning, not an API",
+  "@napi-rs/wasm-runtime@1.2.4": "astro check is verified on the floor; the range tracks a warning, not an API",
 };
 
 /**
@@ -100,8 +103,8 @@ for (const [key, manifest] of storeManifests()) {
   if (semver.validRange(range) === null) {
     errors.push(`${key} declares "engines.node": "${range}", which is not a valid range`);
   } else if (!semver.satisfies(floor, range)) {
-    if (manifest.name in DELIBERATE_ENGINE_EXCEPTIONS) {
-      staleExceptions.delete(manifest.name);
+    if (key in DELIBERATE_ENGINE_EXCEPTIONS) {
+      staleExceptions.delete(key);
       excepted++;
     } else {
       errors.push(
@@ -114,8 +117,8 @@ for (const [key, manifest] of storeManifests()) {
 
 for (const name of staleExceptions) {
   errors.push(
-    `DELIBERATE_ENGINE_EXCEPTIONS: no installed "${name}" excludes Node ${floor} any more; ` +
-      "drop the entry",
+    `DELIBERATE_ENGINE_EXCEPTIONS: "${name}" is not an installed package that excludes ` +
+      `Node ${floor}; drop the entry, or re-verify the version that replaced it`,
   );
 }
 
