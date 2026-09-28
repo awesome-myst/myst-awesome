@@ -205,7 +205,12 @@ const iconAttributes = (iconFamily: NavItem['iconFamily']) =>
     navMenu.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
-        const focusableElements = Array.from(navMenu.querySelectorAll<HTMLElement>('a, button, input'));
+        // Web Awesome controls keep their native element in shadow DOM, so match
+        // the hosts. A filtered-out or collapsed entry is `display: none`, and
+        // `focus()` on it is a no-op that would leave the arrow keys stuck.
+        const focusableElements = Array.from(
+          navMenu.querySelectorAll<HTMLElement>('wa-input, a[href], wa-button'),
+        ).filter((element) => element.checkVisibility());
         const currentIndex = focusableElements.findIndex((element) => element === document.activeElement);
 
         let nextIndex;

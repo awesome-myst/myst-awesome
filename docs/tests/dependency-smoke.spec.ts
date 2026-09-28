@@ -117,6 +117,13 @@ test("the home page navigation filter keeps matching entries and hides the rest"
   await search.fill("admon");
   await expect(sections.filter({ visible: true })).toHaveText([/admonitions/i]);
 
+  // The arrow keys move only between entries the filter left visible, and the
+  // search field is one of the stops.
+  await search.press("ArrowDown");
+  await expect(sections.filter({ visible: true }).locator("a")).toBeFocused();
+  await page.keyboard.press("ArrowUp");
+  await expect(search).toBeFocused();
+
   await search.fill("no page is called this");
   await expect(sections.filter({ visible: true })).toHaveCount(0);
 
