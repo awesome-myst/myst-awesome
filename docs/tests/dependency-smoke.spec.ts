@@ -91,25 +91,35 @@ test("the home page theme controls apply the chosen theme and color scheme", asy
   await expect(html).toHaveClass(/\bwa-dark\b/);
 });
 
-test("the home page navigation filter responds to typing", async ({
+test("the home page navigation filter keeps matching entries and hides the rest", async ({
   page,
   isMobile,
 }) => {
-  // The script wires up only the first NavigationMenu in the document, which
-  // is the desktop sidebar; the mobile drawer's copy does not filter.
-  test.skip(isMobile, "the mobile drawer's NavigationMenu copy is not wired up");
-
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect
     .poll(() => unregisteredWaElements(page), { timeout: 15000 })
     .toEqual([]);
-  const menu = page.locator(".page-menu .navigation-menu");
+
+  // BasePage renders the menu twice, in the desktop sidebar and in the mobile
+  // drawer; each copy has to filter on its own.
+  let menu = page.locator(".page-menu .navigation-menu");
+  if (isMobile) {
+    await page.locator(".mobile-nav-toggle").click();
+    menu = page.locator(".mobile-nav-drawer .navigation-menu");
+  }
   const sections = menu.locator(".nav-section");
+  const search = menu.locator(".search-input input");
   await expect(sections.first()).toBeVisible();
+  const total = await sections.count();
 
-  await menu.locator(".search-input input").fill("no page is called this");
-  await expect(sections.locator("visible=true")).toHaveCount(0);
+  // The home page's entries are flat: titled links with no children, which a
+  // filter that only inspects child links hides for every query.
+  await search.fill("admon");
+  await expect(sections.filter({ visible: true })).toHaveText([/admonitions/i]);
 
-  await menu.locator(".search-input input").fill("");
-  await expect(sections.first()).toBeVisible();
+  await search.fill("no page is called this");
+  await expect(sections.filter({ visible: true })).toHaveCount(0);
+
+  await search.fill("");
+  await expect(sections.filter({ visible: true })).toHaveCount(total);
 });
