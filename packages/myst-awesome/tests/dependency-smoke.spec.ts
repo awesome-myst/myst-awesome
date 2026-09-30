@@ -80,6 +80,11 @@ test("the docs-example route loads without console errors", async ({
   await expect
     .poll(() => unregisteredWaElements(page), { timeout: 15000 })
     .toEqual([]);
+  // Each `wa-icon` fetches its SVG after it upgrades, so a failing icon is
+  // reported only once that request settles. Asserting earlier made the test
+  // a race that only slow runners lost: the free Font Awesome CDN answers 403
+  // for Pro-only icons, which failed this test on Windows alone.
+  await page.waitForLoadState("networkidle");
 
   expect(errors).toEqual([]);
 });

@@ -44,7 +44,7 @@ test.describe("Component Override System", () => {
     );
 
     // Check for sparkles icon in header
-    await expect(navHeader.locator('wa-icon[name="sparkles"]')).toBeVisible();
+    await expect(navHeader.locator('wa-icon[name="wand-magic-sparkles"]')).toBeVisible();
 
     // Check for gradient background (by checking CSS class)
     await expect(customNav).toHaveClass(/custom-navigation-menu/);

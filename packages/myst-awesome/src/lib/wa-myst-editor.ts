@@ -439,10 +439,8 @@ export class WaMystEditor extends LitElement {
             help-text="Enter MyST markdown syntax for live preview"
             resize="vertical"
             rows="12"
-            @wa-input=${this._handleInput}
             @input=${this._handleInput}
             @change=${this._handleInput}
-            @wa-change=${this._handleInput}
           ></wa-textarea>
         </div>
 

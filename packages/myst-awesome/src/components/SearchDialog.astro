@@ -166,10 +166,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
         doSearch(q);
       };
       searchInput.addEventListener('input', boundSearchInputHandler, { once: false });
-      // @ts-ignore
-      searchInput.addEventListener('wa-input', boundSearchInputHandler, { once: false });
-      // @ts-ignore
-      searchInput.addEventListener('sl-input', boundSearchInputHandler, { once: false });
     }
 
     // Use component API to open; lifecycle events will update state
@@ -423,10 +419,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       // Detach input listeners to avoid duplicates on next open
       if (searchInput && boundSearchInputHandler) {
         searchInput.removeEventListener('input', boundSearchInputHandler);
-        // @ts-ignore
-        searchInput.removeEventListener('wa-input', boundSearchInputHandler);
-        // @ts-ignore
-        searchInput.removeEventListener('sl-input', boundSearchInputHandler);
         boundSearchInputHandler = null;
       }
       // @ts-ignore
@@ -451,9 +443,6 @@ const { baseDir = '', foldersOption = false } = Astro.props as Props;
       dialogEl.addEventListener('wa-after-hide', markClosed);
       // Also listen for request-close events to proactively set the closing guard
       dialogEl.addEventListener('wa-request-close', () => { closing = true; });
-      // Shoelace compatibility events
-      // @ts-ignore
-      dialogEl.addEventListener('sl-request-close', () => { closing = true; });
     }
 
     // Signal readiness for E2E tests

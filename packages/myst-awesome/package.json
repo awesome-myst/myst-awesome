@@ -21,10 +21,10 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "pnpm --filter=. exec playwright test --config=tests/playwright.config.ts",
+    "typecheck": "astro check",
     "copy-scienceicons": "node scripts/copy-scienceicons.mjs"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
     "@awesome-myst/myst-astro-collections": "workspace:*",
     "@awesome-myst/myst-zod": "^0.7.0",
     "@awesome.me/webawesome": "^3.12.0",
@@ -38,10 +38,11 @@
     "scienceicons": "^0.0.14",
     "sharp": "^0.35.4",
     "shiki": "^4.4.3",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.1"
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.63.0"
   }
 }

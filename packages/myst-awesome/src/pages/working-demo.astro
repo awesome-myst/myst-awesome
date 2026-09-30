@@ -8,10 +8,11 @@
  */
 import BasePage from '../layouts/BasePage.astro';
 import CustomNavigationMenu from '../custom/CustomNavigationMenu.astro';
+import type { NavItem } from '../components/NavigationMenu.astro';
 import CustomTableOfContents from '../custom/CustomTableOfContents.astro';
 
 // Simple test data
-const navItems = [
+const navItems: NavItem[] = [
   {
     title: "Test Section",
     icon: "folder",

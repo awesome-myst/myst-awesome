@@ -13,10 +13,11 @@
  */
 import DocsLayout from '../layouts/DocsLayout.astro';
 import NavigationMenu from '../components/NavigationMenu.astro';
+import type { NavItem } from '../components/NavigationMenu.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
 // Sample navigation data
-const navItems = [
+const navItems: NavItem[] = [
   {
     title: "Component Overrides",
     icon: "puzzle-piece",

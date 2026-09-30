@@ -241,7 +241,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       <!-- Theme selector (optional) -->
       {showThemeSelector && (
         <wa-select class="theme-selector" placeholder="Select theme" appearance="filled" size="s" value={theme}>
-          <wa-icon slot="start" name="paintbrush" variant="regular"></wa-icon>
+          <wa-icon slot="start" name="paintbrush"></wa-icon>
           <wa-option value="default">Default</wa-option>
           <wa-option value="awesome">Awesome</wa-option>
         </wa-select>
@@ -291,7 +291,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
     )}
   </div>
 
-  <nav slot="navigation" class="docs-navigat | 'shoelace'ion">
+  <nav slot="navigation" class="docs-navigation">
     {toc.map((entry: Entry) => {
       const url = getEntryUrl(entry);
       const title = getEntryTitle(entry);
@@ -409,7 +409,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       <nav class="article-nav">
         {prevPage && (
           <a href={prevPage.href} class="nav-prev">
-            <wa-icon name="arrow-left" variant="regular"></wa-icon>
+            <wa-icon name="arrow-left"></wa-icon>
             <div>
               <span class="nav-label">Previous</span>
               <span class="nav-title">{prevPage.title}</span>
@@ -423,7 +423,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
               <span class="nav-label">Next</span>
               <span class="nav-title">{nextPage.title}</span>
             </div>
-            <wa-icon name="arrow-right" variant="regular"></wa-icon>
+            <wa-icon name="arrow-right"></wa-icon>
           </a>
         )}
       </nav>
@@ -482,9 +482,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
       // Web Awesome select components emit 'change' events
       themeSelector.addEventListener('change', (e: any) => {
         const value = (e.target as any)?.value ?? 'default';
-        if ((window as any).setTheme) {
-          (window as any).setTheme(value);
-        }
+        window.setTheme?.(value);
       });
     }
 
@@ -514,9 +512,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         const current = (active.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
         const next = order[(order.indexOf(current) + 1) % order.length];
         setActive(next);
-        if ((window as any).setColorScheme) {
-          (window as any).setColorScheme(next);
-        }
+        window.setColorScheme?.(next);
       });
 
       // Also support direct selection if custom UI triggers events in the future
@@ -524,9 +520,7 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
         btn.addEventListener('select', () => {
           const value = (btn.dataset.value as 'light' | 'dark' | 'auto') || 'auto';
           setActive(value);
-          if ((window as any).setColorScheme) {
-            (window as any).setColorScheme(value);
-          }
+          window.setColorScheme?.(value);
         });
       });
     }
@@ -670,10 +664,6 @@ if (frontmatter?.thumbnail && typeof frontmatter.thumbnail === 'string') {
 
   .nav-search {
     width: 100%;
-  }
-
-  .docs-navigation {
-    padding: var(--wa-space-m);
   }
 
   .nav-section {

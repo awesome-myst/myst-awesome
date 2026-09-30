@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2025 Fideus Labs LLC
 
-interface NavItem {
+export interface NavItem {
   title: string;
   href?: string;
   icon?: string;
@@ -28,6 +28,11 @@ const {
   collapsible = true,
   showIcons = true
 } = Astro.props;
+
+// `iconFamily` mixes Font Awesome variants with the brands family, which Web
+// Awesome takes as a different attribute.
+const iconAttributes = (iconFamily: NavItem['iconFamily']) =>
+  iconFamily === 'brands' ? { family: 'brands' } : { variant: iconFamily };
 ---
 
 <nav class="navigation-menu">
@@ -47,7 +52,7 @@ const {
             {section.href ? (
               <a href={section.href} class="nav-section-title-link">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} {...iconAttributes(section.iconFamily)}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -59,7 +64,7 @@ const {
             ) : (
               <h3 class="nav-section-title">
                 {showIcons && section.icon && (
-                  <wa-icon name={section.icon} variant={section.iconFamily || 'regular'}></wa-icon>
+                  <wa-icon name={section.icon} {...iconAttributes(section.iconFamily)}></wa-icon>
                 )}
                 {section.title}
                 {section.badge && (
@@ -89,7 +94,7 @@ const {
                   aria-current={item.current ? 'page' : undefined}
                 >
                   {showIcons && item.icon && (
-                    <wa-icon name={item.icon} variant={item.iconFamily || 'regular'}></wa-icon>
+                    <wa-icon name={item.icon} {...iconAttributes(item.iconFamily)}></wa-icon>
                   )}
                   <span class="nav-link-text">{item.title}</span>
                   {item.badge && (
@@ -109,7 +114,7 @@ const {
                           aria-current={subItem.current ? 'page' : undefined}
                         >
                           {showIcons && subItem.icon && (
-                            <wa-icon name={subItem.icon} variant={subItem.iconFamily || 'regular'}></wa-icon>
+                            <wa-icon name={subItem.icon} {...iconAttributes(subItem.iconFamily)}></wa-icon>
                           )}
                           <span class="nav-link-text">{subItem.title}</span>
                           {subItem.badge && (
@@ -137,97 +142,92 @@ const {
   import '@awesome.me/webawesome/dist/components/badge/badge.js';
   import '@awesome.me/webawesome/dist/components/icon/icon.js';
 
-  // Navigation menu functionality
-  const navMenu = document.querySelector('.navigation-menu');
-  const searchInput = navMenu?.querySelector('.search-input');
-  const navToggles = navMenu?.querySelectorAll('.nav-toggle');
-  const navLinks = navMenu?.querySelectorAll('.nav-link, .nav-sublink');
+  const ENTRY = '.nav-section, .nav-item, .nav-subitem';
+  const LABEL = ':scope > .nav-section-header, :scope > .nav-link, :scope > .nav-sublink';
 
-  // Search functionality
-  if (searchInput) {
-    searchInput.addEventListener('wa-input', (e) => {
-      const query = e.target.value.toLowerCase();
-      const navItems = navMenu.querySelectorAll('.nav-item, .nav-subitem');
+  // A match shows the entry, the entries containing it, and everything under
+  // it, so a matching section title keeps its links and a flat entry with no
+  // children stays searchable.
+  function filterEntries(navMenu: HTMLElement, query: string) {
+    const entries = navMenu.querySelectorAll<HTMLElement>(ENTRY);
+    if (!query) {
+      entries.forEach((entry) => entry.style.removeProperty('display'));
+      return;
+    }
+    const visible = new Set<HTMLElement>();
+    entries.forEach((entry) => {
+      const label = entry.querySelector(LABEL)?.textContent?.toLowerCase() ?? '';
+      if (!label.includes(query)) return;
+      entry.querySelectorAll<HTMLElement>(ENTRY).forEach((descendant) => visible.add(descendant));
+      for (let node: HTMLElement | null = entry; node; node = node.parentElement?.closest<HTMLElement>(ENTRY) ?? null) {
+        visible.add(node);
+      }
+    });
+    entries.forEach((entry) => {
+      if (visible.has(entry)) entry.style.removeProperty('display');
+      else entry.style.display = 'none';
+    });
+  }
 
-      navItems.forEach(item => {
-        const link = item.querySelector('.nav-link, .nav-sublink');
-        const text = link?.textContent?.toLowerCase() || '';
-        const shouldShow = text.includes(query);
+  // BasePage renders its navigation slot twice, in the desktop sidebar and in
+  // the mobile drawer, so every instance needs its own listeners.
+  function initNavigationMenu(navMenu: HTMLElement) {
+    const searchInput = navMenu.querySelector<HTMLElementTagNameMap['wa-input']>('.search-input');
+    searchInput?.addEventListener('input', () => {
+      filterEntries(navMenu, (searchInput.value ?? '').trim().toLowerCase());
+    });
 
-        item.style.display = shouldShow ? 'block' : 'none';
+    navMenu.querySelectorAll<HTMLElement>('.nav-toggle').forEach((toggle) => {
+      const section = toggle.closest<HTMLElement>('.nav-section');
+      const navList = section?.querySelector<HTMLElement>('.nav-list');
+      const expandIcon = toggle.querySelector<HTMLElement>('.nav-expand-icon');
+      const collapseIcon = toggle.querySelector<HTMLElement>('.nav-collapse-icon');
 
-        // Show parent sections if any child matches
-        if (shouldShow) {
-          let parent = item.closest('.nav-section');
-          while (parent) {
-            parent.style.display = 'block';
-            parent = parent.parentElement?.closest('.nav-section');
+      if (section && navList && expandIcon && collapseIcon) {
+        toggle.addEventListener('click', () => {
+          const isCollapsed = navList.style.display === 'none';
+
+          if (isCollapsed) {
+            navList.style.display = 'block';
+            expandIcon.style.display = 'none';
+            collapseIcon.style.display = 'block';
+            section.classList.remove('collapsed');
+          } else {
+            navList.style.display = 'none';
+            expandIcon.style.display = 'block';
+            collapseIcon.style.display = 'none';
+            section.classList.add('collapsed');
           }
-        }
-      });
+        });
+      }
+    });
 
-      // Hide sections with no visible items
-      if (query) {
-        const sections = navMenu.querySelectorAll('.nav-section');
-        sections.forEach(section => {
-          const visibleItems = section.querySelectorAll('.nav-item:not([style*="display: none"]), .nav-subitem:not([style*="display: none"])');
-          section.style.display = visibleItems.length > 0 ? 'block' : 'none';
-        });
-      } else {
-        // Reset all visibility when search is cleared
-        const allItems = navMenu.querySelectorAll('.nav-section, .nav-item, .nav-subitem');
-        allItems.forEach(item => {
-          item.style.display = 'block';
-        });
+    navMenu.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        // Web Awesome controls keep their native element in shadow DOM, so match
+        // the hosts. A filtered-out or collapsed entry is `display: none`, and
+        // `focus()` on it is a no-op that would leave the arrow keys stuck.
+        const focusableElements = Array.from(
+          navMenu.querySelectorAll<HTMLElement>('wa-input, a[href], wa-button'),
+        ).filter((element) => element.checkVisibility());
+        const currentIndex = focusableElements.findIndex((element) => element === document.activeElement);
+
+        let nextIndex;
+        if (e.key === 'ArrowDown') {
+          nextIndex = currentIndex + 1;
+          if (nextIndex >= focusableElements.length) nextIndex = 0;
+        } else {
+          nextIndex = currentIndex - 1;
+          if (nextIndex < 0) nextIndex = focusableElements.length - 1;
+        }
+
+        focusableElements[nextIndex]?.focus();
       }
     });
   }
 
-  // Collapsible sections
-  navToggles.forEach(toggle => {
-    const section = toggle.closest('.nav-section');
-    const navList = section?.querySelector('.nav-list');
-    const expandIcon = toggle.querySelector('.nav-expand-icon');
-    const collapseIcon = toggle.querySelector('.nav-collapse-icon');
-
-    if (navList && expandIcon && collapseIcon) {
-      toggle.addEventListener('click', () => {
-        const isCollapsed = navList.style.display === 'none';
-
-        if (isCollapsed) {
-          navList.style.display = 'block';
-          expandIcon.style.display = 'none';
-          collapseIcon.style.display = 'block';
-          section.classList.remove('collapsed');
-        } else {
-          navList.style.display = 'none';
-          expandIcon.style.display = 'block';
-          collapseIcon.style.display = 'none';
-          section.classList.add('collapsed');
-        }
-      });
-    }
-  });
-
-  // Keyboard navigation
-  navMenu?.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      const focusableElements = Array.from(navMenu.querySelectorAll('a, button, input'));
-      const currentIndex = focusableElements.indexOf(document.activeElement);
-
-      let nextIndex;
-      if (e.key === 'ArrowDown') {
-        nextIndex = currentIndex + 1;
-        if (nextIndex >= focusableElements.length) nextIndex = 0;
-      } else {
-        nextIndex = currentIndex - 1;
-        if (nextIndex < 0) nextIndex = focusableElements.length - 1;
-      }
-
-      focusableElements[nextIndex]?.focus();
-    }
-  });
+  document.querySelectorAll<HTMLElement>('.navigation-menu').forEach(initNavigationMenu);
 </script>
 
 <style>

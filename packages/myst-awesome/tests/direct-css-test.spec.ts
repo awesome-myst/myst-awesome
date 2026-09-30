@@ -20,7 +20,7 @@ test.describe("Direct CSS Test", () => {
 
     // Manually force the correct grid layout
     await page.evaluate(() => {
-      const pageBody = document.querySelector(".page-body");
+      const pageBody = document.querySelector<HTMLElement>(".page-body");
       if (pageBody) {
         // Force the grid layout
         pageBody.style.gridTemplateColumns = "1fr 15rem";

@@ -36,9 +36,9 @@ test.describe("Component Override System", () => {
     await expect(navTitle).toBeVisible();
     await expect(navTitle).toContainText("Custom Navigation");
 
-    // Check for sparkles icon in custom nav
+    // Check for the header icon in custom nav
     const sparklesIcon = page
-      .locator('.custom-nav-title wa-icon[name="sparkles"]')
+      .locator('.custom-nav-title wa-icon[name="wand-magic-sparkles"]')
       .first();
     await expect(sparklesIcon).toBeVisible();
   });

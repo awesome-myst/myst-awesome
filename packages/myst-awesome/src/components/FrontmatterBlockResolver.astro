@@ -20,12 +20,12 @@
  *      components={{ authors: CustomAuthors }}
  *    />
  */
-import type { ProjectAndPageFrontmatter } from '@awesome-myst/myst-zod';
+import type { ComponentProps } from 'astro/types';
 import DefaultFrontmatterBlock from './frontmatter/FrontmatterBlock.astro';
 
 interface Props {
   component?: any;
-  frontmatter: ProjectAndPageFrontmatter;
+  frontmatter: ComponentProps<typeof DefaultFrontmatterBlock>['frontmatter'];
   baseUrl?: string;
   components?: {
     authors?: any;

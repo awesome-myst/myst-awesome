@@ -4,10 +4,11 @@
 
 import DocsLayout from '../layouts/DocsLayout.astro';
 import NavigationMenu from '../components/NavigationMenu.astro';
+import type { NavItem } from '../components/NavigationMenu.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
 // Sample navigation data
-const navItems = [
+const navItems: NavItem[] = [
   {
     title: "Getting Started",
     icon: "rocket",
@@ -59,7 +60,6 @@ const tocItems = [
   showEditButton={true}
   showThemeSelector={true}
   editUrl="https://github.com/example/myst-awesome/edit/main/docs/index.md"
-  author="MyST Team"
   lastModified={new Date('2024-01-15')}
   nextPage={{ title: "Installation Guide", href: "/docs/installation" }}
   prevPage={{ title: "Introduction", href: "/docs/intro" }}
@@ -121,7 +121,7 @@ const tocItems = [
     <div class="feature-grid">
       <wa-card>
         <div slot="header">
-          <wa-icon name="layout" variant="solid"></wa-icon>
+          <wa-icon name="table-columns" variant="solid"></wa-icon>
           <strong>Header & Navigation</strong>
         </div>
         <p>Customizable header with branding, navigation, and theme controls.</p>
@@ -129,7 +129,7 @@ const tocItems = [
 
       <wa-card>
         <div slot="header">
-          <wa-icon name="sidebar" variant="solid"></wa-icon>
+          <wa-icon name="bars-staggered" variant="solid"></wa-icon>
           <strong>Sidebar Navigation</strong>
         </div>
         <p>Collapsible navigation menu with search and hierarchical organization.</p>
